@@ -8,8 +8,69 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* FIX CRÍTICO: el div#map debe tener altura explícita para que Leaflet lo muestre */
     #map { height: 540px; width: 100%; background: #101e30; border-radius: 12px; }
+
+    /* ── REGIONAL INTELLIGENCE BOARD ── */
+    .rib-section { background: #070f1a; padding: 3rem 0 4rem; border-top: 1px solid #1e3a5f; }
+    .rib-header { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; }
+    .rib-header h2 { font-size:1.5rem; color:#dbe7ff; margin:0; }
+    .rib-header .badge { background:#1e3a5f; color:#0ea5e9; font-size:.72rem; font-weight:700;
+      padding:.25rem .65rem; border-radius:999px; letter-spacing:.08em; text-transform:uppercase; }
+
+    /* KPI strip */
+    .rib-kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2.5rem; }
+    @media(max-width:700px){ .rib-kpi-strip{ grid-template-columns:repeat(2,1fr); } }
+    .rib-kpi { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:12px; padding:1.1rem 1.4rem;
+      display:flex; flex-direction:column; gap:.25rem; }
+    .rib-kpi .rk-label { font-size:.72rem; color:#64748b; text-transform:uppercase; letter-spacing:.07em; }
+    .rib-kpi .rk-val   { font-size:2rem; font-weight:800; color:#dbe7ff; line-height:1; }
+    .rib-kpi .rk-sub   { font-size:.72rem; color:#4ade80; }
+
+    /* Charts row */
+    .rib-charts { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2.5rem; }
+    @media(max-width:900px){ .rib-charts{ grid-template-columns:1fr; } }
+    .rib-chart-card { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:14px;
+      padding:1.4rem 1.6rem; }
+    .rib-chart-title { font-size:.8rem; font-weight:700; color:#64748b;
+      text-transform:uppercase; letter-spacing:.09em; margin-bottom:1.2rem; }
+
+    /* Bar chart inline */
+    .ibar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.7rem; }
+    .ibar-label { font-size:.75rem; color:#a0aec0; min-width:120px; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis; }
+    .ibar-track { flex:1; background:#1e3a5f; border-radius:6px; height:8px; overflow:hidden; }
+    .ibar-fill  { height:100%; border-radius:6px; transition:width .4s ease; }
+    .ibar-val   { font-size:.75rem; color:#dbe7ff; min-width:38px; text-align:right;
+      font-weight:700; }
+
+    /* Stacked bar */
+    .sbar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.65rem; }
+    .sbar-label { font-size:.74rem; color:#a0aec0; min-width:110px; }
+    .sbar-track { flex:1; display:flex; border-radius:6px; overflow:hidden; height:12px; }
+    .sbar-seg   { height:100%; transition:width .4s ease; }
+    .sbar-total { font-size:.74rem; color:#dbe7ff; min-width:32px; text-align:right; font-weight:700; }
+
+    /* Table */
+    .rib-table-wrap { overflow-x:auto; }
+    .rib-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+    .rib-table thead th { background:#0d1b2a; color:#64748b; font-size:.7rem; text-transform:uppercase;
+      letter-spacing:.08em; padding:.6rem 1rem; border-bottom:1px solid #1e3a5f; text-align:left; white-space:nowrap; }
+    .rib-table tbody tr { border-bottom:1px solid #0f2540; transition:background .15s; }
+    .rib-table tbody tr:hover { background:#0d1b2a; }
+    .rib-table tbody td { padding:.65rem 1rem; color:#dbe7ff; vertical-align:middle; white-space:nowrap; }
+    .rib-table .td-region { color:#dbe7ff; font-weight:700; }
+    .rib-table .td-int   { font-size:1rem; font-weight:800; }
+    .intensity-pill { display:inline-block; padding:.2rem .65rem; border-radius:999px;
+      font-size:.72rem; font-weight:700; }
+    .td-leader { color:#4ade80; font-size:.78rem; }
+    .td-num    { color:#94a3b8; }
+    .td-fast span { background:#1e3a5f; color:#f59e0b; font-size:.7rem;
+      padding:.15rem .5rem; border-radius:999px; font-weight:700; }
+
+    /* Legend pills */
+    .rib-legend { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .leg-item   { display:flex; align-items:center; gap:.35rem; font-size:.72rem; color:#64748b; }
+    .leg-dot    { width:10px; height:10px; border-radius:50%; }
   </style>
 </head>
 <body>
@@ -25,6 +86,7 @@
       <div class="nav-links">
         <a href="#monitor">Monitor</a>
         <a href="#insights">Ranking</a>
+        <a href="#regional">Regiones</a>
         <a href="#signals">Señales</a>
         <a href="https://github.com/0xvanguard/cyberremote-monitor-pro" target="_blank" rel="noreferrer">GitHub ↗</a>
       </div>
@@ -42,6 +104,7 @@
           <button class="btn btn-secondary" onclick="jumpRegion('Europe')">Europa</button>
           <button class="btn btn-secondary" onclick="jumpRegion('LATAM')">LATAM</button>
           <button class="btn btn-secondary" onclick="jumpRegion('NorthAmerica')">Norteamérica</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('Arctic')">🧊 Ártico</button>
         </div>
         <div class="hero-stats">
           <div class="stat"><strong id="statCountries">0</strong><span>Mercados activos</span></div>
@@ -139,6 +202,260 @@
           <div class="feed-list" id="feedList"></div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       REGIONAL INTELLIGENCE BOARD
+  ══════════════════════════════════════════════ -->
+  <section class="rib-section" id="regional">
+    <div class="container">
+
+      <div class="rib-header">
+        <h2>🌍 Regional Intelligence Board</h2>
+        <span class="badge">7 regiones · datos 2026</span>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="rib-kpi-strip">
+        <div class="rib-kpi">
+          <span class="rk-label">Total oportunidades</span>
+          <span class="rk-val">1 592</span>
+          <span class="rk-sub">↑ empleo + freelance + contratos</span>
+        </div>
+        <div class="rib-kpi">
+          <span class="rk-label">Intensidad promedio global</span>
+          <span class="rk-val">69.4</span>
+          <span class="rk-sub">/ 100 · escala mercado activo</span>
+        </div>
+        <div class="rib-kpi">
+          <span class="rk-label">Países cubiertos</span>
+          <span class="rk-val">33</span>
+          <span class="rk-sub">distribuidos en 7 regiones</span>
+        </div>
+        <div class="rib-kpi">
+          <span class="rk-label">Entrada rápida disponible</span>
+          <span class="rk-val">22</span>
+          <span class="rk-sub">países con barrera baja</span>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="rib-charts">
+
+        <!-- Chart 1: Intensidad promedio -->
+        <div class="rib-chart-card">
+          <div class="rib-chart-title">📊 Intensidad de mercado por región (0–100)</div>
+          <div id="chart-intensity">
+            <div class="ibar-row">
+              <span class="ibar-label">Asia Occidental</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:78.7%;background:#00c9a7"></div></div>
+              <span class="ibar-val">78.7</span>
+            </div>
+            <div class="ibar-row">
+              <span class="ibar-label">Europa</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:76.3%;background:#4ade80"></div></div>
+              <span class="ibar-val">76.3</span>
+            </div>
+            <div class="ibar-row">
+              <span class="ibar-label">Asia Meridional</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:76%;background:#f59e0b"></div></div>
+              <span class="ibar-val">76.0</span>
+            </div>
+            <div class="ibar-row">
+              <span class="ibar-label">Australia / NZ</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:75%;background:#0ea5e9"></div></div>
+              <span class="ibar-val">75.0</span>
+            </div>
+            <div class="ibar-row">
+              <span class="ibar-label">Asia Oriental</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:72%;background:#a78bfa"></div></div>
+              <span class="ibar-val">72.0</span>
+            </div>
+            <div class="ibar-row">
+              <span class="ibar-label">Áf. Subsahariana</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:56.3%;background:#f87171"></div></div>
+              <span class="ibar-val">56.3</span>
+            </div>
+            <div class="ibar-row">
+              <span class="ibar-label">Áf. Septentrional</span>
+              <div class="ibar-track"><div class="ibar-fill" style="width:51.2%;background:#38bdf8"></div></div>
+              <span class="ibar-val">51.2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Modalidades stacked -->
+        <div class="rib-chart-card">
+          <div class="rib-chart-title">💼 Oportunidades por modalidad y región</div>
+          <div class="rib-legend">
+            <span class="leg-item"><span class="leg-dot" style="background:#4ade80"></span>Empleos</span>
+            <span class="leg-item"><span class="leg-dot" style="background:#f59e0b"></span>Freelance</span>
+            <span class="leg-item"><span class="leg-dot" style="background:#0ea5e9"></span>Contratos</span>
+          </div>
+          <div id="chart-modality">
+            <!-- Europa 843 total -->
+            <div class="sbar-row">
+              <span class="sbar-label">Europa</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:35.7%;background:#4ade80" title="Empleos 301"></div>
+                <div class="sbar-seg" style="width:34.5%;background:#f59e0b" title="Freelance 291"></div>
+                <div class="sbar-seg" style="width:29.8%;background:#0ea5e9" title="Contratos 251"></div>
+              </div>
+              <span class="sbar-total">843</span>
+            </div>
+            <!-- Asia Oriental 210 -->
+            <div class="sbar-row">
+              <span class="sbar-label">Asia Oriental</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:35.2%;background:#4ade80" title="Empleos 74"></div>
+                <div class="sbar-seg" style="width:35.2%;background:#f59e0b" title="Freelance 74"></div>
+                <div class="sbar-seg" style="width:29.5%;background:#0ea5e9" title="Contratos 62"></div>
+              </div>
+              <span class="sbar-total">210</span>
+            </div>
+            <!-- Asia Occidental 164 -->
+            <div class="sbar-row">
+              <span class="sbar-label">Asia Occidental</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:38.4%;background:#4ade80" title="Empleos 63"></div>
+                <div class="sbar-seg" style="width:27.4%;background:#f59e0b" title="Freelance 45"></div>
+                <div class="sbar-seg" style="width:34.1%;background:#0ea5e9" title="Contratos 56"></div>
+              </div>
+              <span class="sbar-total">164</span>
+            </div>
+            <!-- Áf. Septentrional 110 -->
+            <div class="sbar-row">
+              <span class="sbar-label">Áf. Septentrional</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:26.4%;background:#4ade80" title="Empleos 29"></div>
+                <div class="sbar-seg" style="width:47.3%;background:#f59e0b" title="Freelance 52"></div>
+                <div class="sbar-seg" style="width:26.4%;background:#0ea5e9" title="Contratos 29"></div>
+              </div>
+              <span class="sbar-total">110</span>
+            </div>
+            <!-- Áf. Subsahariana 96 -->
+            <div class="sbar-row">
+              <span class="sbar-label">Áf. Subsahariana</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:28.1%;background:#4ade80" title="Empleos 27"></div>
+                <div class="sbar-seg" style="width:45.8%;background:#f59e0b" title="Freelance 44"></div>
+                <div class="sbar-seg" style="width:26%;background:#0ea5e9" title="Contratos 25"></div>
+              </div>
+              <span class="sbar-total">96</span>
+            </div>
+            <!-- Australia/NZ 86 -->
+            <div class="sbar-row">
+              <span class="sbar-label">Australia / NZ</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:39.5%;background:#4ade80" title="Empleos 34"></div>
+                <div class="sbar-seg" style="width:32.6%;background:#f59e0b" title="Freelance 28"></div>
+                <div class="sbar-seg" style="width:27.9%;background:#0ea5e9" title="Contratos 24"></div>
+              </div>
+              <span class="sbar-total">86</span>
+            </div>
+            <!-- Asia Meridional 83 -->
+            <div class="sbar-row">
+              <span class="sbar-label">Asia Meridional</span>
+              <div class="sbar-track">
+                <div class="sbar-seg" style="width:24.1%;background:#4ade80" title="Empleos 20"></div>
+                <div class="sbar-seg" style="width:42.2%;background:#f59e0b" title="Freelance 35"></div>
+                <div class="sbar-seg" style="width:33.7%;background:#0ea5e9" title="Contratos 28"></div>
+              </div>
+              <span class="sbar-total">83</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla ejecutiva -->
+      <div class="rib-chart-card">
+        <div class="rib-chart-title">🗂️ Tabla ejecutiva — resumen completo por región · 2026</div>
+        <div class="rib-table-wrap">
+          <table class="rib-table">
+            <thead>
+              <tr>
+                <th>Región</th>
+                <th>Países</th>
+                <th>Intensidad</th>
+                <th>Empleos</th>
+                <th>Freelance</th>
+                <th>Contratos</th>
+                <th>Formación</th>
+                <th>Total</th>
+                <th>⚡ Rápida</th>
+                <th>🏆 Líder</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-region">Asia Occidental</td>
+                <td class="td-num">3</td>
+                <td><span class="intensity-pill" style="background:rgba(0,201,167,.15);color:#00c9a7">78.7</span></td>
+                <td class="td-num">63</td><td class="td-num">45</td><td class="td-num">56</td><td class="td-num">23</td>
+                <td><strong style="color:#dbe7ff">164</strong></td>
+                <td class="td-fast"><span>1</span></td>
+                <td class="td-leader">Israel</td>
+              </tr>
+              <tr>
+                <td class="td-region">Europa</td>
+                <td class="td-num">16</td>
+                <td><span class="intensity-pill" style="background:rgba(74,222,128,.15);color:#4ade80">76.3</span></td>
+                <td class="td-num">301</td><td class="td-num">291</td><td class="td-num">251</td><td class="td-num">140</td>
+                <td><strong style="color:#dbe7ff">843</strong></td>
+                <td class="td-fast"><span>10</span></td>
+                <td class="td-leader">Reino Unido</td>
+              </tr>
+              <tr>
+                <td class="td-region">Asia Meridional</td>
+                <td class="td-num">1</td>
+                <td><span class="intensity-pill" style="background:rgba(245,158,11,.15);color:#f59e0b">76.0</span></td>
+                <td class="td-num">20</td><td class="td-num">35</td><td class="td-num">28</td><td class="td-num">20</td>
+                <td><strong style="color:#dbe7ff">83</strong></td>
+                <td class="td-fast"><span>1</span></td>
+                <td class="td-leader">India</td>
+              </tr>
+              <tr>
+                <td class="td-region">Australia / NZ</td>
+                <td class="td-num">2</td>
+                <td><span class="intensity-pill" style="background:rgba(14,165,233,.15);color:#0ea5e9">75.0</span></td>
+                <td class="td-num">34</td><td class="td-num">28</td><td class="td-num">24</td><td class="td-num">15</td>
+                <td><strong style="color:#dbe7ff">86</strong></td>
+                <td class="td-fast"><span>0</span></td>
+                <td class="td-leader">Australia</td>
+              </tr>
+              <tr>
+                <td class="td-region">Asia Oriental</td>
+                <td class="td-num">4</td>
+                <td><span class="intensity-pill" style="background:rgba(167,139,250,.15);color:#a78bfa">72.0</span></td>
+                <td class="td-num">74</td><td class="td-num">74</td><td class="td-num">62</td><td class="td-num">46</td>
+                <td><strong style="color:#dbe7ff">210</strong></td>
+                <td class="td-fast"><span>3</span></td>
+                <td class="td-leader">Singapur</td>
+              </tr>
+              <tr>
+                <td class="td-region">África Subsahariana</td>
+                <td class="td-num">3</td>
+                <td><span class="intensity-pill" style="background:rgba(248,113,113,.15);color:#f87171">56.3</span></td>
+                <td class="td-num">27</td><td class="td-num">44</td><td class="td-num">25</td><td class="td-num">27</td>
+                <td><strong style="color:#dbe7ff">96</strong></td>
+                <td class="td-fast"><span>3</span></td>
+                <td class="td-leader">Sudáfrica</td>
+              </tr>
+              <tr>
+                <td class="td-region">África Septentrional</td>
+                <td class="td-num">4</td>
+                <td><span class="intensity-pill" style="background:rgba(56,189,248,.15);color:#38bdf8">51.2</span></td>
+                <td class="td-num">29</td><td class="td-num">52</td><td class="td-num">29</td><td class="td-num">34</td>
+                <td><strong style="color:#dbe7ff">110</strong></td>
+                <td class="td-fast"><span>4</span></td>
+                <td class="td-leader">Egipto</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </section>
 
