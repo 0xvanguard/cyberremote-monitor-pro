@@ -12,7 +12,9 @@ const nameToCode = {
   'Chile':'CL','Peru':'PE','South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
   'United Arab Emirates':'AE','Portugal':'PT','Italy':'IT','Sweden':'SE','Norway':'NO',
   'Switzerland':'CH','New Zealand':'NZ','Philippines':'PH','Malaysia':'MY',
-  'Belgium':'BE','Czech Republic':'CZ','Costa Rica':'CR','Panama':'PA','Ecuador':'EC'
+  'Belgium':'BE','Czech Republic':'CZ','Costa Rica':'CR','Panama':'PA','Ecuador':'EC',
+  'Greenland':'GL','Venezuela':'VE','Bolivia':'BO','Guatemala':'GT','Morocco':'MA',
+  'Algeria':'DZ','Tunisia':'TN','Egypt':'EG','Saudi Arabia':'SA'
 };
 
 function getHeatColor(intensity) {
@@ -202,7 +204,8 @@ function jumpRegion(region) {
   const views = {
     World: [[18, 5], 2], Europe: [[52, 15], 4], LATAM: [[-12, -65], 3],
     NorthAmerica: [[42, -100], 3], Asia: [[25, 90], 3],
-    Oceania: [[-25, 135], 4], Africa: [[5, 20], 3], MiddleEast: [[25, 45], 4]
+    Oceania: [[-25, 135], 4], Africa: [[5, 20], 3], MiddleEast: [[25, 45], 4],
+    Arctic: [[72, -42], 4]
   };
   const v = views[region];
   if (v && map) map.setView(v[0], v[1]);
