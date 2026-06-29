@@ -12,7 +12,7 @@ const nameToCode = {
   'Chile':'CL','Peru':'PE','South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
   'United Arab Emirates':'AE','Portugal':'PT','Italy':'IT','Sweden':'SE','Norway':'NO',
   'Switzerland':'CH','New Zealand':'NZ','Philippines':'PH','Malaysia':'MY',
-  'Costa Rica':'CR','Panama':'PA','Ecuador':'EC'
+  'Belgium':'BE','Czech Republic':'CZ','Costa Rica':'CR','Panama':'PA','Ecuador':'EC'
 };
 
 function getHeatColor(intensity) {
@@ -98,18 +98,16 @@ function updateCountryPanel(code) {
   const d = dataset[code];
   if (!d) return;
   const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">⚡ Entrada rápida</span>' : '';
-
   const topRole = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
   const topRoleHtml = topRole
-    ? `<div class="metric" style="background:rgba(22,163,74,.1);border-left:3px solid #16a34a;padding-left:8px">
+    ? `<div class="metric" style="background:rgba(22,163,74,.1);border-left:3px solid #16a34a;padding-left:8px;margin-bottom:6px">
         <strong>🔥 Rol más demandado</strong>
         <span style="color:#4ade80">${topRole.role} (${topRole.demand}/100)</span>
         <span style="font-size:.75rem;color:var(--muted)">${topRole.note}</span>
        </div>` : '';
-
   const rolesHtml = d.topRoles ? d.topRoles.map(r => `
-    <div style="margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="margin-bottom:7px">
+      <div style="display:flex;justify-content:space-between">
         <span style="font-size:.78rem;color:#dbe7ff">${r.role}</span>
       </div>
       ${getRoleBar(r.demand)}
@@ -125,11 +123,11 @@ function updateCountryPanel(code) {
       <div class="metric"><strong>Intensidad heatmap</strong><span style="color:${getHeatColor(d.intensity)}">${d.intensity} / 100</span></div>
       ${topRoleHtml}
       <div class="metric"><strong>Salario / tarifa</strong><span>${d.salary}</span></div>
-      <div class="metric"><strong>Plataformas</strong><span>${d.platforms || 'LinkedIn, Upwork'}</span></div>
+      <div class="metric"><strong>Plataformas</strong><span>${d.platforms}</span></div>
       <div class="metric"><strong>Señales activas</strong><span>${getBadges(d)}</span></div>
     </div>
     <div style="margin-top:.8rem">
-      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">📊 DEMANDA POR ROL</div>
+      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">📊 DEMANDA POR ROL — ${d.name.toUpperCase()}</div>
       ${rolesHtml}
     </div>
     <div class="tags" style="margin-top:.5rem">
@@ -149,10 +147,7 @@ function renderRanking() {
     return `
     <div class="rank" onclick="updateCountryPanel('${code}')" style="cursor:pointer">
       <div class="rank-num">${i + 1}</div>
-      <div>
-        <strong>${d.name}</strong>${d.fastEntry ? ' ⚡' : ''}
-        <small>${top ? '🔥 ' + top.role : d.contractType}</small>
-      </div>
+      <div><strong>${d.name}</strong>${d.fastEntry ? ' ⚡' : ''}<small>${top ? '🔥 ' + top.role : d.contractType}</small></div>
       <div class="score" style="color:${getHeatColor(d.intensity)}">${d.intensity}</div>
     </div>`;
   }).join('');
@@ -163,7 +158,7 @@ function renderFeed() {
     .filter(shouldShow)
     .flatMap(d => d.signals.map(s => ({ country: d.name, text: s, intensity: d.intensity, contract: d.contractType })))
     .sort((a, b) => b.intensity - a.intensity)
-    .slice(0, 10);
+    .slice(0, 12);
   document.getElementById('feedList').innerHTML = entries.map(e => `
     <div class="feed-item">
       <strong>${e.country}</strong> <span class="tag" style="font-size:.7rem">${e.contract}</span>
@@ -227,13 +222,11 @@ document.querySelectorAll('.chip[data-filter]').forEach(btn => {
 async function init() {
   const res = await fetch('data/countries.json');
   dataset = await res.json();
-
   map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
     subdomains: 'abcd', maxZoom: 19
   }).addTo(map);
-
   markerLayer = L.layerGroup().addTo(map);
   await loadGeoJson();
   refreshAll();
