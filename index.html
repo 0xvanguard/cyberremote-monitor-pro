@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberRemote Monitor — World Jobs Intelligence</title>
+  <meta name="description" content="Monitor mundial interactivo de empleo remoto junior en ciberseguridad: mapa coroplético, ranking de mercados, signal feed y dashboard tipo intelligence board." />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="logo">🛰️</div>
+        <div>
+          <div>CyberRemote Monitor</div>
+          <small>World jobs intelligence — junior cybersecurity</small>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#monitor">Monitor</a>
+        <a href="#insights">Ranking</a>
+        <a href="#signals">Señales</a>
+        <a href="https://github.com/0xvanguard/cyberremote-monitor-pro" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container hero-grid">
+      <div class="panel hero-main">
+        <div class="eyebrow">🌐 Pro dashboard · vista mundial interactiva</div>
+        <h1>Monitor real para empleo junior remoto en ciberseguridad.</h1>
+        <p class="lead">Mapa del mundo con países pintados por intensidad de mercado, filtros por empleo, servicios y capacitación, panel lateral inteligente, ranking y signal feed.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#monitor">Abrir monitor</a>
+          <button class="btn btn-secondary" onclick="jumpRegion('Europe')">Europa</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('LATAM')">LATAM</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('NorthAmerica')">Norteamérica</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong id="statCountries">10</strong><span>Mercados destacados</span></div>
+          <div class="stat"><strong id="statJobs">0</strong><span>Vacantes detectadas</span></div>
+          <div class="stat"><strong id="statServices">0</strong><span>Servicios / freelance</span></div>
+          <div class="stat"><strong id="statTraining">0</strong><span>Señales de formación</span></div>
+        </div>
+      </div>
+      <div class="panel hero-side">
+        <div class="mini">
+          <h3>Modo intelligence board</h3>
+          <p>Más color = más intensidad de mercado. Haz clic en cualquier país pintado o marcador para ver la estrategia recomendada.</p>
+        </div>
+        <div class="mini">
+          <h3>Modelo monetizable</h3>
+          <p>Útil como base para membresía, newsletter premium, reportes, mentoría, marketplace de servicios y funnel educativo.</p>
+        </div>
+        <div class="mini">
+          <h3>Open source</h3>
+          <p>Datos en <code>data/countries.json</code>. Fácil de extender con scraping, APIs o Supabase.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="monitor">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Global intelligence board</h2>
+          <p>Haz clic en un país pintado para ver ruta, intensidad, señales tácticas y monetización recomendada.</p>
+        </div>
+      </div>
+
+      <div class="monitor-layout">
+        <div class="map-wrap">
+          <div class="toolbar">
+            <button class="chip active" data-filter="all">Todo</button>
+            <button class="chip" data-filter="jobs">Empleo</button>
+            <button class="chip" data-filter="freelance">Servicios</button>
+            <button class="chip" data-filter="training">Capacitación</button>
+            <button class="chip" onclick="jumpRegion('World')">Mundo completo</button>
+          </div>
+          <div class="legend">
+            <div><span class="dot" style="background:#1f8f4f"></span>Alta intensidad</div>
+            <div><span class="dot" style="background:#f59e0b"></span>Mercado puente</div>
+            <div><span class="dot" style="background:#0ea5e9"></span>Formación / servicios</div>
+          </div>
+          <div id="map"></div>
+        </div>
+
+        <aside class="sidebar">
+          <div>
+            <div class="side-title">Panel de país</div>
+            <div class="country-box" id="countryBox">
+              <div class="country-name">Selecciona un país</div>
+              <div class="muted-text">Haz clic sobre cualquier país del mapa para ver la estrategia recomendada.</div>
+              <div class="metrics">
+                <div class="metric"><strong>Mapa coroplético</strong><span>Países coloreados por intensidad de mercado.</span></div>
+                <div class="metric"><strong>Panel dinámico</strong><span>Cambia con cada país y filtro activo.</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="side-title">Top 5 mercados</div>
+            <div class="ranking" id="ranking"></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="dashboard-grid" id="insights">
+        <div class="cards">
+          <div class="section-head dash-head">
+            <h2 class="sub-h2">KPIs del radar</h2>
+          </div>
+          <div class="mini-grid">
+            <div class="kpi"><div class="label">Europa</div><div class="value" id="kpiEurope">0</div></div>
+            <div class="kpi"><div class="label">LATAM</div><div class="value" id="kpiLatam">0</div></div>
+            <div class="kpi"><div class="label">Freelance</div><div class="value" id="kpiFreelance">0</div></div>
+            <div class="kpi"><div class="label">Training</div><div class="value" id="kpiTraining">0</div></div>
+          </div>
+        </div>
+        <div class="feed" id="signals">
+          <div class="section-head dash-head">
+            <h2 class="sub-h2">Signal feed</h2>
+          </div>
+          <div class="feed-list" id="feedList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>CyberRemote Monitor</strong>
+        <p class="small">Dashboard open source — empleo junior remoto en ciberseguridad.</p>
+      </div>
+      <div>
+        <a href="https://github.com/0xvanguard/cyberremote-monitor-pro" target="_blank" rel="noreferrer" class="btn btn-secondary">Ver en GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
