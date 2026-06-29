@@ -7,6 +7,10 @@
   <meta name="description" content="Monitor mundial interactivo de empleo remoto junior en ciberseguridad: mapa coroplético, ranking de mercados, signal feed y dashboard tipo intelligence board." />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* FIX CRÍTICO: el div#map debe tener altura explícita para que Leaflet lo muestre */
+    #map { height: 540px; width: 100%; background: #101e30; border-radius: 12px; }
+  </style>
 </head>
 <body>
   <nav class="nav">
@@ -31,8 +35,8 @@
     <div class="container hero-grid">
       <div class="panel hero-main">
         <div class="eyebrow">🌐 Pro dashboard · vista mundial interactiva</div>
-        <h1>Monitor real para empleo junior remoto en ciberseguridad.</h1>
-        <p class="lead">Mapa del mundo con países pintados por intensidad de mercado, filtros por empleo, servicios y capacitación, panel lateral inteligente, ranking y signal feed.</p>
+        <h1>Monitor real para contratación remota en ciberseguridad.</h1>
+        <p class="lead">Heatmap global por intensidad de mercado. Filtra por tipo de contratación: empleo, freelance/servicios, obra/proyecto o capacitación. Identifica dónde hay entrada más rápida.</p>
         <div class="cta">
           <a class="btn btn-primary" href="#monitor">Abrir monitor</a>
           <button class="btn btn-secondary" onclick="jumpRegion('Europe')">Europa</button>
@@ -40,24 +44,24 @@
           <button class="btn btn-secondary" onclick="jumpRegion('NorthAmerica')">Norteamérica</button>
         </div>
         <div class="hero-stats">
-          <div class="stat"><strong id="statCountries">10</strong><span>Mercados destacados</span></div>
-          <div class="stat"><strong id="statJobs">0</strong><span>Vacantes detectadas</span></div>
+          <div class="stat"><strong id="statCountries">0</strong><span>Mercados activos</span></div>
+          <div class="stat"><strong id="statJobs">0</strong><span>Vacantes empleo</span></div>
           <div class="stat"><strong id="statServices">0</strong><span>Servicios / freelance</span></div>
-          <div class="stat"><strong id="statTraining">0</strong><span>Señales de formación</span></div>
+          <div class="stat"><strong id="statContracts">0</strong><span>Contratos / obra</span></div>
         </div>
       </div>
       <div class="panel hero-side">
         <div class="mini">
-          <h3>Modo intelligence board</h3>
-          <p>Más color = más intensidad de mercado. Haz clic en cualquier país pintado o marcador para ver la estrategia recomendada.</p>
+          <h3>🔴 Heatmap por intensidad</h3>
+          <p>Más color = más intensidad de contratación real. El mapa usa coropléticos con gradiente de 5 niveles para identificar mercados calientes de un vistazo.</p>
         </div>
         <div class="mini">
-          <h3>Modelo monetizable</h3>
-          <p>Útil como base para membresía, newsletter premium, reportes, mentoría, marketplace de servicios y funnel educativo.</p>
+          <h3>🎛️ Filtros de contratación</h3>
+          <p>Filtra por <strong>Empleo fijo</strong>, <strong>Freelance</strong>, <strong>Obra/Contrato</strong> o <strong>Capacitación</strong>. El mapa y el ranking se actualizan en tiempo real.</p>
         </div>
         <div class="mini">
-          <h3>Open source</h3>
-          <p>Datos en <code>data/countries.json</code>. Fácil de extender con scraping, APIs o Supabase.</p>
+          <h3>⚡ Entrada rápida</h3>
+          <p>Los países marcados con ⚡ tienen menor barrera de entrada para contratistas y juniors con experiencia básica.</p>
         </div>
       </div>
     </div>
@@ -67,24 +71,28 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Global intelligence board</h2>
-          <p>Haz clic en un país pintado para ver ruta, intensidad, señales tácticas y monetización recomendada.</p>
+          <h2>Global hiring intelligence board</h2>
+          <p>Heatmap mundial de contratación en ciberseguridad. Haz clic en un país para ver ruta, intensidad, tipo de contrato y señales tácticas.</p>
         </div>
       </div>
 
       <div class="monitor-layout">
         <div class="map-wrap">
           <div class="toolbar">
-            <button class="chip active" data-filter="all">Todo</button>
-            <button class="chip" data-filter="jobs">Empleo</button>
-            <button class="chip" data-filter="freelance">Servicios</button>
-            <button class="chip" data-filter="training">Capacitación</button>
-            <button class="chip" onclick="jumpRegion('World')">Mundo completo</button>
+            <button class="chip active" data-filter="all">🌐 Todo</button>
+            <button class="chip" data-filter="jobs">💼 Empleo fijo</button>
+            <button class="chip" data-filter="freelance">🛠️ Freelance</button>
+            <button class="chip" data-filter="contract">📋 Obra/Contrato</button>
+            <button class="chip" data-filter="training">🎓 Capacitación</button>
+            <button class="chip" data-filter="fast">⚡ Entrada rápida</button>
+            <button class="chip" onclick="jumpRegion('World')">🗺️ Mundo</button>
           </div>
           <div class="legend">
-            <div><span class="dot" style="background:#1f8f4f"></span>Alta intensidad</div>
-            <div><span class="dot" style="background:#f59e0b"></span>Mercado puente</div>
-            <div><span class="dot" style="background:#0ea5e9"></span>Formación / servicios</div>
+            <div><span class="dot" style="background:#16a34a"></span>Muy alta (90+)</div>
+            <div><span class="dot" style="background:#4ade80"></span>Alta (75–89)</div>
+            <div><span class="dot" style="background:#f59e0b"></span>Media (60–74)</div>
+            <div><span class="dot" style="background:#0ea5e9"></span>Baja–media (45–59)</div>
+            <div><span class="dot" style="background:#1e3a5f"></span>Baja (&lt;45)</div>
           </div>
           <div id="map"></div>
         </div>
@@ -94,15 +102,15 @@
             <div class="side-title">Panel de país</div>
             <div class="country-box" id="countryBox">
               <div class="country-name">Selecciona un país</div>
-              <div class="muted-text">Haz clic sobre cualquier país del mapa para ver la estrategia recomendada.</div>
+              <div class="muted-text">Haz clic sobre cualquier país del mapa para ver la estrategia de contratación recomendada.</div>
               <div class="metrics">
-                <div class="metric"><strong>Mapa coroplético</strong><span>Países coloreados por intensidad de mercado.</span></div>
-                <div class="metric"><strong>Panel dinámico</strong><span>Cambia con cada país y filtro activo.</span></div>
+                <div class="metric"><strong>Heatmap global</strong><span>Países coloreados por intensidad de mercado en 5 niveles.</span></div>
+                <div class="metric"><strong>Filtros de contrato</strong><span>Empleo fijo, freelance, obra/contrato, capacitación y entrada rápida.</span></div>
               </div>
             </div>
           </div>
           <div>
-            <div class="side-title">Top 5 mercados</div>
+            <div class="side-title">🏆 Top mercados activos</div>
             <div class="ranking" id="ranking"></div>
           </div>
         </aside>
@@ -116,13 +124,17 @@
           <div class="mini-grid">
             <div class="kpi"><div class="label">Europa</div><div class="value" id="kpiEurope">0</div></div>
             <div class="kpi"><div class="label">LATAM</div><div class="value" id="kpiLatam">0</div></div>
+            <div class="kpi"><div class="label">N. América</div><div class="value" id="kpiNorthAm">0</div></div>
+            <div class="kpi"><div class="label">Asia-Pac</div><div class="value" id="kpiAsia">0</div></div>
             <div class="kpi"><div class="label">Freelance</div><div class="value" id="kpiFreelance">0</div></div>
-            <div class="kpi"><div class="label">Training</div><div class="value" id="kpiTraining">0</div></div>
+            <div class="kpi"><div class="label">Obra/Contrato</div><div class="value" id="kpiContract">0</div></div>
+            <div class="kpi"><div class="label">Empleo fijo</div><div class="value" id="kpiJobs">0</div></div>
+            <div class="kpi"><div class="label">⚡ Rápida entrada</div><div class="value" id="kpiFast">0</div></div>
           </div>
         </div>
         <div class="feed" id="signals">
           <div class="section-head dash-head">
-            <h2 class="sub-h2">Signal feed</h2>
+            <h2 class="sub-h2">Signal feed — contratación activa</h2>
           </div>
           <div class="feed-list" id="feedList"></div>
         </div>
@@ -134,7 +146,7 @@
     <div class="container footer-inner">
       <div>
         <strong>CyberRemote Monitor</strong>
-        <p class="small">Dashboard open source — empleo junior remoto en ciberseguridad.</p>
+        <p class="small">Dashboard open source — contratación remota junior en ciberseguridad.</p>
       </div>
       <div>
         <a href="https://github.com/0xvanguard/cyberremote-monitor-pro" target="_blank" rel="noreferrer" class="btn btn-secondary">Ver en GitHub ↗</a>
