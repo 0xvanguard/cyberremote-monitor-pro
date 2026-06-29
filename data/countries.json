@@ -4,26 +4,46 @@
     "latlng": [38, -97], "intensity": 95,
     "jobs": 42, "freelance": 38, "contract": 30, "training": 15,
     "fastEntry": true,
-    "contractType": "Empleo fijo / Freelance / Contrato",
-    "route": "LinkedIn, Upwork, Toptal — certificaciones OSCP/CEH",
+    "contractType": "Empleo / 1099 Contrato / Freelance",
+    "route": "LinkedIn, Upwork, Toptal, Dice — certs OSCP/CEH",
     "level": "Junior con 1 año exp. o certs.",
     "salary": "$55k–$110k/año · $40–$90/hr freelance",
     "platforms": "LinkedIn, Indeed, Upwork, Toptal, Dice",
-    "note": "Mayor mercado mundial. Alta demanda de contratistas remotos en SOC, pentesting y DevSecOps.",
-    "signals": ["SOC analyst remote", "Pentest contractor", "DevSecOps freelance", "Bug bounty activo"]
+    "note": "500,000+ posiciones sin cubrir. Mayor mercado mundial para contratistas remotos. Demanda crítica en SOC, pentest y DevSecOps.",
+    "topRoles": [
+      { "role": "SOC Analyst L1/L2", "demand": 95, "note": "Demanda crítica, entrada más rápida" },
+      { "role": "Penetration Tester", "demand": 90, "note": "Escasez severa, premium salarial" },
+      { "role": "Cloud Security Engineer", "demand": 88, "note": "+35% premium vs promedio" },
+      { "role": "DevSecOps Engineer", "demand": 85, "note": "Crecimiento acelerado en startups" },
+      { "role": "Incident Responder", "demand": 82, "note": "Alta demanda en gobierno y fintech" },
+      { "role": "Threat Intel Analyst", "demand": 78, "note": "Muy buscado en grandes empresas" },
+      { "role": "AppSec Engineer", "demand": 76, "note": "Ideal con perfil dev+sec" },
+      { "role": "GRC / Compliance", "demand": 70, "note": "Entrada sin background técnico profundo" }
+    ],
+    "signals": ["SOC analyst remote", "Pentest contractor 1099", "DevSecOps freelance", "Bug bounty activo", "Cloud security AWS"]
   },
   "GB": {
     "name": "United Kingdom", "region": "Europe",
     "latlng": [54, -2], "intensity": 90,
     "jobs": 35, "freelance": 28, "contract": 25, "training": 12,
     "fastEntry": true,
-    "contractType": "Contrato / IR35 / Freelance",
+    "contractType": "Contrato IR35 / Freelance",
     "route": "CyberSecurityJobs UK, LinkedIn, contratos IR35",
-    "level": "Junior–Mid con certs. SC-200 o CEH",
+    "level": "Junior–Mid con SC-200 o CEH",
     "salary": "£35k–£70k/año · £300–£600/día contrato",
     "platforms": "CWJobs, LinkedIn, Jobserve, Freelancer",
-    "note": "Mercado muy activo en contratos. IR35 define contratistas independientes. Entrada rápida vía contratos SC-cleared.",
-    "signals": ["IR35 contractor roles", "SOC L2 remote", "CREST pentester contract", "Cleared roles SC/DV"]
+    "note": "Mercado de contratos más activo de Europa. IR35 define contratistas independientes. Alta demanda en gobierno y finanzas.",
+    "topRoles": [
+      { "role": "Penetration Tester", "demand": 93, "note": "Rol #1 en contratos CREST/CHECK" },
+      { "role": "SOC Analyst L2", "demand": 88, "note": "Demanda crítica en MSSP" },
+      { "role": "Incident Responder", "demand": 85, "note": "Alta demanda post-ataques NHS" },
+      { "role": "Cloud Security Engineer", "demand": 82, "note": "Azure/AWS en banca y gobierno" },
+      { "role": "GRC / Compliance", "demand": 80, "note": "DORA y NIS2 impulsan demanda" },
+      { "role": "Threat Intel Analyst", "demand": 75, "note": "Muy activo en sector defensa" },
+      { "role": "DevSecOps Engineer", "demand": 72, "note": "Creciente en fintechs UK" },
+      { "role": "AppSec Engineer", "demand": 68, "note": "Demanda en scale-ups" }
+    ],
+    "signals": ["IR35 contractor roles", "SOC L2 remote", "CREST pentester contract", "Cleared roles SC/DV", "NIS2 compliance UK"]
   },
   "DE": {
     "name": "Germany", "region": "Europe",
@@ -35,34 +55,64 @@
     "level": "Junior–Mid, inglés requerido",
     "salary": "€45k–€80k/año · €80–€120/hr freelance",
     "platforms": "XING, LinkedIn, Gulp, Freelance.de",
-    "note": "Alta demanda en Berlin y Munich. Trabajo remoto para UE disponible. Idioma no es barrera si hablas inglés.",
-    "signals": ["Pentest Werkvertrag", "SOC remote EU", "SIEM engineer", "Red team junior"]
+    "note": "Alta demanda en Berlin y Munich. Regulación NIS2 obliga a empresas a contratar especialistas. Inglés suficiente.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 88, "note": "Demanda masiva en empresas industriales" },
+      { "role": "Cloud Security Engineer", "demand": 86, "note": "AWS/Azure en Mittelstand" },
+      { "role": "GRC / Compliance", "demand": 85, "note": "NIS2 y BSI-Grundschutz impulsan contratación" },
+      { "role": "Penetration Tester", "demand": 80, "note": "Werkvertrag frecuente" },
+      { "role": "DevSecOps Engineer", "demand": 78, "note": "Demanda en automakers (BMW, VW)" },
+      { "role": "Incident Responder", "demand": 72, "note": "Creciente en sector industrial" },
+      { "role": "AppSec Engineer", "demand": 68, "note": "Demanda en SaaS berlín" },
+      { "role": "Threat Intel Analyst", "demand": 65, "note": "Gobierno y defensa" }
+    ],
+    "signals": ["Pentest Werkvertrag", "SOC remote EU", "SIEM engineer", "NIS2 GRC specialist", "Cloud AWS Germany"]
   },
   "NL": {
     "name": "Netherlands", "region": "Europe",
     "latlng": [52.3, 5.3], "intensity": 83,
     "jobs": 22, "freelance": 25, "contract": 20, "training": 8,
     "fastEntry": true,
-    "contractType": "Freelance / ZZP / Contrato",
+    "contractType": "Freelance ZZP / Contrato",
     "route": "Malt, Freelance.nl, LinkedIn",
     "level": "Junior con certs. o portafolio",
     "salary": "€50k–€85k/año · €70–€110/hr ZZP",
-    "platforms": "LinkedIn, Malt, Freelance.nl, Nationale Vacaturebank",
-    "note": "Hub tech europeo. ZZP (autónomo) muy usado para contratistas remotos. Inglés suficiente.",
-    "signals": ["ZZP security consultant", "Remote pentest", "Cloud security NL", "SOC freelance"]
+    "platforms": "LinkedIn, Malt, Freelance.nl",
+    "note": "Hub tech europeo. ZZP (autónomo) muy usado. Ingl&eacute;s suficiente. GDPR y NIS2 generan demanda constante.",
+    "topRoles": [
+      { "role": "Cloud Security Engineer", "demand": 87, "note": "AWS/Azure, hub europeo" },
+      { "role": "GRC / Compliance", "demand": 85, "note": "GDPR y NIS2 activos" },
+      { "role": "SOC Analyst", "demand": 80, "note": "MSSPs en Amsterdam" },
+      { "role": "Penetration Tester", "demand": 78, "note": "ZZP contratos frecuentes" },
+      { "role": "DevSecOps Engineer", "demand": 75, "note": "Fintechs y scale-ups" },
+      { "role": "AppSec Engineer", "demand": 70, "note": "Demanda en Booking, ASML" },
+      { "role": "Threat Intel Analyst", "demand": 65, "note": "Sector financiero" },
+      { "role": "Incident Responder", "demand": 62, "note": "Contratos gobierno NL" }
+    ],
+    "signals": ["ZZP security consultant", "Remote pentest", "Cloud security NL", "SOC freelance", "GDPR compliance"]
   },
   "CA": {
     "name": "Canada", "region": "North America",
     "latlng": [56, -96], "intensity": 88,
     "jobs": 30, "freelance": 20, "contract": 22, "training": 14,
     "fastEntry": true,
-    "contractType": "Empleo fijo / Contrato T4/T1",
+    "contractType": "Empleo fijo / Contrato T4",
     "route": "LinkedIn, WorkBC, contratistas T4",
     "level": "Junior con CompTIA Sec+",
     "salary": "CAD $55k–$95k · CAD $60–$100/hr",
     "platforms": "LinkedIn, Indeed, WorkBC, Glassdoor",
     "note": "Alta demanda remota en Ontario y BC. Compatible con trabajo desde LATAM para contratos no residentes vía plataformas.",
-    "signals": ["Remote SOC analyst", "Security contractor", "Pentest junior", "GRC consultant"]
+    "topRoles": [
+      { "role": "SOC Analyst L1/L2", "demand": 90, "note": "Rol más demandado en todo Canadá" },
+      { "role": "Cloud Security Engineer", "demand": 86, "note": "Azure dominante en sector público" },
+      { "role": "GRC / Compliance", "demand": 82, "note": "PIPEDA y regulaciones provinciales" },
+      { "role": "Penetration Tester", "demand": 78, "note": "Alta demanda en sector financiero" },
+      { "role": "Incident Responder", "demand": 75, "note": "Gobierno federal y provincias" },
+      { "role": "DevSecOps Engineer", "demand": 72, "note": "Creciente en startups Toronto" },
+      { "role": "Threat Intel Analyst", "demand": 68, "note": "CSIS y sector defensa" },
+      { "role": "AppSec Engineer", "demand": 64, "note": "Demanda en Shopify y fintechs" }
+    ],
+    "signals": ["Remote SOC analyst", "Security contractor T4", "Pentest junior", "GRC consultant", "Cloud Azure Canada"]
   },
   "AU": {
     "name": "Australia", "region": "Oceania",
@@ -74,8 +124,18 @@
     "level": "Junior–Mid con AGSVA clearance",
     "salary": "AUD $65k–$110k · AUD $70–$130/hr",
     "platforms": "Seek, LinkedIn, SecTalent, Adzuna",
-    "note": "Demanda creciente en gobierno y fintech. Contratistas ABN pueden trabajar remotamente. Zona horaria favorable para Asia.",
-    "signals": ["AGSVA clearance roles", "Pentest contractor", "Incident response", "Remote cloud security"]
+    "note": "Demanda creciente en gobierno y fintech. Contratistas ABN pueden trabajar remotamente desde Asia.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 85, "note": "Demanda en MSSP y gobierno" },
+      { "role": "Penetration Tester", "demand": 83, "note": "CREST y OSCP muy valorados" },
+      { "role": "Cloud Security Engineer", "demand": 80, "note": "AWS dominante en AU" },
+      { "role": "Incident Responder", "demand": 76, "note": "Essential 8 impulsó demanda" },
+      { "role": "GRC / Compliance", "demand": 74, "note": "Essential 8 y Privacy Act" },
+      { "role": "Threat Intel Analyst", "demand": 68, "note": "ASD y sector defensa" },
+      { "role": "DevSecOps Engineer", "demand": 65, "note": "Creciente en fintechs Sydney" },
+      { "role": "AppSec Engineer", "demand": 60, "note": "Demanda en fintech Melbourne" }
+    ],
+    "signals": ["AGSVA clearance roles", "Pentest contractor ABN", "Incident response AU", "Remote cloud security", "Essential 8 compliance"]
   },
   "SG": {
     "name": "Singapore", "region": "Asia",
@@ -84,11 +144,21 @@
     "fastEntry": true,
     "contractType": "Empleo / Contrato / Freelance",
     "route": "JobsDB, LinkedIn, NodeFlair",
-    "level": "Junior con certs. CISM, CEH o OSCP",
+    "level": "Junior con CISM, CEH o OSCP",
     "salary": "SGD $50k–$90k · SGD $60–$100/hr",
     "platforms": "JobsDB, LinkedIn, NodeFlair, MyCareersFuture",
-    "note": "Hub fintech asiático. Alta demanda de contratistas remotos para bancos y fintechs regionales. Inglés dominante.",
-    "signals": ["Fintech security contractor", "SOC Singapore", "Remote pentest Asia", "CISO support"]
+    "note": "Hub fintech asiático. Alta demanda para bancos y fintechs regionales. Inglés dominante. Puerta a contratos Asia-Pacífico.",
+    "topRoles": [
+      { "role": "Cloud Security Engineer", "demand": 90, "note": "AWS/GCP en fintechs asiáticas" },
+      { "role": "SOC Analyst", "demand": 86, "note": "Demanda masiva en bancos" },
+      { "role": "AppSec Engineer", "demand": 84, "note": "Fintechs y super-apps" },
+      { "role": "Penetration Tester", "demand": 80, "note": "MAS regulación bancaria" },
+      { "role": "Threat Intel Analyst", "demand": 76, "note": "Sector financiero y gobierno" },
+      { "role": "DevSecOps Engineer", "demand": 74, "note": "Startups y unicornios SG" },
+      { "role": "GRC / Compliance", "demand": 70, "note": "MAS TRM Guidelines" },
+      { "role": "Incident Responder", "demand": 65, "note": "CSIRT nacional" }
+    ],
+    "signals": ["Fintech security contractor", "SOC Singapore banks", "Remote pentest Asia", "Cloud GCP SG", "MAS compliance"]
   },
   "IN": {
     "name": "India", "region": "Asia",
@@ -99,9 +169,19 @@
     "route": "Naukri, Upwork, Internshala, LinkedIn",
     "level": "Junior – alta competencia, certs. valoradas",
     "salary": "₹4L–₹12L/año · $15–$40/hr freelance",
-    "platforms": "Naukri, Upwork, Freelancer, LinkedIn, Internshala",
-    "note": "Mayor pool global de freelancers de seguridad. Entrada rápida en plataformas globales desde aquí. Ideal para LATAM por competencia de precios.",
-    "signals": ["Bug bounty top earners", "Pentest C2C", "VAPT freelance", "Security training provider"]
+    "platforms": "Naukri, Upwork, Freelancer, LinkedIn",
+    "note": "Mayor pool global de freelancers de seguridad. 1M+ posiciones sin cubrir. Entrada rápida en plataformas globales.",
+    "topRoles": [
+      { "role": "SOC Analyst L1", "demand": 92, "note": "Rol más contratado masivamente" },
+      { "role": "Penetration Tester (VAPT)", "demand": 88, "note": "VAPT dominante en India" },
+      { "role": "AppSec Engineer", "demand": 82, "note": "Demanda en IT giants TCS/Infosys" },
+      { "role": "Cloud Security Engineer", "demand": 80, "note": "AWS/Azure en BPOs" },
+      { "role": "DevSecOps Engineer", "demand": 75, "note": "Startups Bangalore/Hyderabad" },
+      { "role": "GRC / Compliance", "demand": 68, "note": "IT Act y sector bancario" },
+      { "role": "Threat Intel Analyst", "demand": 60, "note": "CERTs y grandes empresas" },
+      { "role": "Incident Responder", "demand": 58, "note": "Gobierno y BFSI" }
+    ],
+    "signals": ["Bug bounty top earners", "Pentest C2C India", "VAPT freelance", "SOC L1 BPO", "Security training provider"]
   },
   "BR": {
     "name": "Brazil", "region": "LATAM",
@@ -113,8 +193,18 @@
     "level": "Junior con portafolio o CTF",
     "salary": "R$4k–R$12k/mes · $18–$35/hr freelance",
     "platforms": "LinkedIn, Gupy, Workana, GetNinjas",
-    "note": "Mayor mercado LATAM. Modalidad PJ (freelance legal) muy usada en tech. Alta demanda en fintechs y govtech.",
-    "signals": ["PJ pentest", "SOC CLT remoto", "DevSecOps junior", "Bug bounty LATAM"]
+    "note": "Mayor mercado LATAM. Modalidad PJ muy usada en tech. Alta demanda en fintechs (Nubank, iFood) y govtech.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 85, "note": "Demanda masiva en fintechs" },
+      { "role": "Penetration Tester", "demand": 80, "note": "PJ contratos frecuentes" },
+      { "role": "DevSecOps Engineer", "demand": 76, "note": "Nubank, iFood, PicPay" },
+      { "role": "AppSec Engineer", "demand": 72, "note": "Sector bancario LGPD" },
+      { "role": "GRC / Compliance", "demand": 70, "note": "LGPD activa demanda legal-tech" },
+      { "role": "Cloud Security Engineer", "demand": 65, "note": "AWS en startups brasileñas" },
+      { "role": "Incident Responder", "demand": 60, "note": "Gobierno federal" },
+      { "role": "Threat Intel Analyst", "demand": 55, "note": "Sector financiero SP" }
+    ],
+    "signals": ["PJ pentest", "SOC CLT remoto", "DevSecOps Nubank", "Bug bounty LATAM", "LGPD compliance"]
   },
   "CO": {
     "name": "Colombia", "region": "LATAM",
@@ -122,12 +212,22 @@
     "jobs": 12, "freelance": 20, "contract": 18, "training": 14,
     "fastEntry": true,
     "contractType": "Prestación de servicios / Freelance",
-    "route": "LinkedIn, Workana, Torre.ai, prestación de servicios",
+    "route": "LinkedIn, Workana, Torre.ai, prestación servicios",
     "level": "Junior con portafolio o certificación",
     "salary": "$3M–$8M COP/mes · $15–$30/hr USD freelance",
     "platforms": "LinkedIn, Torre.ai, Workana, Computrabajo",
-    "note": "Ecosistema tech creciente. Prestación de servicios (contrato civil) es la forma más común para consultores. Muchas empresas US/EU contratan talent colombiano remoto.",
-    "signals": ["Pentest prestación servicios", "SOC remoto Colombia", "Consultoría seguridad", "DevSecOps freelance"]
+    "note": "Ecosistema tech creciente. Prestación de servicios es la forma más común. Muchas empresas US/EU contratan talento colombiano remoto.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 82, "note": "Demanda en bancos y sector público" },
+      { "role": "Penetration Tester", "demand": 78, "note": "Prestación de servicios frecuente" },
+      { "role": "GRC / Compliance", "demand": 74, "note": "Ley 1581 y sector financiero" },
+      { "role": "DevSecOps Engineer", "demand": 68, "note": "Startups Bogotá y Medellín" },
+      { "role": "Cloud Security Engineer", "demand": 65, "note": "AWS en empresas de tecnología" },
+      { "role": "AppSec Engineer", "demand": 60, "note": "Fintechs y e-commerce" },
+      { "role": "Incident Responder", "demand": 55, "note": "Sector público y gobierno" },
+      { "role": "Threat Intel Analyst", "demand": 50, "note": "Empresas multinacionales" }
+    ],
+    "signals": ["Pentest prestación servicios", "SOC remoto Colombia", "Consultoría seguridad", "DevSecOps freelance", "GRC Ley 1581"]
   },
   "MX": {
     "name": "Mexico", "region": "LATAM",
@@ -139,60 +239,87 @@
     "level": "Junior con CompTIA o OSCP básico",
     "salary": "$18k–$40k MXN/mes · $20–$35/hr freelance",
     "platforms": "OCC Mundial, LinkedIn, Workana, Indeed MX",
-    "note": "Nearshore favorito de empresas US. Alta demanda en CDMX y remoto. Honorarios es el equivalente a prestación de servicios.",
-    "signals": ["Pentest honorarios", "SOC Level 1 remoto", "Cloud security MX", "CISO advisory"]
+    "note": "Nearshore favorito de empresas US. Alta demanda en CDMX. Honorarios = prestación de servicios MX.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 84, "note": "Demanda en bancos y TELCO" },
+      { "role": "Cloud Security Engineer", "demand": 78, "note": "Azure dominante en empresas MX" },
+      { "role": "GRC / Compliance", "demand": 75, "note": "LFPDPPP y sector financiero" },
+      { "role": "Penetration Tester", "demand": 72, "note": "Honorarios frecuentes" },
+      { "role": "DevSecOps Engineer", "demand": 68, "note": "Startups CDMX" },
+      { "role": "Incident Responder", "demand": 62, "note": "Sector bancario" },
+      { "role": "AppSec Engineer", "demand": 58, "note": "E-commerce y fintechs" },
+      { "role": "Threat Intel Analyst", "demand": 52, "note": "Gobierno y defensa" }
+    ],
+    "signals": ["Pentest honorarios", "SOC Level 1 remoto", "Cloud security MX", "CISO advisory", "LFPDPPP compliance"]
   },
   "AR": {
     "name": "Argentina", "region": "LATAM",
     "latlng": [-34, -64], "intensity": 65,
     "jobs": 10, "freelance": 25, "contract": 12, "training": 10,
     "fastEntry": true,
-    "contractType": "Freelance / Monotributo / Contrato",
+    "contractType": "Freelance / Monotributo",
     "route": "Workana, Upwork, LinkedIn, monotributo",
     "level": "Junior con portafolio o CTF",
     "salary": "$500–$2000 USD/mes freelance",
     "platforms": "Workana, Upwork, LinkedIn, Freelancer",
     "note": "Alta cultura freelance. Muchos trabajan en USD para clientes extranjeros. Monotributo simplifica la facturación.",
-    "signals": ["Freelance pentest USD", "Bug bounty activo", "SOC remoto AR", "Consultoría monotributo"]
-  },
-  "CL": {
-    "name": "Chile", "region": "LATAM",
-    "latlng": [-30, -71], "intensity": 66,
-    "jobs": 12, "freelance": 14, "contract": 10, "training": 8,
-    "fastEntry": false,
-    "contractType": "Plazo fijo / Boleta / Freelance",
-    "route": "LinkedIn, GetOnBoard, Trabajando.com",
-    "level": "Junior–Mid con OSCP o CEH",
-    "salary": "$1.5M–$4M CLP/mes",
-    "platforms": "LinkedIn, GetOnBoard, Trabajando.com",
-    "note": "Mercado financiero robusto. Alta demanda en bancos y retail. Boleta honorarios para contratistas.",
-    "signals": ["Pentest banca", "SOC chileno remoto", "CISO consultoría", "DevSecOps fintech"]
+    "topRoles": [
+      { "role": "Penetration Tester", "demand": 80, "note": "Freelance USD más rentable" },
+      { "role": "SOC Analyst", "demand": 72, "note": "Demanda local y remota" },
+      { "role": "AppSec Engineer", "demand": 68, "note": "Startups y unicornios AR" },
+      { "role": "DevSecOps Engineer", "demand": 65, "note": "MercadoLibre y fintechs" },
+      { "role": "Bug Bounty Hunter", "demand": 70, "note": "Muy activo en HackerOne/Bugcrowd" },
+      { "role": "Cloud Security Engineer", "demand": 60, "note": "AWS en empresas tech" },
+      { "role": "GRC / Compliance", "demand": 52, "note": "Sector regulado" },
+      { "role": "Threat Intel Analyst", "demand": 48, "note": "Empresas multinacionales" }
+    ],
+    "signals": ["Freelance pentest USD", "Bug bounty activo", "SOC remoto AR", "Consultoría monotributo", "MercadoLibre DevSecOps"]
   },
   "IL": {
     "name": "Israel", "region": "Middle East",
     "latlng": [31.5, 34.8], "intensity": 86,
     "jobs": 25, "freelance": 20, "contract": 22, "training": 8,
     "fastEntry": false,
-    "contractType": "Empleo / Contrato / Freelance",
+    "contractType": "Empleo / Contrato startup",
     "route": "LinkedIn, AllJobs.co.il, CyberJobsIsrael",
     "level": "Mid–Senior, militar background valorado",
     "salary": "$80k–$150k/año",
     "platforms": "LinkedIn, AllJobs, Glassdoor",
-    "note": "Capital mundial de ciberseguridad. Startups y Unit 8200 alumni dominan. Difícil para juniors sin background militar pero freelance es posible.",
-    "signals": ["Cybersecurity startup", "Red team specialist", "Threat intelligence", "VC-backed security"]
+    "note": "Capital mundial de ciberseguridad. Startups y Unit 8200 alumni dominan. Difícil para juniors sin background militar.",
+    "topRoles": [
+      { "role": "Threat Intel Analyst", "demand": 95, "note": "Rol #1 en Israel, startups cyber" },
+      { "role": "Penetration Tester", "demand": 92, "note": "Red team en startups VC" },
+      { "role": "Incident Responder", "demand": 88, "note": "Demanda en gobierno y defensa" },
+      { "role": "AppSec Engineer", "demand": 85, "note": "Startups producto SaaS" },
+      { "role": "Cloud Security Engineer", "demand": 82, "note": "AWS/GCP en unicornios" },
+      { "role": "SOC Analyst", "demand": 72, "note": "MSSPs israelíes exportan servicios" },
+      { "role": "DevSecOps Engineer", "demand": 68, "note": "Startups Serie A/B" },
+      { "role": "GRC / Compliance", "demand": 55, "note": "Sector regulado financiero" }
+    ],
+    "signals": ["Cybersecurity startup Israel", "Red team specialist", "Threat intelligence VC", "Unit 8200 alumni", "MSSP export"]
   },
   "AE": {
-    "name": "UAE", "region": "Middle East",
+    "name": "UAE (Dubai)", "region": "Middle East",
     "latlng": [24, 54], "intensity": 78,
     "jobs": 20, "freelance": 15, "contract": 18, "training": 7,
     "fastEntry": true,
-    "contractType": "Empleo / Contrato local",
+    "contractType": "Empleo local / Contrato expat",
     "route": "Bayt.com, LinkedIn, GulfTalent",
     "level": "Junior–Mid con certs.",
-    "salary": "AED $120k–$250k/año",
+    "salary": "AED $120k–$250k/año (tax-free)",
     "platforms": "Bayt.com, LinkedIn, GulfTalent, Naukrigulf",
-    "note": "Dubai y Abu Dhabi invierten masivamente en ciberseguridad. Tax-free. Muchas posiciones abiertas para expats con inglés.",
-    "signals": ["SOC UAE government", "Pentest Dubai", "CISO support", "Remote contract Gulf"]
+    "note": "Dubai y Abu Dhabi invierten masivamente post-NCA. Tax-free. Posiciones abiertas para expats con inglés.",
+    "topRoles": [
+      { "role": "GRC / Compliance", "demand": 90, "note": "NCA UAE obliga a empresas" },
+      { "role": "SOC Analyst", "demand": 86, "note": "Gobierno y sector financiero" },
+      { "role": "Cloud Security Engineer", "demand": 82, "note": "Azure en gobierno smart city" },
+      { "role": "Penetration Tester", "demand": 75, "note": "Contratos gobierno Dubai" },
+      { "role": "Incident Responder", "demand": 72, "note": "Alta demanda post-ataques OT" },
+      { "role": "Threat Intel Analyst", "demand": 68, "note": "Sector energía y gobierno" },
+      { "role": "DevSecOps Engineer", "demand": 60, "note": "Startups Dubai tech" },
+      { "role": "AppSec Engineer", "demand": 55, "note": "Fintech en DIFC" }
+    ],
+    "signals": ["SOC UAE government", "Pentest Dubai", "NCA compliance", "Remote contract Gulf", "Cloud Azure UAE"]
   },
   "PL": {
     "name": "Poland", "region": "Europe",
@@ -204,34 +331,41 @@
     "level": "Junior con portafolio",
     "salary": "PLN 8k–18k/mes · €50–€80/hr B2B",
     "platforms": "JustJoin.it, LinkedIn, Pracuj.pl, NoFluffJobs",
-    "note": "Hub nearshore europeo. Contratos B2B muy usados. Alta demanda de contratistas para empresas UE. Inglés suficiente.",
-    "signals": ["B2B security Poland", "Remote pentest EU", "SOC L1 contract", "DevSecOps junior"]
+    "note": "Hub nearshore europeo. Contratos B2B muy usados. Alta demanda de contratistas para empresas UE.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 88, "note": "MSSPs polacos exportan servicios EU" },
+      { "role": "Penetration Tester", "demand": 84, "note": "B2B contratos frecuentes" },
+      { "role": "Cloud Security Engineer", "demand": 80, "note": "AWS/Azure en nearshore" },
+      { "role": "DevSecOps Engineer", "demand": 76, "note": "Alta demanda en outsourcing UE" },
+      { "role": "GRC / Compliance", "demand": 74, "note": "NIS2 y GDPR activos" },
+      { "role": "AppSec Engineer", "demand": 68, "note": "Nearshore para empresas UK/DE" },
+      { "role": "Incident Responder", "demand": 62, "note": "CERT Polska y sector público" },
+      { "role": "Threat Intel Analyst", "demand": 58, "note": "Defensa y gobierno" }
+    ],
+    "signals": ["B2B security Poland", "Remote pentest EU", "SOC L1 contract", "DevSecOps junior", "NIS2 compliance PL"]
   },
   "PT": {
     "name": "Portugal", "region": "Europe",
     "latlng": [39.5, -8], "intensity": 74,
     "jobs": 16, "freelance": 18, "contract": 14, "training": 9,
     "fastEntry": true,
-    "contractType": "Recibo verde / Empleo / Freelance",
+    "contractType": "Recibo verde / Empleo",
     "route": "LinkedIn, NET-Empregos, Talent Portugal",
     "level": "Junior con inglés y certs. básicas",
     "salary": "€25k–€50k/año · €40–€70/hr recibo verde",
     "platforms": "LinkedIn, NET-Empregos, Glassdoor PT",
-    "note": "Hub para empresas US/UK con operaciones en Europa. Recibo verde = freelance legal. Lisboa tech scene en expansión.",
-    "signals": ["Remote security Lisboa", "Pentest recibo verde", "SOC EU remoto", "NIS2 compliance"]
-  },
-  "FR": {
-    "name": "France", "region": "Europe",
-    "latlng": [46, 2], "intensity": 79,
-    "jobs": 24, "freelance": 18, "contract": 16, "training": 10,
-    "fastEntry": false,
-    "contractType": "CDI / CDD / Freelance (portage)",
-    "route": "Welcome to the Jungle, Malt, LinkedIn",
-    "level": "Junior–Mid, francés requerido",
-    "salary": "€38k–€70k/año · €500–€900/día freelance",
-    "platforms": "Welcome to the Jungle, Malt, LinkedIn, Cadremploi",
-    "note": "Mercado grande pero idioma es barrera. Portage salarial = freelance con protección social. Muchas empresas CAC40 contratan consultores externos.",
-    "signals": ["Pentest portage salarial", "RSSI junior", "SOC CDD", "NIS2 consulting"]
+    "note": "Hub para empresas US/UK con operaciones en Europa. Recibo verde = freelance legal. Lisboa tech en expansión.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 82, "note": "Centro de operaciones EU" },
+      { "role": "GRC / Compliance", "demand": 78, "note": "NIS2 y GDPR desde Lisboa" },
+      { "role": "Cloud Security Engineer", "demand": 72, "note": "Centros AWS en Portugal" },
+      { "role": "DevSecOps Engineer", "demand": 68, "note": "Startups Lisboa y Porto" },
+      { "role": "Penetration Tester", "demand": 65, "note": "Recibo verde frecuente" },
+      { "role": "AppSec Engineer", "demand": 60, "note": "Nearshore para UK/US" },
+      { "role": "Incident Responder", "demand": 55, "note": "CNCS y sector financiero" },
+      { "role": "Threat Intel Analyst", "demand": 50, "note": "Sector defensa y gobierno" }
+    ],
+    "signals": ["Remote security Lisboa", "Pentest recibo verde", "SOC EU remoto", "NIS2 compliance PT", "Cloud AWS Portugal"]
   },
   "ZA": {
     "name": "South Africa", "region": "Africa",
@@ -243,8 +377,18 @@
     "level": "Junior con CompTIA o EC-Council",
     "salary": "R20k–R50k/mes",
     "platforms": "LinkedIn, PNet, CareerJunction",
-    "note": "Mayor mercado tech de Africa. Inglés dominante. Oportunidad de contratistas remotos para empresas EU/US en zona horaria compatible.",
-    "signals": ["SOC analyst SA", "Pentest contract", "Remote EU-compatible", "POPIA compliance"]
+    "note": "Mayor mercado tech de África. Inglés dominante. Zona horaria compatible con EU. POPIA impulsa demanda GRC.",
+    "topRoles": [
+      { "role": "GRC / Compliance", "demand": 84, "note": "POPIA activa demanda masiva" },
+      { "role": "SOC Analyst", "demand": 78, "note": "MSSPs SA y bancos" },
+      { "role": "Penetration Tester", "demand": 72, "note": "Contratos sector financiero" },
+      { "role": "Cloud Security Engineer", "demand": 65, "note": "AWS/Azure creciente" },
+      { "role": "Incident Responder", "demand": 60, "note": "Sector energía y minería" },
+      { "role": "DevSecOps Engineer", "demand": 55, "note": "Startups Johannesburgo" },
+      { "role": "Threat Intel Analyst", "demand": 50, "note": "Gobierno y defensa" },
+      { "role": "AppSec Engineer", "demand": 48, "note": "E-commerce local" }
+    ],
+    "signals": ["SOC analyst SA", "Pentest contract", "POPIA compliance", "Remote EU-compatible", "Cloud security ZA"]
   },
   "PH": {
     "name": "Philippines", "region": "Asia",
@@ -256,7 +400,17 @@
     "level": "Junior con inglés y certs.",
     "salary": "$800–$2500 USD/mes freelance",
     "platforms": "Upwork, OnlineJobs.ph, LinkedIn, Kalibrr",
-    "note": "Gran pool de freelancers remotos en inglés. Muchos trabajan para empresas US/AU. Zona horaria favorable para contratos asiáticos.",
-    "signals": ["Freelance SOC remote", "VAPT Philippines", "Upwork security top rated", "BPO security ops"]
+    "note": "Gran pool de freelancers remotos en inglés trabajando para US/AU. Zona horaria favorable para contratos asiáticos.",
+    "topRoles": [
+      { "role": "SOC Analyst", "demand": 85, "note": "BPO y MSSPs filipinos" },
+      { "role": "GRC / Compliance", "demand": 70, "note": "Data Privacy Act PH" },
+      { "role": "Penetration Tester", "demand": 68, "note": "Upwork top freelancers" },
+      { "role": "Incident Responder", "demand": 62, "note": "BPO sector" },
+      { "role": "Cloud Security Engineer", "demand": 58, "note": "AWS en call centers" },
+      { "role": "AppSec Engineer", "demand": 55, "note": "Startups Manila" },
+      { "role": "DevSecOps Engineer", "demand": 52, "note": "Remoto para US/AU" },
+      { "role": "Threat Intel Analyst", "demand": 45, "note": "Sector gobierno" }
+    ],
+    "signals": ["Freelance SOC remote", "VAPT Philippines", "Upwork security top rated", "BPO security ops", "Data Privacy Act"]
   }
 }
