@@ -550,5 +550,101 @@
       { "role": "Pentester / AppSec",  "demand": 65, "note": "Consultoras CI" },
       { "role": "Cloud / DevSecOps",   "demand": 58, "note": "Fintechs Abidjan" }
     ]
+  },
+  "UY": {
+    "name": "Uruguay",
+    "region": "LATAM",
+    "contractType": "Empleo + Remoto USD",
+    "intensity": 62,
+    "tier": 2,
+    "fastEntry": true,
+    "latlng": [-32.52, -55.76],
+    "jobs": 18,
+    "freelance": 22,
+    "contract": 12,
+    "training": 10,
+    "salary": "USD 1,800–4,500/mes · $22–55/h remoto",
+    "platforms": "LinkedIn UY · Bumeran.com.uy · Computrabajo UY · Workana · Upwork",
+    "note": "Montevideo: mercado más maduro de ciberseguridad en el Cono Sur. AGESIC (Agencia de Gobierno Electrónico) impulsa estrategia nacional activa. Tata Consultancy Services, Mercado Libre, ANCAP y bancos privados contratan regularmente. Decreto de Protección de Datos 2023 generó boom GRC. Salarios en USD con trabajo remoto para clientes de EE.UU. y Europa.",
+    "signals": ["AGESIC Estrategia Nacional Ciberseguridad 2025", "TCS/Globant hiring Montevideo", "Decreto Datos Personales 2023 boom GRC", "ANCAP OT security industrial"],
+    "topRoles": [
+      { "role": "SOC Analyst Jr./Sr.",  "demand": 82, "note": "TCS, Bancos, AGESIC" },
+      { "role": "GRC / ISO 27001",      "demand": 78, "note": "Decreto datos 2023" },
+      { "role": "Pentester / AppSec",   "demand": 75, "note": "Consultoras UY/AR" },
+      { "role": "Cloud Security",       "demand": 70, "note": "AWS/Azure UY" },
+      { "role": "OT/ICS Security",      "demand": 55, "note": "ANCAP, UTE, OSE" }
+    ]
+  },
+  "GY": {
+    "name": "Guyana",
+    "region": "LATAM",
+    "contractType": "Petróleo (ExxonMobil) + Gov",
+    "intensity": 48,
+    "tier": 2,
+    "fastEntry": true,
+    "latlng": [4.86, -58.93],
+    "jobs": 12,
+    "freelance": 9,
+    "contract": 8,
+    "training": 7,
+    "salary": "USD 1,200–3,500/mes · $18–42/h (sector oil)",
+    "platforms": "LinkedIn GY · GuyanaTimes Jobs · Indeed GY · ExxonMobil Careers",
+    "note": "Georgetown: boom petrolero ExxonMobil/Stabroek (producción 640,000 bbl/día 2024) dispara demanda OT/ICS y ciberseguridad industrial. GTC (Guyana Telephone) y Digicel contratan IT Security. Gobierno lanza Digital Transformation Strategy 2025. Mercado anglófono con salarios en USD vinculados al sector oil.",
+    "signals": ["ExxonMobil OT/ICS Guyana 2025", "Digital Transformation Strategy GOV", "Stabroek block cybersec", "GTC IT Security hiring"],
+    "topRoles": [
+      { "role": "OT/ICS Security Eng.", "demand": 88, "note": "ExxonMobil, Hess, CNOOC" },
+      { "role": "SOC Analyst",          "demand": 72, "note": "Sector oil + bancos" },
+      { "role": "Network Security",     "demand": 65, "note": "GTC, Digicel GY" },
+      { "role": "GRC / Compliance",     "demand": 60, "note": "Regulación oil sector" },
+      { "role": "Cloud Security",       "demand": 52, "note": "AWS/Azure gov" }
+    ]
+  },
+  "SR": {
+    "name": "Suriname",
+    "region": "LATAM",
+    "contractType": "Petróleo + Gov + Freelance",
+    "intensity": 36,
+    "tier": 3,
+    "fastEntry": true,
+    "latlng": [3.92, -56.03],
+    "jobs": 6,
+    "freelance": 8,
+    "contract": 4,
+    "training": 5,
+    "salary": "USD 800–2,200/mes · $12–28/h",
+    "platforms": "LinkedIn SR · Vacaturebank.sr · Indeed SR · TotalEnergies Careers",
+    "note": "Paramaribo: TotalEnergies bloque offshore (first oil 2025) activa demanda OT/ICS. Telesur y Digicel SR telecoms. BTI Bank y Hakrinbank sector financiero. Multilingüe (neerlandés, inglés, español, sranan) abre mercado freelance diverso. ICT Suriname (regulador) fortaleciendo marco legal.",
+    "signals": ["TotalEnergies offshore first oil 2025", "BTI Bank IT Security", "ICT Suriname regulación", "Freelance multilingüe NL/EN/ES"],
+    "topRoles": [
+      { "role": "OT/ICS Security",     "demand": 75, "note": "TotalEnergies, Staatsolie" },
+      { "role": "Network Security",    "demand": 58, "note": "Telesur, Digicel SR" },
+      { "role": "SOC Analyst Jr.",     "demand": 52, "note": "Bancos, sector oil" },
+      { "role": "GRC / Compliance",   "demand": 45, "note": "ICT SR, bancos" },
+      { "role": "Freelance NL remote","demand": 48, "note": "Clientes Países Bajos" }
+    ]
+  },
+  "GF": {
+    "name": "French Guiana",
+    "region": "LATAM",
+    "contractType": "Francia (régimen UE) + Espacial",
+    "intensity": 44,
+    "tier": 2,
+    "fastEntry": true,
+    "latlng": [3.93, -53.13],
+    "jobs": 9,
+    "freelance": 7,
+    "contract": 6,
+    "training": 6,
+    "salary": "EUR 2,200–4,800/mes · $28–58/h (salarios Francia)",
+    "platforms": "LinkedIn FR · Pôle Emploi GF · Indeed FR · CNES Careers",
+    "note": "Cayena / Kourou: territorio francés (UE) en Sudamérica. Centro Espacial Guayanés (CNES/ESA/Arianespace) es el mayor empleador IT/OT con altos requisitos de ciberseguridad espacial. Salarios y marco legal equivalentes a Francia metropolitana (RGPD, ANSSI). Orange Caraïbe y SFR son telecoms. Contrato bajo derecho laboral francés — el único mercado de la región con estándares salariales europeos.",
+    "signals": ["CNES/ESA cybersec espacial", "ANSSI France mandato", "Arianespace OT Security", "RGPD enforzado territorio FR"],
+    "topRoles": [
+      { "role": "OT/ICS Espacial",      "demand": 85, "note": "CNES, Arianespace, ESA" },
+      { "role": "Cybersec. Analyst",    "demand": 72, "note": "ANSSI mandato, GOV FR" },
+      { "role": "GRC / RGPD / NIS2",   "demand": 68, "note": "Marco legal francés" },
+      { "role": "Network Security",     "demand": 60, "note": "Orange Caraïbe, SFR" },
+      { "role": "Cloud Security",       "demand": 55, "note": "AWS Paris / Azure FR" }
+    ]
   }
 }
