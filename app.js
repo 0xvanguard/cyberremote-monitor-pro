@@ -4,18 +4,42 @@ let markerLayer = null;
 let map = null;
 let activeFilter = 'all';
 
+// Exact names from johan/world.geo.json + common variants
 const nameToCode = {
-  'Germany':'DE','Spain':'ES','United Kingdom':'GB','United States of America':'US',
-  'Canada':'CA','Colombia':'CO','Mexico':'MX','Brazil':'BR','India':'IN','Australia':'AU',
-  'Netherlands':'NL','France':'FR','Poland':'PL','Romania':'RO','Ukraine':'UA',
-  'Israel':'IL','Singapore':'SG','Japan':'JP','South Korea':'KR','Argentina':'AR',
-  'Chile':'CL','Peru':'PE','South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
-  'United Arab Emirates':'AE','Portugal':'PT','Italy':'IT','Sweden':'SE','Norway':'NO',
-  'Switzerland':'CH','New Zealand':'NZ','Philippines':'PH','Malaysia':'MY',
-  'Belgium':'BE','Czech Republic':'CZ','Costa Rica':'CR','Panama':'PA','Ecuador':'EC',
-  'Greenland':'GL','Venezuela':'VE','Bolivia':'BO','Guatemala':'GT','Morocco':'MA',
-  'Algeria':'DZ','Tunisia':'TN','Egypt':'EG','Saudi Arabia':'SA'
+  // North America
+  'United States of America':'US','United States':'US',
+  'Canada':'CA',
+  'Greenland':'GL',
+  // LATAM
+  'Mexico':'MX','Colombia':'CO','Venezuela':'VE','Ecuador':'EC',
+  'Peru':'PE','Bolivia':'BO','Brazil':'BR','Argentina':'AR',
+  'Chile':'CL','Guatemala':'GT','Costa Rica':'CR','Panama':'PA',
+  // Europe
+  'United Kingdom':'GB','Germany':'DE','France':'FR','Spain':'ES',
+  'Portugal':'PT','Italy':'IT','Belgium':'BE','Netherlands':'NL',
+  'Poland':'PL','Czech Republic':'CZ','Czech Rep.':'CZ',
+  'Romania':'RO','Ukraine':'UA','Sweden':'SE','Norway':'NO','Switzerland':'CH',
+  'Ireland':'IE',
+  // Middle East
+  'Israel':'IL','United Arab Emirates':'AE','Saudi Arabia':'SA',
+  // Africa
+  'Egypt':'EG','Morocco':'MA','Algeria':'DZ','Tunisia':'TN',
+  'South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
+  // Asia
+  'India':'IN','Singapore':'SG','Japan':'JP',
+  'South Korea':'KR','Korea':'KR',"Korea, Republic of":'KR',
+  'Philippines':'PH','Malaysia':'MY',
+  // Oceania
+  'Australia':'AU','New Zealand':'NZ'
 };
+
+// Resolve code: prefer iso_a2 from GeoJSON props, fallback to nameToCode
+function resolveCode(feature) {
+  const props = feature.properties;
+  // iso_a2 in this GeoJSON can be "-99" for disputed/unknown — ignore those
+  if (props.iso_a2 && props.iso_a2 !== '-99' && props.iso_a2 !== '') return props.iso_a2;
+  return nameToCode[props.name] || nameToCode[props.NAME] || null;
+}
 
 function getHeatColor(intensity) {
   if (intensity >= 90) return '#16a34a';
@@ -37,7 +61,7 @@ function shouldShow(data) {
 }
 
 function styleFeature(feature) {
-  const code = feature.properties.iso_a2 || nameToCode[feature.properties.name];
+  const code = resolveCode(feature);
   const data = dataset[code];
   const visible = shouldShow(data);
   return {
@@ -48,7 +72,7 @@ function styleFeature(feature) {
 }
 
 function onEachFeature(feature, layer) {
-  const code = feature.properties.iso_a2 || nameToCode[feature.properties.name];
+  const code = resolveCode(feature);
   const data = dataset[code];
   if (!data) return;
   const fast = data.fastEntry ? ' ⚡' : '';
@@ -172,10 +196,11 @@ function renderFeed() {
 function renderKpis() {
   const vals = Object.values(dataset).filter(shouldShow);
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental'];
   set('kpiEurope', vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
   set('kpiLatam', vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
   set('kpiNorthAm', vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
-  set('kpiAsia', vals.filter(v => v.region === 'Asia').reduce((a, b) => a + b.jobs, 0));
+  set('kpiAsia', vals.filter(v => asiaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
   set('kpiFreelance', vals.reduce((a, b) => a + b.freelance, 0));
   set('kpiContract', vals.reduce((a, b) => a + (b.contract || 0), 0));
   set('kpiJobs', vals.reduce((a, b) => a + b.jobs, 0));
@@ -225,6 +250,7 @@ document.querySelectorAll('.chip[data-filter]').forEach(btn => {
 async function init() {
   const res = await fetch('data/countries.json');
   dataset = await res.json();
+  window.dataset = dataset;
   map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
@@ -235,6 +261,8 @@ async function init() {
   refreshAll();
   updateCountryPanel('US');
   setTimeout(() => map.invalidateSize(), 300);
+  // Trigger regional cards render after dataset is ready
+  if (typeof renderCards === 'function') renderCards('all');
 }
 
 init();
