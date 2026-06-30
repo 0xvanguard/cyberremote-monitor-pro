@@ -8,8 +8,7 @@ let activeFilter = 'all';
 const nameToCode = {
   // North America
   'United States of America':'US','United States':'US',
-  'Canada':'CA',
-  'Greenland':'GL',
+  'Canada':'CA','Greenland':'GL',
   // LATAM
   'Mexico':'MX','Colombia':'CO','Venezuela':'VE','Ecuador':'EC',
   'Peru':'PE','Bolivia':'BO','Brazil':'BR','Argentina':'AR',
@@ -18,10 +17,11 @@ const nameToCode = {
   'United Kingdom':'GB','Germany':'DE','France':'FR','Spain':'ES',
   'Portugal':'PT','Italy':'IT','Belgium':'BE','Netherlands':'NL',
   'Poland':'PL','Czech Republic':'CZ','Czech Rep.':'CZ',
-  'Romania':'RO','Ukraine':'UA','Sweden':'SE','Norway':'NO','Switzerland':'CH',
-  'Ireland':'IE',
+  'Romania':'RO','Ukraine':'UA','Sweden':'SE','Norway':'NO',
+  'Switzerland':'CH','Ireland':'IE',
   // Middle East
   'Israel':'IL','United Arab Emirates':'AE','Saudi Arabia':'SA',
+  'Turkey':'TR','Türkiye':'TR',
   // Africa
   'Egypt':'EG','Morocco':'MA','Algeria':'DZ','Tunisia':'TN',
   'South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
@@ -29,6 +29,7 @@ const nameToCode = {
   'India':'IN','Singapore':'SG','Japan':'JP',
   'South Korea':'KR','Korea':'KR',"Korea, Republic of":'KR',
   'Philippines':'PH','Malaysia':'MY',
+  'China':'CN','Indonesia':'ID','Vietnam':'VN','Thailand':'TH',
   // Oceania
   'Australia':'AU','New Zealand':'NZ'
 };
@@ -36,7 +37,6 @@ const nameToCode = {
 // Resolve code: prefer iso_a2 from GeoJSON props, fallback to nameToCode
 function resolveCode(feature) {
   const props = feature.properties;
-  // iso_a2 in this GeoJSON can be "-99" for disputed/unknown — ignore those
   if (props.iso_a2 && props.iso_a2 !== '-99' && props.iso_a2 !== '') return props.iso_a2;
   return nameToCode[props.name] || nameToCode[props.NAME] || null;
 }
@@ -64,24 +64,39 @@ function styleFeature(feature) {
   const code = resolveCode(feature);
   const data = dataset[code];
   const visible = shouldShow(data);
+  if (data && visible) {
+    return {
+      fillColor: getHeatColor(data.intensity),
+      weight: 0.8, opacity: 1, color: '#1e3a5f', fillOpacity: 0.78
+    };
+  }
+  // No data — neutral dark gray, subtle border
   return {
-    fillColor: data && visible ? getHeatColor(data.intensity) : '#0d1b2a',
-    weight: 0.8, opacity: 1, color: '#1e3a5f',
-    fillOpacity: data && visible ? 0.78 : 0.15
+    fillColor: '#1a2535',
+    weight: 0.5, opacity: 0.6, color: '#253550', fillOpacity: 0.55
   };
 }
 
 function onEachFeature(feature, layer) {
   const code = resolveCode(feature);
   const data = dataset[code];
-  if (!data) return;
-  const fast = data.fastEntry ? ' ⚡' : '';
-  layer.bindTooltip(`<strong>${data.name}${fast}</strong> — Intensidad: ${data.intensity}`, { sticky: true });
-  layer.on({
-    click: () => updateCountryPanel(code),
-    mouseover: e => { e.target.setStyle({ weight: 2, color: '#dbe7ff', fillOpacity: 0.95 }); },
-    mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
-  });
+  if (data) {
+    const fast = data.fastEntry ? ' ⚡' : '';
+    layer.bindTooltip(`<strong>${data.name}${fast}</strong> — Intensidad: ${data.intensity}`, { sticky: true });
+    layer.on({
+      click: () => updateCountryPanel(code),
+      mouseover: e => { e.target.setStyle({ weight: 2, color: '#dbe7ff', fillOpacity: 0.95 }); },
+      mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
+    });
+  } else {
+    // No data country — show neutral tooltip
+    const name = feature.properties.name || feature.properties.NAME || 'País';
+    layer.bindTooltip(`<span style="color:#64748b">${name}</span> — Sin datos disponibles`, { sticky: true });
+    layer.on({
+      mouseover: e => { e.target.setStyle({ fillOpacity: 0.75, color: '#334155' }); },
+      mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
+    });
+  }
 }
 
 function renderMarkers() {
@@ -261,7 +276,6 @@ async function init() {
   refreshAll();
   updateCountryPanel('US');
   setTimeout(() => map.invalidateSize(), 300);
-  // Trigger regional cards render after dataset is ready
   if (typeof renderCards === 'function') renderCards('all');
 }
 
