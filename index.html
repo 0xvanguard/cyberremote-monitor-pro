@@ -222,6 +222,289 @@
     .td-lead { color:#4ade80; font-size:.76rem; }
     .td-num  { color:#94a3b8; }
     .td-f    { color:#f59e0b; font-size:.7rem; font-weight:700; }
+
+    /* ════════════════════════════════════════════
+       🇨🇴 COLOMBIA DEEP-DRILL — HACKER DARK
+    ════════════════════════════════════════════ */
+    #colombia {
+      background: #020917;
+      border-top: 1px solid #0ea5e915;
+      border-bottom: 1px solid #0ea5e915;
+      padding: 3.5rem 0 4rem;
+      position: relative;
+    }
+    #colombia::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #0ea5e940, #4ade8030, #f59e0b20, transparent);
+    }
+    .co-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 1.8rem;
+    }
+    .co-eyebrow {
+      font-size: .62rem;
+      font-weight: 700;
+      color: #0ea5e9;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: .35rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .co-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: #0ea5e9;
+      border-radius: 50%;
+      animation: coPing 2s infinite;
+    }
+    @keyframes coPing {
+      0%,100% { opacity:1; box-shadow:0 0 0 0 #0ea5e960; }
+      50% { opacity:.6; box-shadow:0 0 0 5px transparent; }
+    }
+    .co-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #dbe7ff;
+      margin: 0 0 .3rem;
+      line-height: 1.2;
+    }
+    .co-subtitle {
+      font-size: .78rem;
+      color: #334155;
+    }
+    .co-status-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .co-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid;
+      letter-spacing: .04em;
+    }
+    /* KPI strip */
+    .co-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 1.6rem;
+    }
+    @media(max-width:900px){ .co-kpi-strip{ grid-template-columns:repeat(3,1fr); } }
+    @media(max-width:500px){ .co-kpi-strip{ grid-template-columns:repeat(2,1fr); } }
+    .co-kpi-box {
+      background: #030d1a;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+      padding: .9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: border-color .2s;
+    }
+    .co-kpi-box:hover { border-color: #0ea5e960; }
+    .co-kpi-val {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #dbe7ff;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .co-kpi-lbl {
+      font-size: .6rem;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+    /* Controls bar */
+    .co-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      padding: .7rem 1rem;
+      background: #030d1a;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+    }
+    .co-ctrl-label {
+      font-size: .65rem;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+    .co-view-btn {
+      background: #0d1b2a;
+      color: #64748b;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 5px 14px;
+      font-size: .72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .co-view-btn:hover { background: #1e3a5f; color: #dbe7ff; }
+    .co-view-btn.active { background: #0ea5e920; color: #0ea5e9; border-color: #0ea5e9; }
+    .co-divider {
+      width: 1px; height: 20px;
+      background: #1e3a5f;
+      flex-shrink: 0;
+    }
+    .co-nav-btn {
+      background: transparent;
+      color: #334155;
+      border: 1px solid #1e3a5f30;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: .67rem;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .co-nav-btn:hover { background: #0ea5e910; color: #0ea5e9; border-color: #0ea5e940; }
+    /* Map + panel grid */
+    .co-main-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 14px;
+      margin-bottom: 1.4rem;
+    }
+    @media(max-width:900px){ .co-main-grid{ grid-template-columns:1fr; } }
+    #col-map {
+      height: 580px;
+      border-radius: 12px;
+      border: 1px solid #1e3a5f;
+      background: #030d1a;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Leaflet overrides for hacker feel */
+    #col-map .leaflet-control-zoom a {
+      background: #030d1a !important;
+      color: #0ea5e9 !important;
+      border-color: #1e3a5f !important;
+    }
+    #col-map .leaflet-control-zoom a:hover {
+      background: #1e3a5f !important;
+    }
+    #col-map .leaflet-popup-content-wrapper {
+      background: #030d1a !important;
+      border: 1px solid #1e3a5f !important;
+      color: #dbe7ff !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 24px #00000080 !important;
+    }
+    #col-map .leaflet-popup-tip { background: #030d1a !important; }
+    /* Side panel */
+    .co-side {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .co-panel-card {
+      background: #030d1a;
+      border: 1px solid #1e3a5f;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .co-panel-card.scrollable {
+      overflow-y: auto;
+      max-height: 360px;
+    }
+    .co-panel-title {
+      font-size: .62rem;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 10px;
+    }
+    /* Ranking items */
+    .co-rank-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .co-rank-row:hover { background: #0ea5e908; }
+    .co-rank-num {
+      font-size: .78rem;
+      font-weight: 800;
+      min-width: 18px;
+      text-align: center;
+    }
+    .co-rank-body { flex: 1; display: flex; flex-direction: column; }
+    .co-rank-name { font-size: .8rem; font-weight: 700; color: #dbe7ff; }
+    .co-rank-sub  { font-size: .65rem; color: #475569; }
+    /* Legend */
+    .co-legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: .6rem 1rem;
+      background: #030d1a;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .co-leg-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .65rem;
+      color: #475569;
+    }
+    .co-leg-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    /* Scan line overlay */
+    .co-map-wrap {
+      position: relative;
+    }
+    .co-scan-badge {
+      position: absolute;
+      top: 10px; left: 10px;
+      z-index: 500;
+      background: rgba(2,9,23,.82);
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 6px 12px;
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+    }
+    .co-scan-label {
+      font-size: .58rem;
+      font-weight: 700;
+      color: #0ea5e9;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+    .co-scan-sub {
+      font-size: .62rem;
+      color: #334155;
+    }
   </style>
 </head>
 <body>
@@ -239,6 +522,7 @@
         <a href="#globe3d">🌐 Globo 3D</a>
         <a href="#insights">Ranking</a>
         <a href="#regional">Regiones</a>
+        <a href="#colombia" style="color:#4ade80">🇨🇴 Colombia</a>
         <a href="#signals">Señales</a>
         <a href="https://github.com/0xvanguard/cyberremote-monitor-pro" target="_blank" rel="noreferrer">GitHub ↗</a>
       </div>
@@ -254,6 +538,7 @@
         <div class="cta">
           <a class="btn btn-primary" href="#monitor">Abrir monitor</a>
           <a class="btn btn-primary" href="#globe3d" style="background:linear-gradient(135deg,#0ea5e9,#6366f1)">🌐 Ver Globo 3D</a>
+          <a class="btn btn-primary" href="#colombia" style="background:linear-gradient(135deg,#16a34a,#0ea5e9);color:#fff">🇨🇴 Colombia</a>
           <button class="btn btn-secondary" onclick="jumpRegion('Europe')">Europa</button>
           <button class="btn btn-secondary" onclick="jumpRegion('LATAM')">LATAM</button>
           <button class="btn btn-secondary" onclick="jumpRegion('NorthAmerica')">Norteamérica</button>
@@ -351,33 +636,26 @@
   ══════════════════════════════════════════ -->
   <section id="globe3d" class="globe-section">
     <div class="globe-section-inner">
-      <!-- Three.js canvas -->
       <div style="position:relative">
         <canvas id="globeCanvas"></canvas>
-        <!-- overlay badge -->
         <div style="position:absolute;top:1.2rem;left:1.4rem;pointer-events:none">
           <div style="background:rgba(2,8,23,.75);border:1px solid #1e3a5f;border-radius:10px;padding:.6rem 1rem;backdrop-filter:blur(8px)">
             <div style="font-size:.65rem;color:#0ea5e9;text-transform:uppercase;letter-spacing:.1em;font-weight:700">🌐 CyberRemote · Space View</div>
             <div style="font-size:.78rem;color:#94a3b8;margin-top:.15rem">Globo 3D interactivo · heatmap de contratación</div>
           </div>
         </div>
-        <!-- controls hint -->
         <div style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);pointer-events:none">
           <div style="background:rgba(2,8,23,.6);border:1px solid #1e3a5f22;border-radius:999px;padding:.35rem 1rem;font-size:.67rem;color:#334155;backdrop-filter:blur(4px);white-space:nowrap">
             🖱️ Arrastra para rotar · Scroll para zoom · Clic en punto para ver país
           </div>
         </div>
       </div>
-
-      <!-- Right panel -->
       <div class="globe-panel-right">
         <div>
           <div class="globe-title">Vista desde el espacio</div>
           <div class="globe-country-name" id="globeCountryName">Haz clic en un punto</div>
           <div style="font-size:.73rem;color:#475569;margin-top:.2rem" id="globeCountryRegion">Selecciona un mercado en el globo</div>
         </div>
-
-        <!-- Intensity bar -->
         <div id="globeIntensityWrap" style="display:none">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
             <span style="font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Intensidad de mercado</span>
@@ -387,40 +665,18 @@
             <div class="globe-intensity-fill" id="globeIntensityFill" style="width:0%"></div>
           </div>
         </div>
-
-        <!-- KPIs -->
         <div class="globe-kpi-grid" id="globeKpiGrid" style="display:none">
-          <div class="globe-kpi">
-            <div class="gk-lbl">Empleos</div>
-            <div class="gk-val" id="globeJobs">—</div>
-          </div>
-          <div class="globe-kpi">
-            <div class="gk-lbl">Freelance</div>
-            <div class="gk-val" id="globeFreelance">—</div>
-          </div>
-          <div class="globe-kpi">
-            <div class="gk-lbl">Contratos</div>
-            <div class="gk-val" id="globeContract">—</div>
-          </div>
-          <div class="globe-kpi">
-            <div class="gk-lbl">Salario</div>
-            <div class="gk-val" style="font-size:.85rem" id="globeSalary">—</div>
-          </div>
+          <div class="globe-kpi"><div class="gk-lbl">Empleos</div><div class="gk-val" id="globeJobs">—</div></div>
+          <div class="globe-kpi"><div class="gk-lbl">Freelance</div><div class="gk-val" id="globeFreelance">—</div></div>
+          <div class="globe-kpi"><div class="gk-lbl">Contratos</div><div class="gk-val" id="globeContract">—</div></div>
+          <div class="globe-kpi"><div class="gk-lbl">Salario</div><div class="gk-val" style="font-size:.85rem" id="globeSalary">—</div></div>
         </div>
-
-        <!-- Top roles -->
         <div id="globeRolesWrap" style="display:none">
           <div class="globe-title" style="margin-bottom:.6rem">📊 Roles más demandados</div>
           <div class="globe-role-list" id="globeRoleList"></div>
         </div>
-
-        <!-- Tags -->
         <div class="globe-tags" id="globeTags"></div>
-
-        <!-- Note -->
         <div style="font-size:.72rem;color:#334155;line-height:1.5" id="globeNote"></div>
-
-        <!-- Auto-rotate control -->
         <div>
           <div class="globe-title" style="margin-bottom:.5rem">Controles del globo</div>
           <div class="globe-controls">
@@ -429,8 +685,6 @@
             <button class="globe-btn" id="btnAtmo" onclick="toggleAtmosphere()">✦ Atmósfera</button>
           </div>
         </div>
-
-        <!-- Legend -->
         <div>
           <div class="globe-title" style="margin-bottom:.5rem">Intensidad</div>
           <div class="globe-legend">
@@ -525,6 +779,105 @@
     </div>
   </section>
 
+  <!-- ════════════════════════════════════════════════════════════
+       🇨🇴 COLOMBIA DEEP-DRILL — HACKER DARK INTEL MAP
+  ════════════════════════════════════════════════════════════ -->
+  <section id="colombia">
+    <div class="container">
+
+      <!-- Header -->
+      <div class="co-header">
+        <div>
+          <div class="co-eyebrow">Colombia · Deep-Drill Intelligence · 2026</div>
+          <h2 class="co-title">🇨🇴 Mapa de Ciberseguridad — Colombia</h2>
+          <p class="co-subtitle">33 departamentos · 47 ciudades · heatmap por intensidad de mercado remoto</p>
+        </div>
+        <div class="co-status-badges">
+          <span class="co-badge" style="background:#4ade8010;border-color:#4ade8040;color:#4ade80">⬤ LIVE · Score 68/100</span>
+          <span class="co-badge" style="background:#0ea5e910;border-color:#0ea5e940;color:#0ea5e9">262 freelance</span>
+          <span class="co-badge" style="background:#f59e0b10;border-color:#f59e0b40;color:#f59e0b">167 empleos</span>
+          <span class="co-badge" style="background:#a78bfa10;border-color:#a78bfa40;color:#a78bfa">⚡ 7/7 entrada rápida top dept.</span>
+        </div>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="co-kpi-strip">
+        <div class="co-kpi-box">
+          <span class="co-kpi-val" id="col-kpi-depts" style="color:#dbe7ff">33</span>
+          <span class="co-kpi-lbl">Departamentos</span>
+        </div>
+        <div class="co-kpi-box">
+          <span class="co-kpi-val" id="col-kpi-cities" style="color:#dbe7ff">47</span>
+          <span class="co-kpi-lbl">Ciudades</span>
+        </div>
+        <div class="co-kpi-box">
+          <span class="co-kpi-val" id="col-kpi-jobs" style="color:#4ade80">167</span>
+          <span class="co-kpi-lbl">Empleos</span>
+        </div>
+        <div class="co-kpi-box">
+          <span class="co-kpi-val" id="col-kpi-freelance" style="color:#0ea5e9">262</span>
+          <span class="co-kpi-lbl">Freelance</span>
+        </div>
+        <div class="co-kpi-box">
+          <span class="co-kpi-val" id="col-kpi-contracts" style="color:#f59e0b">148</span>
+          <span class="co-kpi-lbl">Contratos</span>
+        </div>
+        <div class="co-kpi-box">
+          <span class="co-kpi-val" id="col-kpi-score" style="color:#a78bfa">68</span>
+          <span class="co-kpi-lbl">Score nacional</span>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="co-legend">
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#16a34a"></span>Muy alto (80+)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#4ade80"></span>Alto (65–79)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#f59e0b"></span>Medio (50–64)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#0ea5e9"></span>Emergente (30–49)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#1e3a5f"></span>Bajo (&lt;30)</span>
+        <span style="margin-left:auto;font-size:.6rem;color:#1e3a5f">// clic en marcador para intel completa</span>
+      </div>
+
+      <!-- Controls bar -->
+      <div class="co-controls">
+        <span class="co-ctrl-label">Vista ·</span>
+        <button class="co-view-btn active" data-view="departments" onclick="colToggleView('departments')">🏛️ Departamentos</button>
+        <button class="co-view-btn" data-view="cities" onclick="colToggleView('cities')">🏙️ Ciudades</button>
+        <div class="co-divider"></div>
+        <span class="co-ctrl-label">Zoom rápido ·</span>
+        <div id="col-quick-nav" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+      </div>
+
+      <!-- Map + Side panel -->
+      <div class="co-main-grid">
+        <div class="co-map-wrap">
+          <!-- Scan overlay badge -->
+          <div class="co-scan-badge">
+            <div class="co-scan-label">// intel map · colombia</div>
+            <div class="co-scan-sub">33 depts · 47 cities · cyber jobs 2026</div>
+          </div>
+          <div id="col-map"></div>
+        </div>
+
+        <div class="co-side">
+          <!-- Detail panel -->
+          <div class="co-panel-card scrollable" id="col-detail-panel">
+            <div style="color:#1e3a5f;font-size:.75rem;text-align:center;padding:2rem 0">
+              <div style="font-size:1.5rem;margin-bottom:.5rem">🇨🇴</div>
+              <div>Haz clic en un departamento<br>para ver intel completa</div>
+            </div>
+          </div>
+          <!-- Ranking -->
+          <div class="co-panel-card">
+            <div class="co-panel-title">// ranking top 10 departamentos</div>
+            <div id="col-ranking"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <footer class="footer">
     <div class="container footer-inner">
       <div>
@@ -541,6 +894,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="app.js"></script>
   <script src="globe3d.js"></script>
+  <script src="colombia-map.js"></script>
   <script>
   function getHC(i){
     if(i>=90)return'#16a34a';if(i>=75)return'#4ade80';
@@ -584,8 +938,21 @@
     btn.classList.add('active');
     renderCards(region);
   }
+
+  // Init order: app → globe → colombia map
   document.addEventListener('DOMContentLoaded',()=>{
     setTimeout(()=>renderCards('all'),1200);
+
+    // Lazy-init Colombia map when section scrolls into view
+    let colInited = false;
+    const colSection = document.getElementById('colombia');
+    const colObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !colInited) {
+        colInited = true;
+        if (typeof initColombiaMap === 'function') initColombiaMap();
+      }
+    }, { threshold: 0.1 });
+    if (colSection) colObserver.observe(colSection);
   });
   </script>
 </body>
