@@ -4,37 +4,32 @@ let markerLayer = null;
 let map = null;
 let activeFilter = 'all';
 
-// Exact names from johan/world.geo.json + common variants
 const nameToCode = {
-  // North America
   'United States of America':'US','United States':'US',
   'Canada':'CA','Greenland':'GL',
-  // LATAM
   'Mexico':'MX','Colombia':'CO','Venezuela':'VE','Ecuador':'EC',
   'Peru':'PE','Bolivia':'BO','Brazil':'BR','Argentina':'AR',
   'Chile':'CL','Guatemala':'GT','Costa Rica':'CR','Panama':'PA',
-  // Europe
   'United Kingdom':'GB','Germany':'DE','France':'FR','Spain':'ES',
   'Portugal':'PT','Italy':'IT','Belgium':'BE','Netherlands':'NL',
   'Poland':'PL','Czech Republic':'CZ','Czech Rep.':'CZ',
   'Romania':'RO','Ukraine':'UA','Sweden':'SE','Norway':'NO',
   'Switzerland':'CH','Ireland':'IE',
-  // Middle East
   'Israel':'IL','United Arab Emirates':'AE','Saudi Arabia':'SA',
   'Turkey':'TR','Türkiye':'TR',
-  // Africa
   'Egypt':'EG','Morocco':'MA','Algeria':'DZ','Tunisia':'TN',
   'South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
-  // Asia
   'India':'IN','Singapore':'SG','Japan':'JP',
   'South Korea':'KR','Korea':'KR',"Korea, Republic of":'KR',
   'Philippines':'PH','Malaysia':'MY',
   'China':'CN','Indonesia':'ID','Vietnam':'VN','Thailand':'TH',
-  // Oceania
+  'Russia':'RU','Kazakhstan':'KZ','Mongolia':'MN',
+  'Iran':'IR',"Iran (Islamic Republic of)":'IR',
+  'Iraq':'IQ','Laos':'LA',"Lao People's Democratic Republic":'LA',
+  'Cambodia':'KH',
   'Australia':'AU','New Zealand':'NZ'
 };
 
-// Resolve code: prefer iso_a2 from GeoJSON props, fallback to nameToCode
 function resolveCode(feature) {
   const props = feature.properties;
   if (props.iso_a2 && props.iso_a2 !== '-99' && props.iso_a2 !== '') return props.iso_a2;
@@ -65,16 +60,9 @@ function styleFeature(feature) {
   const data = dataset[code];
   const visible = shouldShow(data);
   if (data && visible) {
-    return {
-      fillColor: getHeatColor(data.intensity),
-      weight: 0.8, opacity: 1, color: '#1e3a5f', fillOpacity: 0.78
-    };
+    return { fillColor: getHeatColor(data.intensity), weight: 0.8, opacity: 1, color: '#1e3a5f', fillOpacity: 0.78 };
   }
-  // No data — neutral dark gray, subtle border
-  return {
-    fillColor: '#1a2535',
-    weight: 0.5, opacity: 0.6, color: '#253550', fillOpacity: 0.55
-  };
+  return { fillColor: '#1a2535', weight: 0.5, opacity: 0.6, color: '#253550', fillOpacity: 0.55 };
 }
 
 function onEachFeature(feature, layer) {
@@ -89,7 +77,6 @@ function onEachFeature(feature, layer) {
       mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
     });
   } else {
-    // No data country — show neutral tooltip
     const name = feature.properties.name || feature.properties.NAME || 'País';
     layer.bindTooltip(`<span style="color:#64748b">${name}</span> — Sin datos disponibles`, { sticky: true });
     layer.on({
@@ -155,7 +142,6 @@ function updateCountryPanel(code) {
       <span style="font-size:.68rem;color:var(--muted)">${r.note}</span>
     </div>
   `).join('') : '';
-
   document.getElementById('countryBox').innerHTML = `
     <div class="country-name">${d.name} <span style="font-size:.85rem;font-weight:400;color:var(--muted)">${d.region}</span></div>
     <div class="tags" style="margin-bottom:.5rem">${fast}<span class="tag">${d.contractType}</span></div>
@@ -211,7 +197,7 @@ function renderFeed() {
 function renderKpis() {
   const vals = Object.values(dataset).filter(shouldShow);
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental'];
+  const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico'];
   set('kpiEurope', vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
   set('kpiLatam', vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
   set('kpiNorthAm', vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
@@ -263,9 +249,15 @@ document.querySelectorAll('.chip[data-filter]').forEach(btn => {
 });
 
 async function init() {
-  const res = await fetch('data/countries.json');
-  dataset = await res.json();
+  // Cargar datasets en paralelo — countries.json (principal) + countries-extra.json (MN, LA, TH, KH)
+  const [resMain, resExtra] = await Promise.all([
+    fetch('data/countries.json'),
+    fetch('data/countries-extra.json')
+  ]);
+  const [main, extra] = await Promise.all([resMain.json(), resExtra.json()]);
+  dataset = { ...main, ...extra };
   window.dataset = dataset;
+
   map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
