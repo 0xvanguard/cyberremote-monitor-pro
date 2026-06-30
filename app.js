@@ -16,7 +16,7 @@ const nameToCode = {
   'Romania':'RO','Ukraine':'UA','Sweden':'SE','Norway':'NO',
   'Switzerland':'CH','Ireland':'IE',
   'Israel':'IL','United Arab Emirates':'AE','Saudi Arabia':'SA',
-  'Turkey':'TR','Türkiye':'TR',
+  'Turkey':'TR','T\u00fcrkiye':'TR',
   'Egypt':'EG','Morocco':'MA','Algeria':'DZ','Tunisia':'TN',
   'South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
   'India':'IN','Singapore':'SG','Japan':'JP',
@@ -27,7 +27,14 @@ const nameToCode = {
   'Iran':'IR','Iran (Islamic Republic of)':'IR',
   'Iraq':'IQ','Laos':'LA',"Lao People's Democratic Republic":'LA',
   'Cambodia':'KH',
-  'Australia':'AU','New Zealand':'NZ'
+  'Australia':'AU','New Zealand':'NZ',
+  // Africa-new & LATAM additions
+  'Paraguay':'PY','Namibia':'NA','Botswana':'BW','Zimbabwe':'ZW',
+  'Mozambique':'MZ','Zambia':'ZM','Malawi':'MW','Angola':'AO',
+  'Democratic Republic of the Congo':'CD','DR Congo':'CD','Congo, Dem. Rep.':'CD',
+  'Gabon':'GA','Cameroon':'CM','Tanzania':'TZ','Uganda':'UG',
+  'Ethiopia':'ET','Somalia':'SO','South Sudan':'SS',
+  'Central African Republic':'CF','C. African Rep.':'CF'
 };
 
 function resolveCode(feature) {
@@ -41,6 +48,7 @@ function getHeatColor(intensity) {
   if (intensity >= 75) return '#4ade80';
   if (intensity >= 60) return '#f59e0b';
   if (intensity >= 45) return '#0ea5e9';
+  if (intensity >= 25) return '#6366f1';
   return '#1e3a5f';
 }
 
@@ -69,16 +77,16 @@ function onEachFeature(feature, layer) {
   const code = resolveCode(feature);
   const data = dataset[code];
   if (data) {
-    const fast = data.fastEntry ? ' ⚡' : '';
-    layer.bindTooltip(`<strong>${data.name}${fast}</strong> — Intensidad: ${data.intensity}`, { sticky: true });
+    const fast = data.fastEntry ? ' \u26a1' : '';
+    layer.bindTooltip(`<strong>${data.name}${fast}</strong> \u2014 Intensidad: ${data.intensity}`, { sticky: true });
     layer.on({
       click: () => updateCountryPanel(code),
       mouseover: e => { e.target.setStyle({ weight: 2, color: '#dbe7ff', fillOpacity: 0.95 }); },
       mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
     });
   } else {
-    const name = feature.properties.name || feature.properties.NAME || 'País';
-    layer.bindTooltip(`<span style="color:#64748b">${name}</span> — Sin datos disponibles`, { sticky: true });
+    const name = feature.properties.name || feature.properties.NAME || 'Pa\u00eds';
+    layer.bindTooltip(`<span style="color:#64748b">${name}</span> \u2014 Sin datos disponibles`, { sticky: true });
     layer.on({
       mouseover: e => { e.target.setStyle({ fillOpacity: 0.75, color: '#334155' }); },
       mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
@@ -96,7 +104,7 @@ function renderMarkers() {
       radius, color: '#dbe7ff', weight: 1.2,
       fillColor: getHeatColor(data.intensity), fillOpacity: 0.92
     }).bindTooltip(
-      `<strong>${data.name}</strong>${data.fastEntry ? ' ⚡' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
+      `<strong>${data.name}</strong>${data.fastEntry ? ' \u26a1' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
       { direction: 'top' }
     );
     m.on('click', () => updateCountryPanel(code));
@@ -106,15 +114,15 @@ function renderMarkers() {
 
 function getBadges(data) {
   const b = [];
-  if (data.jobs > 0) b.push(`💼 ${data.jobs} empleo`);
-  if (data.freelance > 0) b.push(`🛠️ ${data.freelance} freelance`);
-  if (data.contract > 0) b.push(`📋 ${data.contract} contratos`);
-  if (data.fastEntry) b.push('⚡ Entrada rápida');
+  if (data.jobs > 0) b.push(`\ud83d\udcbc ${data.jobs} empleo`);
+  if (data.freelance > 0) b.push(`\ud83d\udee0\ufe0f ${data.freelance} freelance`);
+  if (data.contract > 0) b.push(`\ud83d\udccb ${data.contract} contratos`);
+  if (data.fastEntry) b.push('\u26a1 Entrada r\u00e1pida');
   return b.join(' &bull; ');
 }
 
 function getRoleBar(demand) {
-  const color = demand >= 85 ? '#16a34a' : demand >= 70 ? '#4ade80' : demand >= 55 ? '#f59e0b' : '#0ea5e9';
+  const color = demand >= 85 ? '#16a34a' : demand >= 70 ? '#4ade80' : demand >= 55 ? '#f59e0b' : demand >= 35 ? '#0ea5e9' : '#6366f1';
   return `<div style="display:flex;align-items:center;gap:6px;margin:2px 0">
     <div style="flex:1;background:#1e3a5f;border-radius:4px;height:6px;overflow:hidden">
       <div style="width:${demand}%;height:100%;background:${color};border-radius:4px"></div>
@@ -128,14 +136,16 @@ function updateCountryPanel(code) {
   if (!d) return;
   const el = document.getElementById('countryBox');
   if (!el) return;
-  const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">⚡ Entrada rápida</span>' : '';
+  const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">\u26a1 Entrada r\u00e1pida</span>' : '';
   const topRole = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
   const topRoleHtml = topRole
     ? `<div class="metric" style="background:rgba(22,163,74,.1);border-left:3px solid #16a34a;padding-left:8px;margin-bottom:6px">
-        <strong>🔥 Rol más demandado</strong>
+        <strong>\ud83d\udd25 Rol m\u00e1s demandado</strong>
         <span style="color:#4ade80">${topRole.role} (${topRole.demand}/100)</span>
         <span style="font-size:.75rem;color:var(--muted)">${topRole.note}</span>
        </div>` : '';
+  const tierLabels = { 1: '\ud83d\udfe2 Tier 1', 2: '\ud83d\udfe1 Tier 2', 3: '\ud83d� Tier 3', 4: '\ud83d� Tier 4' };
+  const tierHtml = d.tier ? `<span class="tag" style="background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.25);color:#7dd3fc">${tierLabels[d.tier] || ''}</span>` : '';
   const rolesHtml = d.topRoles ? d.topRoles.map(r => `
     <div style="margin-bottom:7px">
       <div style="display:flex;justify-content:space-between">
@@ -147,17 +157,17 @@ function updateCountryPanel(code) {
   `).join('') : '';
   el.innerHTML = `
     <div class="country-name">${d.name} <span style="font-size:.85rem;font-weight:400;color:var(--muted)">${d.region}</span></div>
-    <div class="tags" style="margin-bottom:.5rem">${fast}<span class="tag">${d.contractType}</span></div>
+    <div class="tags" style="margin-bottom:.5rem">${fast}${tierHtml}<span class="tag">${d.contractType}</span></div>
     <div class="muted-text" style="margin-bottom:.6rem">${d.note}</div>
     <div class="metrics">
       <div class="metric"><strong>Intensidad heatmap</strong><span style="color:${getHeatColor(d.intensity)}">${d.intensity} / 100</span></div>
       ${topRoleHtml}
       <div class="metric"><strong>Salario / tarifa</strong><span>${d.salary}</span></div>
       <div class="metric"><strong>Plataformas</strong><span>${d.platforms}</span></div>
-      <div class="metric"><strong>Señales activas</strong><span>${getBadges(d)}</span></div>
+      <div class="metric"><strong>Se\u00f1ales activas</strong><span>${getBadges(d)}</span></div>
     </div>
     <div style="margin-top:.8rem">
-      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">📊 DEMANDA POR ROL — ${d.name.toUpperCase()}</div>
+      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">\ud83d\udcca DEMANDA POR ROL \u2014 ${d.name.toUpperCase()}</div>
       ${rolesHtml}
     </div>
     <div class="tags" style="margin-top:.5rem">
@@ -179,7 +189,7 @@ function renderRanking() {
     return `
     <div class="rank" onclick="updateCountryPanel('${code}')" style="cursor:pointer">
       <div class="rank-num">${i + 1}</div>
-      <div><strong>${d.name}</strong>${d.fastEntry ? ' ⚡' : ''}<small>${top ? '🔥 ' + top.role : d.contractType}</small></div>
+      <div><strong>${d.name}</strong>${d.fastEntry ? ' \u26a1' : ''}<small>${top ? '\ud83d\udd25 ' + top.role : d.contractType}</small></div>
       <div class="score" style="color:${getHeatColor(d.intensity)}">${d.intensity}</div>
     </div>`;
   }).join('');
@@ -205,10 +215,12 @@ function renderKpis() {
   const vals = Object.values(dataset).filter(shouldShow);
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico'];
+  const africaRegions = ['\u00c1frica Austral','\u00c1frica Oriental','\u00c1frica Central','\u00c1frica Septentrional','\u00c1frica Subsahariana'];
   set('kpiEurope',   vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
   set('kpiLatam',    vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
   set('kpiNorthAm',  vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
   set('kpiAsia',     vals.filter(v => asiaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
+  set('kpiAfrica',   vals.filter(v => africaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
   set('kpiFreelance',vals.reduce((a, b) => a + b.freelance, 0));
   set('kpiContract', vals.reduce((a, b) => a + (b.contract || 0), 0));
   set('kpiJobs',     vals.reduce((a, b) => a + b.jobs, 0));
@@ -253,15 +265,17 @@ window.updateCountryPanel = updateCountryPanel;
 
 async function init() {
   try {
-    const [resMain, resExtra] = await Promise.all([
+    const [resMain, resExtra, resAfrica] = await Promise.all([
       fetch('data/countries.json'),
-      fetch('data/countries-extra.json')
+      fetch('data/countries-extra.json'),
+      fetch('data/africa-new.json')
     ]);
-    if (!resMain.ok)  throw new Error('countries.json HTTP ' + resMain.status);
-    if (!resExtra.ok) throw new Error('countries-extra.json HTTP ' + resExtra.status);
+    if (!resMain.ok)   throw new Error('countries.json HTTP '       + resMain.status);
+    if (!resExtra.ok)  throw new Error('countries-extra.json HTTP ' + resExtra.status);
+    if (!resAfrica.ok) throw new Error('africa-new.json HTTP '      + resAfrica.status);
 
-    const [main, extra] = await Promise.all([resMain.json(), resExtra.json()]);
-    dataset = { ...main, ...extra };
+    const [main, extra, africaNew] = await Promise.all([resMain.json(), resExtra.json(), resAfrica.json()]);
+    dataset = { ...main, ...extra, ...africaNew };
     window.dataset = dataset;
 
     map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
@@ -281,7 +295,7 @@ async function init() {
     console.error('[CyberRemote] init() failed:', err);
     const mapEl = document.getElementById('map');
     if (mapEl) mapEl.innerHTML =
-      `<div style="color:#f87171;padding:2rem;font-size:.85rem">⚠️ Error cargando datos: ${err.message}</div>`;
+      `<div style="color:#f87171;padding:2rem;font-size:.85rem">\u26a0\ufe0f Error cargando datos: ${err.message}</div>`;
   }
 }
 
