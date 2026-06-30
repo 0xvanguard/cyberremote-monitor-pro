@@ -16,7 +16,7 @@ const nameToCode = {
   'Romania':'RO','Ukraine':'UA','Sweden':'SE','Norway':'NO',
   'Switzerland':'CH','Ireland':'IE',
   'Israel':'IL','United Arab Emirates':'AE','Saudi Arabia':'SA',
-  'Turkey':'TR','T\u00fcrkiye':'TR',
+  'Turkey':'TR','Türkiye':'TR',
   'Egypt':'EG','Morocco':'MA','Algeria':'DZ','Tunisia':'TN',
   'South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
   'India':'IN','Singapore':'SG','Japan':'JP',
@@ -28,13 +28,23 @@ const nameToCode = {
   'Iraq':'IQ','Laos':'LA',"Lao People's Democratic Republic":'LA',
   'Cambodia':'KH',
   'Australia':'AU','New Zealand':'NZ',
-  // Africa-new & LATAM additions
+  // Africa-new & LATAM
   'Paraguay':'PY','Namibia':'NA','Botswana':'BW','Zimbabwe':'ZW',
   'Mozambique':'MZ','Zambia':'ZM','Malawi':'MW','Angola':'AO',
   'Democratic Republic of the Congo':'CD','DR Congo':'CD','Congo, Dem. Rep.':'CD',
   'Gabon':'GA','Cameroon':'CM','Tanzania':'TZ','Uganda':'UG',
   'Ethiopia':'ET','Somalia':'SO','South Sudan':'SS',
-  'Central African Republic':'CF','C. African Rep.':'CF'
+  'Central African Republic':'CF','C. African Rep.':'CF',
+  // World expansion
+  'Lesotho':'LS','Swaziland':'SZ','Eswatini':'SZ',
+  'Madagascar':'MG','Fiji':'FJ','Papua New Guinea':'PG',
+  'East Timor':'TL','Timor-Leste':'TL',
+  'Pakistan':'PK','Afghanistan':'AF',
+  'Turkmenistan':'TM','Uzbekistan':'UZ','Tajikistan':'TJ','Kyrgyzstan':'KG',
+  'Burundi':'BI','Sudan':'SD','Chad':'TD',
+  'Niger':'NE','Mali':'ML','Mauritania':'MR',
+  'Senegal':'SN','Guinea-Bissau':'GW','Sierra Leone':'SL',
+  'Liberia':'LR','Ivory Coast':'CI',"Côte d'Ivoire":'CI',"Cote d'Ivoire":'CI'
 };
 
 function resolveCode(feature) {
@@ -77,16 +87,16 @@ function onEachFeature(feature, layer) {
   const code = resolveCode(feature);
   const data = dataset[code];
   if (data) {
-    const fast = data.fastEntry ? ' \u26a1' : '';
-    layer.bindTooltip(`<strong>${data.name}${fast}</strong> \u2014 Intensidad: ${data.intensity}`, { sticky: true });
+    const fast = data.fastEntry ? ' ⚡' : '';
+    layer.bindTooltip(`<strong>${data.name}${fast}</strong> — Intensidad: ${data.intensity}`, { sticky: true });
     layer.on({
       click: () => updateCountryPanel(code),
       mouseover: e => { e.target.setStyle({ weight: 2, color: '#dbe7ff', fillOpacity: 0.95 }); },
       mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
     });
   } else {
-    const name = feature.properties.name || feature.properties.NAME || 'Pa\u00eds';
-    layer.bindTooltip(`<span style="color:#64748b">${name}</span> \u2014 Sin datos disponibles`, { sticky: true });
+    const name = feature.properties.name || feature.properties.NAME || 'País';
+    layer.bindTooltip(`<span style="color:#64748b">${name}</span> — Sin datos disponibles`, { sticky: true });
     layer.on({
       mouseover: e => { e.target.setStyle({ fillOpacity: 0.75, color: '#334155' }); },
       mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
@@ -104,7 +114,7 @@ function renderMarkers() {
       radius, color: '#dbe7ff', weight: 1.2,
       fillColor: getHeatColor(data.intensity), fillOpacity: 0.92
     }).bindTooltip(
-      `<strong>${data.name}</strong>${data.fastEntry ? ' \u26a1' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
+      `<strong>${data.name}</strong>${data.fastEntry ? ' ⚡' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
       { direction: 'top' }
     );
     m.on('click', () => updateCountryPanel(code));
@@ -114,10 +124,10 @@ function renderMarkers() {
 
 function getBadges(data) {
   const b = [];
-  if (data.jobs > 0) b.push(`\ud83d\udcbc ${data.jobs} empleo`);
-  if (data.freelance > 0) b.push(`\ud83d\udee0\ufe0f ${data.freelance} freelance`);
-  if (data.contract > 0) b.push(`\ud83d\udccb ${data.contract} contratos`);
-  if (data.fastEntry) b.push('\u26a1 Entrada r\u00e1pida');
+  if (data.jobs > 0) b.push(`💼 ${data.jobs} empleo`);
+  if (data.freelance > 0) b.push(`🛠️ ${data.freelance} freelance`);
+  if (data.contract > 0) b.push(`📋 ${data.contract} contratos`);
+  if (data.fastEntry) b.push('⚡ Entrada rápida');
   return b.join(' &bull; ');
 }
 
@@ -136,15 +146,15 @@ function updateCountryPanel(code) {
   if (!d) return;
   const el = document.getElementById('countryBox');
   if (!el) return;
-  const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">\u26a1 Entrada r\u00e1pida</span>' : '';
+  const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">⚡ Entrada rápida</span>' : '';
   const topRole = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
   const topRoleHtml = topRole
     ? `<div class="metric" style="background:rgba(22,163,74,.1);border-left:3px solid #16a34a;padding-left:8px;margin-bottom:6px">
-        <strong>\ud83d\udd25 Rol m\u00e1s demandado</strong>
+        <strong>🔥 Rol más demandado</strong>
         <span style="color:#4ade80">${topRole.role} (${topRole.demand}/100)</span>
         <span style="font-size:.75rem;color:var(--muted)">${topRole.note}</span>
        </div>` : '';
-  const tierLabels = { 1: '\ud83d\udfe2 Tier 1', 2: '\ud83d\udfe1 Tier 2', 3: '\ud83d� Tier 3', 4: '\ud83d� Tier 4' };
+  const tierLabels = { 1: '🟢 Tier 1', 2: '🟡 Tier 2', 3: '🔵 Tier 3', 4: '🔴 Tier 4' };
   const tierHtml = d.tier ? `<span class="tag" style="background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.25);color:#7dd3fc">${tierLabels[d.tier] || ''}</span>` : '';
   const rolesHtml = d.topRoles ? d.topRoles.map(r => `
     <div style="margin-bottom:7px">
@@ -164,10 +174,10 @@ function updateCountryPanel(code) {
       ${topRoleHtml}
       <div class="metric"><strong>Salario / tarifa</strong><span>${d.salary}</span></div>
       <div class="metric"><strong>Plataformas</strong><span>${d.platforms}</span></div>
-      <div class="metric"><strong>Se\u00f1ales activas</strong><span>${getBadges(d)}</span></div>
+      <div class="metric"><strong>Señales activas</strong><span>${getBadges(d)}</span></div>
     </div>
     <div style="margin-top:.8rem">
-      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">\ud83d\udcca DEMANDA POR ROL \u2014 ${d.name.toUpperCase()}</div>
+      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">📊 DEMANDA POR ROL — ${d.name.toUpperCase()}</div>
       ${rolesHtml}
     </div>
     <div class="tags" style="margin-top:.5rem">
@@ -189,7 +199,7 @@ function renderRanking() {
     return `
     <div class="rank" onclick="updateCountryPanel('${code}')" style="cursor:pointer">
       <div class="rank-num">${i + 1}</div>
-      <div><strong>${d.name}</strong>${d.fastEntry ? ' \u26a1' : ''}<small>${top ? '\ud83d\udd25 ' + top.role : d.contractType}</small></div>
+      <div><strong>${d.name}</strong>${d.fastEntry ? ' ⚡' : ''}<small>${top ? '🔥 ' + top.role : d.contractType}</small></div>
       <div class="score" style="color:${getHeatColor(d.intensity)}">${d.intensity}</div>
     </div>`;
   }).join('');
@@ -214,8 +224,8 @@ function renderFeed() {
 function renderKpis() {
   const vals = Object.values(dataset).filter(shouldShow);
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico'];
-  const africaRegions = ['\u00c1frica Austral','\u00c1frica Oriental','\u00c1frica Central','\u00c1frica Septentrional','\u00c1frica Subsahariana'];
+  const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico','Asia Central','Pacífico'];
+  const africaRegions = ['África Austral','África Oriental','África Central','África Septentrional','África Subsahariana','África Occidental','África del Norte'];
   set('kpiEurope',   vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
   set('kpiLatam',    vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
   set('kpiNorthAm',  vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
@@ -265,17 +275,21 @@ window.updateCountryPanel = updateCountryPanel;
 
 async function init() {
   try {
-    const [resMain, resExtra, resAfrica] = await Promise.all([
+    const [resMain, resExtra, resAfrica, resWorld] = await Promise.all([
       fetch('data/countries.json'),
       fetch('data/countries-extra.json'),
-      fetch('data/africa-new.json')
+      fetch('data/africa-new.json'),
+      fetch('data/world-expansion.json')
     ]);
     if (!resMain.ok)   throw new Error('countries.json HTTP '       + resMain.status);
     if (!resExtra.ok)  throw new Error('countries-extra.json HTTP ' + resExtra.status);
     if (!resAfrica.ok) throw new Error('africa-new.json HTTP '      + resAfrica.status);
+    if (!resWorld.ok)  throw new Error('world-expansion.json HTTP ' + resWorld.status);
 
-    const [main, extra, africaNew] = await Promise.all([resMain.json(), resExtra.json(), resAfrica.json()]);
-    dataset = { ...main, ...extra, ...africaNew };
+    const [main, extra, africaNew, worldExp] = await Promise.all([
+      resMain.json(), resExtra.json(), resAfrica.json(), resWorld.json()
+    ]);
+    dataset = { ...main, ...extra, ...africaNew, ...worldExp };
     window.dataset = dataset;
 
     map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
@@ -295,7 +309,7 @@ async function init() {
     console.error('[CyberRemote] init() failed:', err);
     const mapEl = document.getElementById('map');
     if (mapEl) mapEl.innerHTML =
-      `<div style="color:#f87171;padding:2rem;font-size:.85rem">\u26a0\ufe0f Error cargando datos: ${err.message}</div>`;
+      `<div style="color:#f87171;padding:2rem;font-size:.85rem">⚠️ Error cargando datos: ${err.message}</div>`;
   }
 }
 
