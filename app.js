@@ -20,11 +20,11 @@ const nameToCode = {
   'Egypt':'EG','Morocco':'MA','Algeria':'DZ','Tunisia':'TN',
   'South Africa':'ZA','Nigeria':'NG','Kenya':'KE',
   'India':'IN','Singapore':'SG','Japan':'JP',
-  'South Korea':'KR','Korea':'KR',"Korea, Republic of":'KR',
+  'South Korea':'KR','Korea':'KR','Korea, Republic of':'KR',
   'Philippines':'PH','Malaysia':'MY',
   'China':'CN','Indonesia':'ID','Vietnam':'VN','Thailand':'TH',
   'Russia':'RU','Kazakhstan':'KZ','Mongolia':'MN',
-  'Iran':'IR',"Iran (Islamic Republic of)":'IR',
+  'Iran':'IR','Iran (Islamic Republic of)':'IR',
   'Iraq':'IQ','Laos':'LA',"Lao People's Democratic Republic":'LA',
   'Cambodia':'KH',
   'Australia':'AU','New Zealand':'NZ'
@@ -87,6 +87,7 @@ function onEachFeature(feature, layer) {
 }
 
 function renderMarkers() {
+  if (!markerLayer) return;
   markerLayer.clearLayers();
   Object.entries(dataset).forEach(([code, data]) => {
     if (!shouldShow(data)) return;
@@ -125,6 +126,8 @@ function getRoleBar(demand) {
 function updateCountryPanel(code) {
   const d = dataset[code];
   if (!d) return;
+  const el = document.getElementById('countryBox');
+  if (!el) return;
   const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">⚡ Entrada rápida</span>' : '';
   const topRole = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
   const topRoleHtml = topRole
@@ -142,7 +145,7 @@ function updateCountryPanel(code) {
       <span style="font-size:.68rem;color:var(--muted)">${r.note}</span>
     </div>
   `).join('') : '';
-  document.getElementById('countryBox').innerHTML = `
+  el.innerHTML = `
     <div class="country-name">${d.name} <span style="font-size:.85rem;font-weight:400;color:var(--muted)">${d.region}</span></div>
     <div class="tags" style="margin-bottom:.5rem">${fast}<span class="tag">${d.contractType}</span></div>
     <div class="muted-text" style="margin-bottom:.6rem">${d.note}</div>
@@ -165,11 +168,13 @@ function updateCountryPanel(code) {
 }
 
 function renderRanking() {
+  const el = document.getElementById('ranking');
+  if (!el) return;
   const sorted = Object.entries(dataset)
     .filter(([, d]) => shouldShow(d))
     .sort((a, b) => b[1].intensity - a[1].intensity)
     .slice(0, 8);
-  document.getElementById('ranking').innerHTML = sorted.map(([code, d], i) => {
+  el.innerHTML = sorted.map(([code, d], i) => {
     const top = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
     return `
     <div class="rank" onclick="updateCountryPanel('${code}')" style="cursor:pointer">
@@ -181,12 +186,14 @@ function renderRanking() {
 }
 
 function renderFeed() {
+  const el = document.getElementById('feedList');
+  if (!el) return;
   const entries = Object.values(dataset)
     .filter(shouldShow)
     .flatMap(d => d.signals.map(s => ({ country: d.name, text: s, intensity: d.intensity, contract: d.contractType })))
     .sort((a, b) => b.intensity - a.intensity)
     .slice(0, 12);
-  document.getElementById('feedList').innerHTML = entries.map(e => `
+  el.innerHTML = entries.map(e => `
     <div class="feed-item">
       <strong>${e.country}</strong> <span class="tag" style="font-size:.7rem">${e.contract}</span>
       <span>${e.text}</span>
@@ -198,18 +205,18 @@ function renderKpis() {
   const vals = Object.values(dataset).filter(shouldShow);
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico'];
-  set('kpiEurope', vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
-  set('kpiLatam', vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
-  set('kpiNorthAm', vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
-  set('kpiAsia', vals.filter(v => asiaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
-  set('kpiFreelance', vals.reduce((a, b) => a + b.freelance, 0));
+  set('kpiEurope',   vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
+  set('kpiLatam',    vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
+  set('kpiNorthAm',  vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
+  set('kpiAsia',     vals.filter(v => asiaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
+  set('kpiFreelance',vals.reduce((a, b) => a + b.freelance, 0));
   set('kpiContract', vals.reduce((a, b) => a + (b.contract || 0), 0));
-  set('kpiJobs', vals.reduce((a, b) => a + b.jobs, 0));
-  set('kpiFast', vals.filter(v => v.fastEntry).length);
-  set('statJobs', vals.reduce((a, b) => a + b.jobs, 0));
-  set('statServices', vals.reduce((a, b) => a + b.freelance, 0));
-  set('statContracts', vals.reduce((a, b) => a + (b.contract || 0), 0));
-  set('statCountries', vals.length);
+  set('kpiJobs',     vals.reduce((a, b) => a + b.jobs, 0));
+  set('kpiFast',     vals.filter(v => v.fastEntry).length);
+  set('statJobs',    vals.reduce((a, b) => a + b.jobs, 0));
+  set('statServices',vals.reduce((a, b) => a + b.freelance, 0));
+  set('statContracts',vals.reduce((a, b) => a + (b.contract || 0), 0));
+  set('statCountries',vals.length);
 }
 
 function refreshAll() {
@@ -228,10 +235,15 @@ async function loadGeoJson() {
 
 function jumpRegion(region) {
   const views = {
-    World: [[18, 5], 2], Europe: [[52, 15], 4], LATAM: [[-12, -65], 3],
-    NorthAmerica: [[42, -100], 3], Asia: [[25, 90], 3],
-    Oceania: [[-25, 135], 4], Africa: [[5, 20], 3], MiddleEast: [[25, 45], 4],
-    Arctic: [[72, -42], 4]
+    World:        [[18, 5],    2],
+    Europe:       [[52, 15],   4],
+    LATAM:        [[-12, -65], 3],
+    NorthAmerica: [[42, -100], 3],
+    Asia:         [[25, 90],   3],
+    Oceania:      [[-25, 135], 4],
+    Africa:       [[5, 20],    3],
+    MiddleEast:   [[25, 45],   4],
+    Arctic:       [[72, -42],  4]
   };
   const v = views[region];
   if (v && map) map.setView(v[0], v[1]);
@@ -239,36 +251,48 @@ function jumpRegion(region) {
 window.jumpRegion = jumpRegion;
 window.updateCountryPanel = updateCountryPanel;
 
-document.querySelectorAll('.chip[data-filter]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.chip[data-filter]').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    activeFilter = btn.dataset.filter;
-    refreshAll();
-  });
-});
-
 async function init() {
-  // Cargar datasets en paralelo — countries.json (principal) + countries-extra.json (MN, LA, TH, KH)
-  const [resMain, resExtra] = await Promise.all([
-    fetch('data/countries.json'),
-    fetch('data/countries-extra.json')
-  ]);
-  const [main, extra] = await Promise.all([resMain.json(), resExtra.json()]);
-  dataset = { ...main, ...extra };
-  window.dataset = dataset;
+  try {
+    const [resMain, resExtra] = await Promise.all([
+      fetch('data/countries.json'),
+      fetch('data/countries-extra.json')
+    ]);
+    if (!resMain.ok)  throw new Error('countries.json HTTP ' + resMain.status);
+    if (!resExtra.ok) throw new Error('countries-extra.json HTTP ' + resExtra.status);
 
-  map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
-    subdomains: 'abcd', maxZoom: 19
-  }).addTo(map);
-  markerLayer = L.layerGroup().addTo(map);
-  await loadGeoJson();
-  refreshAll();
-  updateCountryPanel('US');
-  setTimeout(() => map.invalidateSize(), 300);
-  if (typeof renderCards === 'function') renderCards('all');
+    const [main, extra] = await Promise.all([resMain.json(), resExtra.json()]);
+    dataset = { ...main, ...extra };
+    window.dataset = dataset;
+
+    map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
+      subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+    markerLayer = L.layerGroup().addTo(map);
+
+    await loadGeoJson();
+    refreshAll();
+    updateCountryPanel('US');
+    setTimeout(() => map.invalidateSize(), 300);
+    if (typeof renderCards === 'function') renderCards('all');
+
+  } catch (err) {
+    console.error('[CyberRemote] init() failed:', err);
+    const mapEl = document.getElementById('map');
+    if (mapEl) mapEl.innerHTML =
+      `<div style="color:#f87171;padding:2rem;font-size:.85rem">⚠️ Error cargando datos: ${err.message}</div>`;
+  }
 }
 
-init();
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.chip[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chip[data-filter]').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      refreshAll();
+    });
+  });
+  init();
+});
