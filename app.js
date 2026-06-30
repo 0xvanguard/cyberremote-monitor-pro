@@ -28,14 +28,12 @@ const nameToCode = {
   'Iraq':'IQ','Laos':'LA',"Lao People's Democratic Republic":'LA',
   'Cambodia':'KH',
   'Australia':'AU','New Zealand':'NZ',
-  // Africa-new & LATAM
   'Paraguay':'PY','Namibia':'NA','Botswana':'BW','Zimbabwe':'ZW',
   'Mozambique':'MZ','Zambia':'ZM','Malawi':'MW','Angola':'AO',
   'Democratic Republic of the Congo':'CD','DR Congo':'CD','Congo, Dem. Rep.':'CD',
   'Gabon':'GA','Cameroon':'CM','Tanzania':'TZ','Uganda':'UG',
   'Ethiopia':'ET','Somalia':'SO','South Sudan':'SS',
   'Central African Republic':'CF','C. African Rep.':'CF',
-  // World expansion
   'Lesotho':'LS','Swaziland':'SZ','Eswatini':'SZ',
   'Madagascar':'MG','Fiji':'FJ','Papua New Guinea':'PG',
   'East Timor':'TL','Timor-Leste':'TL',
@@ -65,19 +63,18 @@ function getHeatColor(intensity) {
 function shouldShow(data) {
   if (!data) return false;
   if (activeFilter === 'all') return true;
-  if (activeFilter === 'jobs') return data.jobs > 0;
-  if (activeFilter === 'freelance') return data.freelance > 0;
+  if (activeFilter === 'jobs')     return data.jobs > 0;
+  if (activeFilter === 'freelance')return data.freelance > 0;
   if (activeFilter === 'contract') return data.contract > 0;
   if (activeFilter === 'training') return data.training > 0;
-  if (activeFilter === 'fast') return data.fastEntry === true;
+  if (activeFilter === 'fast')     return data.fastEntry === true;
   return true;
 }
 
 function styleFeature(feature) {
   const code = resolveCode(feature);
   const data = dataset[code];
-  const visible = shouldShow(data);
-  if (data && visible) {
+  if (data && shouldShow(data)) {
     return { fillColor: getHeatColor(data.intensity), weight: 0.8, opacity: 1, color: '#1e3a5f', fillOpacity: 0.78 };
   }
   return { fillColor: '#1a2535', weight: 0.5, opacity: 0.6, color: '#253550', fillOpacity: 0.55 };
@@ -90,16 +87,16 @@ function onEachFeature(feature, layer) {
     const fast = data.fastEntry ? ' ⚡' : '';
     layer.bindTooltip(`<strong>${data.name}${fast}</strong> — Intensidad: ${data.intensity}`, { sticky: true });
     layer.on({
-      click: () => updateCountryPanel(code),
+      click: () => window.updateCountryPanel(code),
       mouseover: e => { e.target.setStyle({ weight: 2, color: '#dbe7ff', fillOpacity: 0.95 }); },
-      mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
+      mouseout:  () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
     });
   } else {
     const name = feature.properties.name || feature.properties.NAME || 'País';
-    layer.bindTooltip(`<span style="color:#64748b">${name}</span> — Sin datos disponibles`, { sticky: true });
+    layer.bindTooltip(`<span style="color:#64748b">${name}</span> — Sin datos`, { sticky: true });
     layer.on({
       mouseover: e => { e.target.setStyle({ fillOpacity: 0.75, color: '#334155' }); },
-      mouseout: () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
+      mouseout:  () => { if (geoJsonLayer) geoJsonLayer.resetStyle(layer); }
     });
   }
 }
@@ -117,74 +114,18 @@ function renderMarkers() {
       `<strong>${data.name}</strong>${data.fastEntry ? ' ⚡' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
       { direction: 'top' }
     );
-    m.on('click', () => updateCountryPanel(code));
+    m.on('click', () => window.updateCountryPanel(code));
     markerLayer.addLayer(m);
   });
 }
 
 function getBadges(data) {
   const b = [];
-  if (data.jobs > 0) b.push(`💼 ${data.jobs} empleo`);
+  if (data.jobs > 0)      b.push(`💼 ${data.jobs} empleo`);
   if (data.freelance > 0) b.push(`🛠️ ${data.freelance} freelance`);
-  if (data.contract > 0) b.push(`📋 ${data.contract} contratos`);
-  if (data.fastEntry) b.push('⚡ Entrada rápida');
+  if (data.contract > 0)  b.push(`📋 ${data.contract} contratos`);
+  if (data.fastEntry)     b.push('⚡ Entrada rápida');
   return b.join(' &bull; ');
-}
-
-function getRoleBar(demand) {
-  const color = demand >= 85 ? '#16a34a' : demand >= 70 ? '#4ade80' : demand >= 55 ? '#f59e0b' : demand >= 35 ? '#0ea5e9' : '#6366f1';
-  return `<div style="display:flex;align-items:center;gap:6px;margin:2px 0">
-    <div style="flex:1;background:#1e3a5f;border-radius:4px;height:6px;overflow:hidden">
-      <div style="width:${demand}%;height:100%;background:${color};border-radius:4px"></div>
-    </div>
-    <span style="font-size:.72rem;color:${color};min-width:26px;text-align:right">${demand}</span>
-  </div>`;
-}
-
-function updateCountryPanel(code) {
-  const d = dataset[code];
-  if (!d) return;
-  const el = document.getElementById('countryBox');
-  if (!el) return;
-  const fast = d.fastEntry ? '<span class="tag" style="background:#f59e0b;color:#000">⚡ Entrada rápida</span>' : '';
-  const topRole = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
-  const topRoleHtml = topRole
-    ? `<div class="metric" style="background:rgba(22,163,74,.1);border-left:3px solid #16a34a;padding-left:8px;margin-bottom:6px">
-        <strong>🔥 Rol más demandado</strong>
-        <span style="color:#4ade80">${topRole.role} (${topRole.demand}/100)</span>
-        <span style="font-size:.75rem;color:var(--muted)">${topRole.note}</span>
-       </div>` : '';
-  const tierLabels = { 1: '🟢 Tier 1', 2: '🟡 Tier 2', 3: '🔵 Tier 3', 4: '🔴 Tier 4' };
-  const tierHtml = d.tier ? `<span class="tag" style="background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.25);color:#7dd3fc">${tierLabels[d.tier] || ''}</span>` : '';
-  const rolesHtml = d.topRoles ? d.topRoles.map(r => `
-    <div style="margin-bottom:7px">
-      <div style="display:flex;justify-content:space-between">
-        <span style="font-size:.78rem;color:#dbe7ff">${r.role}</span>
-      </div>
-      ${getRoleBar(r.demand)}
-      <span style="font-size:.68rem;color:var(--muted)">${r.note}</span>
-    </div>
-  `).join('') : '';
-  el.innerHTML = `
-    <div class="country-name">${d.name} <span style="font-size:.85rem;font-weight:400;color:var(--muted)">${d.region}</span></div>
-    <div class="tags" style="margin-bottom:.5rem">${fast}${tierHtml}<span class="tag">${d.contractType}</span></div>
-    <div class="muted-text" style="margin-bottom:.6rem">${d.note}</div>
-    <div class="metrics">
-      <div class="metric"><strong>Intensidad heatmap</strong><span style="color:${getHeatColor(d.intensity)}">${d.intensity} / 100</span></div>
-      ${topRoleHtml}
-      <div class="metric"><strong>Salario / tarifa</strong><span>${d.salary}</span></div>
-      <div class="metric"><strong>Plataformas</strong><span>${d.platforms}</span></div>
-      <div class="metric"><strong>Señales activas</strong><span>${getBadges(d)}</span></div>
-    </div>
-    <div style="margin-top:.8rem">
-      <div class="side-title" style="font-size:.72rem;margin-bottom:.5rem">📊 DEMANDA POR ROL — ${d.name.toUpperCase()}</div>
-      ${rolesHtml}
-    </div>
-    <div class="tags" style="margin-top:.5rem">
-      <span class="tag">${d.region}</span>
-      ${d.signals.map(s => `<span class="tag">${s}</span>`).join('')}
-    </div>
-  `;
 }
 
 function renderRanking() {
@@ -197,10 +138,14 @@ function renderRanking() {
   el.innerHTML = sorted.map(([code, d], i) => {
     const top = d.topRoles ? d.topRoles.reduce((a, b) => a.demand > b.demand ? a : b) : null;
     return `
-    <div class="rank" onclick="updateCountryPanel('${code}')" style="cursor:pointer">
-      <div class="rank-num">${i + 1}</div>
-      <div><strong>${d.name}</strong>${d.fastEntry ? ' ⚡' : ''}<small>${top ? '🔥 ' + top.role : d.contractType}</small></div>
-      <div class="score" style="color:${getHeatColor(d.intensity)}">${d.intensity}</div>
+    <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem .2rem;cursor:pointer;border-bottom:1px solid #0f2540"
+         onclick="updateCountryPanel('${code}')">
+      <span style="font-size:.75rem;font-weight:800;color:#334155;min-width:16px">${i+1}</span>
+      <div style="flex:1">
+        <div style="font-size:.8rem;font-weight:700;color:#dbe7ff">${d.name}${d.fastEntry ? ' ⚡' : ''}</div>
+        <div style="font-size:.65rem;color:#475569">${top ? '🔥 ' + top.role : d.contractType}</div>
+      </div>
+      <span style="font-size:.82rem;font-weight:800;color:${getHeatColor(d.intensity)}">${d.intensity}</span>
     </div>`;
   }).join('');
 }
@@ -224,13 +169,13 @@ function renderFeed() {
 function renderKpis() {
   const vals = Object.values(dataset).filter(shouldShow);
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  const asiaRegions = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico','Asia Central','Pacífico'];
-  const africaRegions = ['África Austral','África Oriental','África Central','África Septentrional','África Subsahariana','África Occidental','África del Norte'];
+  const asiaR = ['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Sudeste Asiatico','Asia Central','Pacífico'];
+  const africaR= ['África Austral','África Oriental','África Central','África Septentrional','África Subsahariana','África Occidental','África del Norte'];
   set('kpiEurope',   vals.filter(v => v.region === 'Europe').reduce((a, b) => a + b.jobs, 0));
   set('kpiLatam',    vals.filter(v => v.region === 'LATAM').reduce((a, b) => a + b.jobs, 0));
   set('kpiNorthAm',  vals.filter(v => v.region === 'North America').reduce((a, b) => a + b.jobs, 0));
-  set('kpiAsia',     vals.filter(v => asiaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
-  set('kpiAfrica',   vals.filter(v => africaRegions.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
+  set('kpiAsia',     vals.filter(v => asiaR.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
+  set('kpiAfrica',   vals.filter(v => africaR.includes(v.region)).reduce((a, b) => a + b.jobs, 0));
   set('kpiFreelance',vals.reduce((a, b) => a + b.freelance, 0));
   set('kpiContract', vals.reduce((a, b) => a + (b.contract || 0), 0));
   set('kpiJobs',     vals.reduce((a, b) => a + b.jobs, 0));
@@ -247,6 +192,7 @@ function refreshAll() {
   renderRanking();
   renderFeed();
   renderKpis();
+  if (typeof renderCards === 'function') renderCards('all');
 }
 
 async function loadGeoJson() {
@@ -271,28 +217,27 @@ function jumpRegion(region) {
   if (v && map) map.setView(v[0], v[1]);
 }
 window.jumpRegion = jumpRegion;
-window.updateCountryPanel = updateCountryPanel;
 
 async function init() {
   try {
-    const [resMain, resExtra, resAfrica, resWorld] = await Promise.all([
+    const [r1, r2, r3, r4] = await Promise.all([
       fetch('data/countries.json'),
       fetch('data/countries-extra.json'),
       fetch('data/africa-new.json'),
       fetch('data/world-expansion.json')
     ]);
-    if (!resMain.ok)   throw new Error('countries.json HTTP '       + resMain.status);
-    if (!resExtra.ok)  throw new Error('countries-extra.json HTTP ' + resExtra.status);
-    if (!resAfrica.ok) throw new Error('africa-new.json HTTP '      + resAfrica.status);
-    if (!resWorld.ok)  throw new Error('world-expansion.json HTTP ' + resWorld.status);
+    if (!r1.ok) throw new Error('countries.json ' + r1.status);
+    if (!r2.ok) throw new Error('countries-extra.json ' + r2.status);
+    if (!r3.ok) throw new Error('africa-new.json ' + r3.status);
+    if (!r4.ok) throw new Error('world-expansion.json ' + r4.status);
 
-    const [main, extra, africaNew, worldExp] = await Promise.all([
-      resMain.json(), resExtra.json(), resAfrica.json(), resWorld.json()
-    ]);
+    const [main, extra, africaNew, worldExp] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json()]);
     dataset = { ...main, ...extra, ...africaNew, ...worldExp };
     window.dataset = dataset;
 
-    map = L.map('map', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
+    // Init 2D map — attach to #map2d
+    map = L.map('map2d', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
+    window._leafletMap = map;
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
       subdomains: 'abcd', maxZoom: 19
@@ -301,15 +246,13 @@ async function init() {
 
     await loadGeoJson();
     refreshAll();
-    updateCountryPanel('US');
+    window.updateCountryPanel('US');
     setTimeout(() => map.invalidateSize(), 300);
-    if (typeof renderCards === 'function') renderCards('all');
 
   } catch (err) {
     console.error('[CyberRemote] init() failed:', err);
-    const mapEl = document.getElementById('map');
-    if (mapEl) mapEl.innerHTML =
-      `<div style="color:#f87171;padding:2rem;font-size:.85rem">⚠️ Error cargando datos: ${err.message}</div>`;
+    const el = document.getElementById('map2d');
+    if (el) el.innerHTML = `<div style="color:#f87171;padding:2rem;font-size:.85rem">⚠️ Error: ${err.message}</div>`;
   }
 }
 

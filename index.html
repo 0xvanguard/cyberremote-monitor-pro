@@ -8,503 +8,302 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    #map { height: 540px; width: 100%; background: #101e30; border-radius: 12px; }
-
-    /* ── GLOBE 3D SECTION ── */
-    .globe-section {
-      background: #020817;
-      padding: 0;
-      position: relative;
-      overflow: hidden;
-      border-top: 1px solid #0ea5e920;
-      border-bottom: 1px solid #0ea5e920;
+    /* ─── UNIFIED MAP SHELL ─────────────────────────────── */
+    .umap-section { background:#020817; padding:0; position:relative; }
+    .umap-header {
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:10px;
+      padding:1.4rem 1.6rem 0;
     }
-    .globe-section-inner {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      min-height: 680px;
-      gap: 0;
+    .umap-title { font-size:1.1rem; font-weight:800; color:#dbe7ff; margin:0; }
+    .umap-sub   { font-size:.72rem; color:#475569; margin:.2rem 0 0; }
+    /* toggle pill */
+    .view-toggle {
+      display:flex; background:#030d1a; border:1px solid #1e3a5f;
+      border-radius:999px; overflow:hidden;
     }
-    @media(max-width:900px){
-      .globe-section-inner { grid-template-columns: 1fr; }
-      .globe-panel-right { border-left: none !important; border-top: 1px solid #1e3a5f; }
+    .vt-btn {
+      padding:.35rem 1.1rem; font-size:.72rem; font-weight:700; cursor:pointer;
+      border:none; background:transparent; color:#475569; transition:all .18s;
+      white-space:nowrap;
     }
+    .vt-btn.active { background:#0ea5e9; color:#000; }
+    /* wrapper that swaps 2D <-> 3D */
+    .umap-stage {
+      display:grid; grid-template-columns:1fr 360px; min-height:640px;
+    }
+    @media(max-width:960px){ .umap-stage{ grid-template-columns:1fr; } }
+    /* 2D canvas */
+    #map2d {
+      height:640px; width:100%;
+      background:#101e30;
+      display:block;
+    }
+    /* 3D canvas */
     #globeCanvas {
-      width: 100%;
-      height: 680px;
-      display: block;
-      cursor: grab;
+      width:100%; height:640px;
+      display:none;   /* hidden by default */
+      cursor:grab;
     }
-    #globeCanvas:active { cursor: grabbing; }
-    .globe-panel-right {
-      border-left: 1px solid #1e3a5f;
-      background: #030d1a;
-      padding: 2rem 1.6rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      overflow-y: auto;
-      max-height: 680px;
+    #globeCanvas:active{ cursor:grabbing; }
+    /* Right info panel — shared by 2D & 3D */
+    .umap-panel {
+      border-left:1px solid #1e3a5f;
+      background:#030d1a;
+      padding:1.6rem 1.4rem;
+      display:flex; flex-direction:column; gap:1rem;
+      overflow-y:auto; max-height:640px;
     }
-    .globe-title {
-      font-size: .68rem;
-      font-weight: 700;
-      color: #0ea5e9;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      margin-bottom: .3rem;
+    .up-section-title {
+      font-size:.62rem; font-weight:700; color:#0ea5e9;
+      text-transform:uppercase; letter-spacing:.1em; margin-bottom:.4rem;
     }
-    .globe-country-name {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #dbe7ff;
-      line-height: 1.2;
+    .up-country-name {
+      font-size:1.3rem; font-weight:800; color:#dbe7ff; line-height:1.2;
     }
-    .globe-kpi-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .7rem;
+    .up-region { font-size:.73rem; color:#475569; margin-top:.1rem; }
+    .up-kpi-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:.6rem;
     }
-    .globe-kpi {
-      background: #0d1b2a;
-      border: 1px solid #1e3a5f;
-      border-radius: 10px;
-      padding: .8rem 1rem;
+    .up-kpi {
+      background:#0d1b2a; border:1px solid #1e3a5f; border-radius:9px;
+      padding:.7rem .9rem;
     }
-    .globe-kpi .gk-lbl { font-size: .65rem; color: #64748b; text-transform: uppercase; letter-spacing: .07em; }
-    .globe-kpi .gk-val { font-size: 1.5rem; font-weight: 800; color: #dbe7ff; }
-    .globe-role-list { display: flex; flex-direction: column; gap: 6px; }
-    .globe-role-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .up-kpi .lbl { font-size:.62rem; color:#64748b; text-transform:uppercase; letter-spacing:.06em; }
+    .up-kpi .val { font-size:1.4rem; font-weight:800; color:#dbe7ff; line-height:1.1; }
+    .up-role-list { display:flex; flex-direction:column; gap:6px; }
+    .up-role {
+      display:flex; flex-direction:column; gap:2px;
     }
-    .globe-role-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .up-role-top { display:flex; justify-content:space-between; align-items:center; }
+    .up-role-name { font-size:.76rem; color:#dbe7ff; }
+    .up-role-track {
+      background:#1e3a5f; border-radius:4px; height:5px; overflow:hidden;
     }
-    .globe-role-name { font-size: .74rem; color: #dbe7ff; }
-    .globe-role-bar-track {
-      background: #1e3a5f;
-      border-radius: 4px;
-      height: 5px;
-      overflow: hidden;
+    .up-role-fill { height:100%; border-radius:4px; }
+    .up-role-note { font-size:.64rem; color:#475569; }
+    .up-tags { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .up-tag {
+      background:#0d1b2a; border:1px solid #1e3a5f; color:#94a3b8;
+      font-size:.64rem; padding:.17rem .5rem; border-radius:999px;
     }
-    .globe-role-bar-fill { height: 100%; border-radius: 4px; }
-    .globe-role-note { font-size: .64rem; color: #475569; }
-    .globe-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
-    .globe-tag {
-      background: #0d1b2a;
-      border: 1px solid #1e3a5f;
-      color: #94a3b8;
-      font-size: .65rem;
-      padding: .18rem .55rem;
-      border-radius: 999px;
+    .up-note { font-size:.71rem; color:#334155; line-height:1.5; }
+    .up-intensity-bar {
+      height:7px; border-radius:5px; background:#1e3a5f; overflow:hidden; margin-top:.2rem;
     }
-    .globe-hint {
-      font-size: .7rem;
-      color: #1e3a5f;
-      text-align: center;
-      padding-top: .5rem;
-      letter-spacing: .04em;
+    .up-intensity-fill { height:100%; border-radius:5px; transition:width .4s ease; }
+    /* city sub-panel */
+    #cityPanel {
+      border-top:1px solid #1e3a5f;
+      padding-top:.8rem;
+      display:none;
     }
-    .globe-intensity-bar {
-      height: 8px;
-      border-radius: 6px;
-      background: #1e3a5f;
-      overflow: hidden;
-      margin-top: .25rem;
+    .city-list { display:flex; flex-direction:column; gap:4px; max-height:200px; overflow-y:auto; }
+    .city-row {
+      display:flex; align-items:center; gap:.5rem;
+      padding:4px 8px; border-radius:7px; cursor:pointer;
+      transition:background .15s;
     }
-    .globe-intensity-fill {
-      height: 100%;
-      border-radius: 6px;
-      transition: width .5s ease;
+    .city-row:hover { background:#0ea5e910; }
+    .city-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .city-name { font-size:.74rem; color:#dbe7ff; flex:1; }
+    .city-score { font-size:.7rem; font-weight:700; min-width:24px; text-align:right; }
+    /* toolbar */
+    .umap-toolbar {
+      display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+      padding:.75rem 1.6rem; border-top:1px solid #1e3a5f20; background:#020817;
     }
-    .globe-legend {
-      display: flex;
-      flex-direction: column;
-      gap: .4rem;
+    /* globe controls overlay */
+    .globe-controls-overlay {
+      display:none;
+      gap:.5rem; flex-wrap:wrap;
     }
-    .globe-legend-item {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      font-size: .69rem;
-      color: #64748b;
+    .globe-controls-overlay.visible { display:flex; }
+    .gc-btn {
+      background:#0d1b2a; border:1px solid #1e3a5f; color:#94a3b8;
+      font-size:.7rem; padding:.3rem .75rem; border-radius:999px; cursor:pointer; transition:all .2s;
     }
-    .globe-legend-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
+    .gc-btn:hover { background:#1e3a5f; color:#dbe7ff; border-color:#0ea5e9; }
+    .gc-btn.active { background:#0ea5e9; color:#000; border-color:#0ea5e9; font-weight:700; }
+    /* legend bar */
+    .umap-legend {
+      display:flex; gap:1rem; flex-wrap:wrap; align-items:center;
+      padding:.55rem 1.6rem; background:#020817; border-bottom:1px solid #1e3a5f20;
     }
-    .globe-controls {
-      display: flex;
-      gap: .5rem;
-      flex-wrap: wrap;
+    .ul-item { display:flex; align-items:center; gap:.35rem; font-size:.65rem; color:#475569; }
+    .ul-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    /* Colombia section toggle */
+    .co-toggle-row {
+      display:flex; gap:.5rem; flex-wrap:wrap;
+      padding:.6rem 1.6rem; border-top:1px solid #1e3a5f20; background:#020817;
     }
-    .globe-btn {
-      background: #0d1b2a;
-      border: 1px solid #1e3a5f;
-      color: #94a3b8;
-      font-size: .7rem;
-      padding: .3rem .75rem;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all .2s;
+    .co-toggle-btn {
+      background:#030d1a; border:1px solid #1e3a5f; color:#64748b;
+      font-size:.7rem; font-weight:600; padding:.3rem .85rem; border-radius:999px;
+      cursor:pointer; transition:all .2s;
     }
-    .globe-btn:hover { background: #1e3a5f; color: #dbe7ff; border-color: #0ea5e9; }
-    .globe-btn.active { background: #0ea5e9; color: #000; border-color: #0ea5e9; font-weight: 700; }
+    .co-toggle-btn:hover, .co-toggle-btn.active {
+      background:#4ade8020; color:#4ade80; border-color:#4ade8060;
+    }
 
-    /* ── REGIONAL INTELLIGENCE BOARD ── */
-    .rib { background:#070f1a; padding:3.5rem 0 4rem; border-top:1px solid #1e3a5f; }
-    .rib-header { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap; }
-    .rib-header h2 { font-size:1.45rem; color:#dbe7ff; margin:0; }
-    .rib-badge { background:#1e3a5f; color:#0ea5e9; font-size:.7rem; font-weight:700;
-      padding:.22rem .6rem; border-radius:999px; letter-spacing:.08em; text-transform:uppercase; }
-    .rib-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2.5rem; }
-    @media(max-width:700px){ .rib-kpis{ grid-template-columns:repeat(2,1fr); } }
-    .rib-kpi { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:12px;
-      padding:1.1rem 1.3rem; display:flex; flex-direction:column; gap:.2rem; }
-    .rib-kpi .rk-lbl { font-size:.7rem; color:#64748b; text-transform:uppercase; letter-spacing:.07em; }
-    .rib-kpi .rk-val { font-size:1.9rem; font-weight:800; color:#dbe7ff; line-height:1.1; }
-    .rib-kpi .rk-sub { font-size:.7rem; color:#4ade80; }
-    .rib-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; margin-bottom:1.4rem; }
-    @media(max-width:900px){ .rib-grid2{ grid-template-columns:1fr; } }
-    .rib-card { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:14px; padding:1.4rem 1.5rem; }
-    .rib-card-title { font-size:.72rem; font-weight:700; color:#64748b;
-      text-transform:uppercase; letter-spacing:.09em; margin-bottom:1.1rem; }
-    .ibar { display:flex; align-items:center; gap:.65rem; margin-bottom:.6rem; }
-    .ibar-lbl { font-size:.74rem; color:#a0aec0; min-width:128px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .ibar-track { flex:1; background:#1e3a5f; border-radius:6px; height:8px; overflow:hidden; }
-    .ibar-fill  { height:100%; border-radius:6px; }
-    .ibar-val   { font-size:.74rem; color:#dbe7ff; min-width:36px; text-align:right; font-weight:700; }
-    .ibar-sub   { font-size:.67rem; color:#64748b; min-width:56px; text-align:right; }
-    .sbar { display:flex; align-items:center; gap:.65rem; margin-bottom:.55rem; }
-    .sbar-lbl { font-size:.73rem; color:#a0aec0; min-width:116px; }
-    .sbar-track { flex:1; display:flex; border-radius:6px; overflow:hidden; height:11px; }
-    .sbar-seg   { height:100%; }
-    .sbar-tot   { font-size:.73rem; color:#dbe7ff; min-width:30px; text-align:right; font-weight:700; }
-    .rib-legend { display:flex; gap:.85rem; flex-wrap:wrap; margin-bottom:1rem; }
-    .leg { display:flex; align-items:center; gap:.3rem; font-size:.7rem; color:#64748b; }
-    .leg-dot { width:9px; height:9px; border-radius:50%; }
-    .rib-tabs { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
-    .rib-tab { background:#0d1b2a; border:1px solid #1e3a5f; color:#64748b;
-      font-size:.74rem; font-weight:600; padding:.3rem .85rem; border-radius:999px;
-      cursor:pointer; transition:all .2s; white-space:nowrap; }
-    .rib-tab.active, .rib-tab:hover { background:#1e3a5f; color:#dbe7ff; border-color:#0ea5e9; }
-    .rib-countries { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:1rem; }
-    .country-card { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:12px;
-      padding:1rem 1.1rem; cursor:pointer; transition:border-color .2s; }
-    .country-card:hover { border-color:#0ea5e9; }
-    .cc-name { font-size:.88rem; font-weight:700; color:#dbe7ff; margin-bottom:.2rem; }
-    .cc-int  { font-size:.72rem; color:#64748b; margin-bottom:.5rem; }
-    .cc-bars { display:flex; flex-direction:column; gap:3px; }
-    .cc-bar  { display:flex; align-items:center; gap:.4rem; }
-    .cc-bar-lbl { font-size:.65rem; color:#64748b; min-width:58px; }
-    .cc-bar-track { flex:1; background:#1e3a5f; border-radius:4px; height:5px; overflow:hidden; }
-    .cc-bar-fill  { height:100%; border-radius:4px; }
-    .cc-bar-val   { font-size:.65rem; color:#94a3b8; min-width:18px; text-align:right; }
-    .cc-footer { display:flex; justify-content:space-between; align-items:center; margin-top:.55rem; }
-    .cc-salary { font-size:.66rem; color:#4ade80; }
-    .cc-fast   { font-size:.66rem; color:#f59e0b; }
-    .cc-pill   { display:inline-block; padding:.1rem .45rem; border-radius:999px;
-      font-size:.65rem; font-weight:700; }
-    .rib-table-wrap { overflow-x:auto; }
-    .rib-table { width:100%; border-collapse:collapse; font-size:.79rem; }
-    .rib-table thead th { background:#070f1a; color:#64748b; font-size:.68rem;
-      text-transform:uppercase; letter-spacing:.08em; padding:.55rem .9rem;
-      border-bottom:1px solid #1e3a5f; text-align:left; white-space:nowrap; }
-    .rib-table tbody tr { border-bottom:1px solid #0f2540; transition:background .15s; }
-    .rib-table tbody tr:hover { background:#0d1b2a; }
-    .rib-table tbody td { padding:.6rem .9rem; color:#dbe7ff; vertical-align:middle; white-space:nowrap; }
-    .ipill { display:inline-block; padding:.18rem .6rem; border-radius:999px; font-size:.7rem; font-weight:800; }
-    .td-lead { color:#4ade80; font-size:.76rem; }
-    .td-num  { color:#94a3b8; }
-    .td-f    { color:#f59e0b; font-size:.7rem; font-weight:700; }
-
-    /* ════════════════════════════════════════════
-       🇨🇴 COLOMBIA DEEP-DRILL — HACKER DARK
-    ════════════════════════════════════════════ */
-    #colombia {
-      background: #020917;
-      border-top: 1px solid #0ea5e915;
-      border-bottom: 1px solid #0ea5e915;
-      padding: 3.5rem 0 4rem;
-      position: relative;
+    /* ─── COLOMBIA EMBEDDED MAP ────────────────────────── */
+    #colombiaSub {
+      display:none;
+      border-top:1px solid #1e3a5f30;
+      background:#020917;
+      padding:2rem 0 3rem;
     }
-    #colombia::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #0ea5e940, #4ade8030, #f59e0b20, transparent);
-    }
+    #colombiaSub.open { display:block; }
     .co-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 1.8rem;
+      display:flex; align-items:flex-start; justify-content:space-between;
+      flex-wrap:wrap; gap:12px; margin-bottom:1.4rem;
     }
     .co-eyebrow {
-      font-size: .62rem;
-      font-weight: 700;
-      color: #0ea5e9;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      margin-bottom: .35rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-size:.62rem; font-weight:700; color:#0ea5e9;
+      text-transform:uppercase; letter-spacing:.12em;
+      margin-bottom:.35rem; display:flex; align-items:center; gap:6px;
     }
     .co-eyebrow::before {
-      content: '';
-      display: inline-block;
-      width: 6px; height: 6px;
-      background: #0ea5e9;
-      border-radius: 50%;
-      animation: coPing 2s infinite;
+      content:''; display:inline-block; width:6px; height:6px;
+      background:#0ea5e9; border-radius:50%; animation:coPing 2s infinite;
     }
     @keyframes coPing {
-      0%,100% { opacity:1; box-shadow:0 0 0 0 #0ea5e960; }
-      50% { opacity:.6; box-shadow:0 0 0 5px transparent; }
+      0%,100%{opacity:1;box-shadow:0 0 0 0 #0ea5e960;}
+      50%{opacity:.6;box-shadow:0 0 0 5px transparent;}
     }
-    .co-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #dbe7ff;
-      margin: 0 0 .3rem;
-      line-height: 1.2;
-    }
-    .co-subtitle {
-      font-size: .78rem;
-      color: #334155;
-    }
-    .co-status-badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .co-title { font-size:1.4rem; font-weight:800; color:#dbe7ff; margin:0 0 .25rem; line-height:1.2; }
+    .co-subtitle { font-size:.76rem; color:#334155; }
+    .co-badges { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
     .co-badge {
-      font-size: .65rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid;
-      letter-spacing: .04em;
+      font-size:.64rem; font-weight:700; padding:4px 10px;
+      border-radius:999px; border:1px solid; letter-spacing:.04em;
     }
-    /* KPI strip */
     .co-kpi-strip {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 10px;
-      margin-bottom: 1.6rem;
+      display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:1.4rem;
     }
     @media(max-width:900px){ .co-kpi-strip{ grid-template-columns:repeat(3,1fr); } }
     @media(max-width:500px){ .co-kpi-strip{ grid-template-columns:repeat(2,1fr); } }
     .co-kpi-box {
-      background: #030d1a;
-      border: 1px solid #1e3a5f;
-      border-radius: 10px;
-      padding: .9rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      transition: border-color .2s;
+      background:#030d1a; border:1px solid #1e3a5f; border-radius:10px;
+      padding:.85rem 1rem; display:flex; flex-direction:column; gap:3px;
     }
-    .co-kpi-box:hover { border-color: #0ea5e960; }
-    .co-kpi-val {
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: #dbe7ff;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
+    .co-kpi-val { font-size:1.6rem; font-weight:900; color:#dbe7ff; line-height:1; }
+    .co-kpi-lbl { font-size:.6rem; color:#475569; text-transform:uppercase; letter-spacing:.07em; }
+    .co-legend {
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding:.55rem 1rem; background:#030d1a;
+      border:1px solid #1e3a5f; border-radius:10px; margin-bottom:1rem;
     }
-    .co-kpi-lbl {
-      font-size: .6rem;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-    }
-    /* Controls bar */
+    .co-leg-item { display:flex; align-items:center; gap:5px; font-size:.64rem; color:#475569; }
+    .co-leg-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
     .co-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-      padding: .7rem 1rem;
-      background: #030d1a;
-      border: 1px solid #1e3a5f;
-      border-radius: 10px;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      margin-bottom:1rem; padding:.7rem 1rem;
+      background:#030d1a; border:1px solid #1e3a5f; border-radius:10px;
     }
-    .co-ctrl-label {
-      font-size: .65rem;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      white-space: nowrap;
-    }
+    .co-ctrl-label { font-size:.64rem; color:#475569; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
     .co-view-btn {
-      background: #0d1b2a;
-      color: #64748b;
-      border: 1px solid #1e3a5f;
-      border-radius: 8px;
-      padding: 5px 14px;
-      font-size: .72rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .15s;
-      white-space: nowrap;
+      background:#0d1b2a; color:#64748b; border:1px solid #1e3a5f;
+      border-radius:8px; padding:5px 14px; font-size:.72rem; font-weight:600;
+      cursor:pointer; transition:all .15s; white-space:nowrap;
     }
-    .co-view-btn:hover { background: #1e3a5f; color: #dbe7ff; }
-    .co-view-btn.active { background: #0ea5e920; color: #0ea5e9; border-color: #0ea5e9; }
-    .co-divider {
-      width: 1px; height: 20px;
-      background: #1e3a5f;
-      flex-shrink: 0;
-    }
-    .co-nav-btn {
-      background: transparent;
-      color: #334155;
-      border: 1px solid #1e3a5f30;
-      border-radius: 999px;
-      padding: 3px 10px;
-      font-size: .67rem;
-      cursor: pointer;
-      transition: all .15s;
-      white-space: nowrap;
-    }
-    .co-nav-btn:hover { background: #0ea5e910; color: #0ea5e9; border-color: #0ea5e940; }
-    /* Map + panel grid */
+    .co-view-btn:hover { background:#1e3a5f; color:#dbe7ff; }
+    .co-view-btn.active { background:#0ea5e920; color:#0ea5e9; border-color:#0ea5e9; }
     .co-main-grid {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 14px;
-      margin-bottom: 1.4rem;
+      display:grid; grid-template-columns:1fr 310px; gap:14px;
     }
     @media(max-width:900px){ .co-main-grid{ grid-template-columns:1fr; } }
     #col-map {
-      height: 580px;
-      border-radius: 12px;
-      border: 1px solid #1e3a5f;
-      background: #030d1a;
-      position: relative;
-      overflow: hidden;
+      height:560px; border-radius:12px;
+      border:1px solid #1e3a5f; background:#030d1a;
     }
-    /* Leaflet overrides for hacker feel */
-    #col-map .leaflet-control-zoom a {
-      background: #030d1a !important;
-      color: #0ea5e9 !important;
-      border-color: #1e3a5f !important;
+    #col-map .leaflet-control-zoom a{
+      background:#030d1a!important;color:#0ea5e9!important;border-color:#1e3a5f!important;
     }
-    #col-map .leaflet-control-zoom a:hover {
-      background: #1e3a5f !important;
+    #col-map .leaflet-popup-content-wrapper{
+      background:#030d1a!important;border:1px solid #1e3a5f!important;
+      color:#dbe7ff!important;border-radius:10px!important;
     }
-    #col-map .leaflet-popup-content-wrapper {
-      background: #030d1a !important;
-      border: 1px solid #1e3a5f !important;
-      color: #dbe7ff !important;
-      border-radius: 10px !important;
-      box-shadow: 0 4px 24px #00000080 !important;
-    }
-    #col-map .leaflet-popup-tip { background: #030d1a !important; }
-    /* Side panel */
-    .co-side {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    #col-map .leaflet-popup-tip{background:#030d1a!important;}
+    .co-side { display:flex; flex-direction:column; gap:10px; }
     .co-panel-card {
-      background: #030d1a;
-      border: 1px solid #1e3a5f;
-      border-radius: 12px;
-      padding: 14px;
+      background:#030d1a; border:1px solid #1e3a5f;
+      border-radius:12px; padding:14px;
     }
-    .co-panel-card.scrollable {
-      overflow-y: auto;
-      max-height: 360px;
-    }
+    .co-panel-card.scrollable { overflow-y:auto; max-height:340px; }
     .co-panel-title {
-      font-size: .62rem;
-      font-weight: 700;
-      color: #334155;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      margin-bottom: 10px;
-    }
-    /* Ranking items */
-    .co-rank-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .co-rank-row:hover { background: #0ea5e908; }
-    .co-rank-num {
-      font-size: .78rem;
-      font-weight: 800;
-      min-width: 18px;
-      text-align: center;
-    }
-    .co-rank-body { flex: 1; display: flex; flex-direction: column; }
-    .co-rank-name { font-size: .8rem; font-weight: 700; color: #dbe7ff; }
-    .co-rank-sub  { font-size: .65rem; color: #475569; }
-    /* Legend */
-    .co-legend {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: .6rem 1rem;
-      background: #030d1a;
-      border: 1px solid #1e3a5f;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-    }
-    .co-leg-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: .65rem;
-      color: #475569;
-    }
-    .co-leg-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    /* Scan line overlay */
-    .co-map-wrap {
-      position: relative;
+      font-size:.62rem; font-weight:700; color:#334155;
+      text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;
     }
     .co-scan-badge {
-      position: absolute;
-      top: 10px; left: 10px;
-      z-index: 500;
-      background: rgba(2,9,23,.82);
-      border: 1px solid #1e3a5f;
-      border-radius: 8px;
-      padding: 6px 12px;
-      backdrop-filter: blur(6px);
-      pointer-events: none;
+      position:absolute; top:10px; left:10px; z-index:500;
+      background:rgba(2,9,23,.82); border:1px solid #1e3a5f;
+      border-radius:8px; padding:6px 12px;
+      backdrop-filter:blur(6px); pointer-events:none;
     }
-    .co-scan-label {
-      font-size: .58rem;
-      font-weight: 700;
-      color: #0ea5e9;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-    .co-scan-sub {
-      font-size: .62rem;
-      color: #334155;
-    }
+    .co-scan-label { font-size:.58rem; font-weight:700; color:#0ea5e9; text-transform:uppercase; letter-spacing:.1em; }
+    .co-scan-sub   { font-size:.62rem; color:#334155; }
+
+    /* ─── REGIONAL INTELLIGENCE BOARD ──────────────────── */
+    .rib{background:#070f1a;padding:3.5rem 0 4rem;border-top:1px solid #1e3a5f;}
+    .rib-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;}
+    .rib-header h2{font-size:1.45rem;color:#dbe7ff;margin:0;}
+    .rib-badge{background:#1e3a5f;color:#0ea5e9;font-size:.7rem;font-weight:700;
+      padding:.22rem .6rem;border-radius:999px;letter-spacing:.08em;text-transform:uppercase;}
+    .rib-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem;}
+    @media(max-width:700px){.rib-kpis{grid-template-columns:repeat(2,1fr);}}
+    .rib-kpi{background:#0d1b2a;border:1px solid #1e3a5f;border-radius:12px;padding:1.1rem 1.3rem;display:flex;flex-direction:column;gap:.2rem;}
+    .rib-kpi .rk-lbl{font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em;}
+    .rib-kpi .rk-val{font-size:1.9rem;font-weight:800;color:#dbe7ff;line-height:1.1;}
+    .rib-kpi .rk-sub{font-size:.7rem;color:#4ade80;}
+    .rib-grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.4rem;}
+    @media(max-width:900px){.rib-grid2{grid-template-columns:1fr;}}
+    .rib-card{background:#0d1b2a;border:1px solid #1e3a5f;border-radius:14px;padding:1.4rem 1.5rem;}
+    .rib-card-title{font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.09em;margin-bottom:1.1rem;}
+    .ibar{display:flex;align-items:center;gap:.65rem;margin-bottom:.6rem;}
+    .ibar-lbl{font-size:.74rem;color:#a0aec0;min-width:128px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ibar-track{flex:1;background:#1e3a5f;border-radius:6px;height:8px;overflow:hidden;}
+    .ibar-fill{height:100%;border-radius:6px;}
+    .ibar-val{font-size:.74rem;color:#dbe7ff;min-width:36px;text-align:right;font-weight:700;}
+    .ibar-sub{font-size:.67rem;color:#64748b;min-width:56px;text-align:right;}
+    .sbar{display:flex;align-items:center;gap:.65rem;margin-bottom:.55rem;}
+    .sbar-lbl{font-size:.73rem;color:#a0aec0;min-width:116px;}
+    .sbar-track{flex:1;display:flex;border-radius:6px;overflow:hidden;height:11px;}
+    .sbar-seg{height:100%;}
+    .sbar-tot{font-size:.73rem;color:#dbe7ff;min-width:30px;text-align:right;font-weight:700;}
+    .rib-legend{display:flex;gap:.85rem;flex-wrap:wrap;margin-bottom:1rem;}
+    .leg{display:flex;align-items:center;gap:.3rem;font-size:.7rem;color:#64748b;}
+    .leg-dot{width:9px;height:9px;border-radius:50%;}
+    .rib-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+    .rib-tab{background:#0d1b2a;border:1px solid #1e3a5f;color:#64748b;
+      font-size:.74rem;font-weight:600;padding:.3rem .85rem;border-radius:999px;
+      cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .rib-tab.active,.rib-tab:hover{background:#1e3a5f;color:#dbe7ff;border-color:#0ea5e9;}
+    .rib-countries{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;}
+    .country-card{background:#0d1b2a;border:1px solid #1e3a5f;border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s;}
+    .country-card:hover{border-color:#0ea5e9;}
+    .cc-name{font-size:.88rem;font-weight:700;color:#dbe7ff;margin-bottom:.2rem;}
+    .cc-int{font-size:.72rem;color:#64748b;margin-bottom:.5rem;}
+    .cc-bars{display:flex;flex-direction:column;gap:3px;}
+    .cc-bar{display:flex;align-items:center;gap:.4rem;}
+    .cc-bar-lbl{font-size:.65rem;color:#64748b;min-width:58px;}
+    .cc-bar-track{flex:1;background:#1e3a5f;border-radius:4px;height:5px;overflow:hidden;}
+    .cc-bar-fill{height:100%;border-radius:4px;}
+    .cc-bar-val{font-size:.65rem;color:#94a3b8;min-width:18px;text-align:right;}
+    .cc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:.55rem;}
+    .cc-salary{font-size:.66rem;color:#4ade80;}
+    .cc-pill{display:inline-block;padding:.1rem .45rem;border-radius:999px;font-size:.65rem;font-weight:700;}
+    .rib-table-wrap{overflow-x:auto;}
+    .rib-table{width:100%;border-collapse:collapse;font-size:.79rem;}
+    .rib-table thead th{background:#070f1a;color:#64748b;font-size:.68rem;text-transform:uppercase;
+      letter-spacing:.08em;padding:.55rem .9rem;border-bottom:1px solid #1e3a5f;text-align:left;white-space:nowrap;}
+    .rib-table tbody tr{border-bottom:1px solid #0f2540;transition:background .15s;}
+    .rib-table tbody tr:hover{background:#0d1b2a;}
+    .rib-table tbody td{padding:.6rem .9rem;color:#dbe7ff;vertical-align:middle;white-space:nowrap;}
+    .ipill{display:inline-block;padding:.18rem .6rem;border-radius:999px;font-size:.7rem;font-weight:800;}
+    .td-lead{color:#4ade80;font-size:.76rem;}
+    .td-num{color:#94a3b8;}
+    .td-f{color:#f59e0b;font-size:.7rem;font-weight:700;}
   </style>
 </head>
 <body>
@@ -519,10 +318,9 @@
       </div>
       <div class="nav-links">
         <a href="#monitor">Monitor</a>
-        <a href="#globe3d">🌐 Globo 3D</a>
         <a href="#insights">Ranking</a>
         <a href="#regional">Regiones</a>
-        <a href="#colombia" style="color:#4ade80">🇨🇴 Colombia</a>
+        <a href="#colombiaSub" onclick="openColombia()" style="color:#4ade80">🇨🇴 Colombia</a>
         <a href="#signals">Señales</a>
         <a href="https://github.com/0xvanguard/cyberremote-monitor-pro" target="_blank" rel="noreferrer">GitHub ↗</a>
       </div>
@@ -534,17 +332,16 @@
       <div class="panel hero-main">
         <div class="eyebrow">🌐 Pro dashboard · vista mundial interactiva</div>
         <h1>Monitor real para contratación remota en ciberseguridad.</h1>
-        <p class="lead">Heatmap global por intensidad de mercado. Filtra por tipo de contratación: empleo, freelance/servicios, obra/proyecto o capacitación. Identifica dónde hay entrada más rápida.</p>
+        <p class="lead">Heatmap global por intensidad de mercado. Alterna entre el mapa 2D y el globo 3D desde el mismo panel. Haz clic en cualquier país para ver sus ciudades, roles más demandados y señales tácticas.</p>
         <div class="cta">
           <a class="btn btn-primary" href="#monitor">Abrir monitor</a>
-          <a class="btn btn-primary" href="#globe3d" style="background:linear-gradient(135deg,#0ea5e9,#6366f1)">🌐 Ver Globo 3D</a>
-          <a class="btn btn-primary" href="#colombia" style="background:linear-gradient(135deg,#16a34a,#0ea5e9);color:#fff">🇨🇴 Colombia</a>
+          <a class="btn btn-primary" href="#colombiaSub" onclick="openColombia()" style="background:linear-gradient(135deg,#16a34a,#0ea5e9);color:#fff">🇨🇴 Colombia</a>
           <button class="btn btn-secondary" onclick="jumpRegion('Europe')">Europa</button>
           <button class="btn btn-secondary" onclick="jumpRegion('LATAM')">LATAM</button>
           <button class="btn btn-secondary" onclick="jumpRegion('NorthAmerica')">Norteamérica</button>
           <button class="btn btn-secondary" onclick="jumpRegion('Asia')">Asia</button>
-          <button class="btn btn-secondary" onclick="jumpRegion('MiddleEast')">Oriente Medio</button>
           <button class="btn btn-secondary" onclick="jumpRegion('Africa')">África</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('MiddleEast')">Oriente Medio</button>
           <button class="btn btn-secondary" onclick="jumpRegion('Oceania')">Oceanía</button>
           <button class="btn btn-secondary" onclick="jumpRegion('Arctic')">🧊 Ártico</button>
         </div>
@@ -556,161 +353,216 @@
         </div>
       </div>
       <div class="panel hero-side">
-        <div class="mini"><h3>🔴 Heatmap por intensidad</h3><p>Más color = más intensidad de contratación real. El mapa usa coropléticos con gradiente de 5 niveles para identificar mercados calientes.</p></div>
-        <div class="mini"><h3>🎛️ Filtros de contratación</h3><p>Filtra por <strong>Empleo fijo</strong>, <strong>Freelance</strong>, <strong>Obra/Contrato</strong> o <strong>Capacitación</strong>. El mapa y el ranking se actualizan en tiempo real.</p></div>
-        <div class="mini"><h3>⚡ Entrada rápida</h3><p>Los países marcados con ⚡ tienen menor barrera de entrada para contratistas y juniors con experiencia básica.</p></div>
+        <div class="mini"><h3>🗺️ Mapa 2D + 🌐 Globo 3D</h3><p>Un solo monitor con toggle instantáneo entre vista plana y globo espacial. Mismo dataset, mismos filtros, misma info al clic.</p></div>
+        <div class="mini"><h3>🏙️ Drill-down por ciudad</h3><p>Haz clic en cualquier país y ve al panel lateral las ciudades con heatmap por intensidad, roles disponibles y tipo de contrato.</p></div>
+        <div class="mini"><h3>🇨🇴 Colombia Deep-Drill</h3><p>33 departamentos · 47 ciudades mapeadas con intensidad granular de mercado remoto en ciberseguridad.</p></div>
       </div>
     </div>
   </header>
 
-  <section id="monitor">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Global hiring intelligence board</h2>
-          <p>Heatmap mundial de contratación en ciberseguridad. Haz clic en un país para ver ruta, intensidad, tipo de contrato y señales tácticas.</p>
+  <!-- ═══════════════════════════════════════════════════════
+       UNIFIED MAP SECTION — 2D / 3D toggle
+  ═══════════════════════════════════════════════════════ -->
+  <section id="monitor" class="umap-section">
+
+    <!-- Toolbar: filters + view toggle -->
+    <div class="umap-toolbar">
+      <button class="chip active" data-filter="all">🌐 Todo</button>
+      <button class="chip" data-filter="jobs">💼 Empleo</button>
+      <button class="chip" data-filter="freelance">🛠️ Freelance</button>
+      <button class="chip" data-filter="contract">📋 Contrato</button>
+      <button class="chip" data-filter="training">🎓 Formación</button>
+      <button class="chip" data-filter="fast">⚡ Entrada rápida</button>
+      <button class="chip" onclick="jumpRegion('World')">🗺️ Mundo</button>
+      <div style="margin-left:auto">
+        <div class="view-toggle">
+          <button class="vt-btn active" id="btn2d" onclick="switchView('2d')">🗺️ 2D</button>
+          <button class="vt-btn"        id="btn3d" onclick="switchView('3d')">🌐 3D</button>
         </div>
       </div>
-      <div class="monitor-layout">
-        <div class="map-wrap">
-          <div class="toolbar">
-            <button class="chip active" data-filter="all">🌐 Todo</button>
-            <button class="chip" data-filter="jobs">💼 Empleo fijo</button>
-            <button class="chip" data-filter="freelance">🛠️ Freelance</button>
-            <button class="chip" data-filter="contract">📋 Obra/Contrato</button>
-            <button class="chip" data-filter="training">🎓 Capacitación</button>
-            <button class="chip" data-filter="fast">⚡ Entrada rápida</button>
-            <button class="chip" onclick="jumpRegion('World')">🗺️ Mundo</button>
+    </div>
+
+    <!-- Legend -->
+    <div class="umap-legend">
+      <div class="ul-item"><span class="ul-dot" style="background:#16a34a"></span>Muy alta (90+)</div>
+      <div class="ul-item"><span class="ul-dot" style="background:#4ade80"></span>Alta (75–89)</div>
+      <div class="ul-item"><span class="ul-dot" style="background:#f59e0b"></span>Media (60–74)</div>
+      <div class="ul-item"><span class="ul-dot" style="background:#0ea5e9"></span>Emergente (45–59)</div>
+      <div class="ul-item"><span class="ul-dot" style="background:#6366f1"></span>Baja (25–44)</div>
+      <div class="ul-item"><span class="ul-dot" style="background:#1e3a5f"></span>Sin datos</div>
+      <!-- Globe controls (visible only in 3D mode) -->
+      <div class="globe-controls-overlay" id="globeCtrlOverlay" style="margin-left:auto">
+        <button class="gc-btn active" id="btnAutoRotate" onclick="toggleAutoRotate()">⟳ Auto-rotar</button>
+        <button class="gc-btn" onclick="resetGlobeView()">⊙ Reset vista</button>
+        <button class="gc-btn" id="btnAtmo" onclick="toggleAtmosphere()">✦ Atmósfera</button>
+      </div>
+    </div>
+
+    <!-- Stage: map canvas | info panel -->
+    <div class="umap-stage">
+      <div style="position:relative">
+        <!-- 2D MAP -->
+        <div id="map2d"></div>
+        <!-- 3D GLOBE -->
+        <canvas id="globeCanvas"></canvas>
+        <!-- scan badge -->
+        <div style="position:absolute;top:10px;left:10px;z-index:500;pointer-events:none;display:none" id="globeBadge">
+          <div style="background:rgba(2,8,23,.78);border:1px solid #1e3a5f;border-radius:10px;padding:.55rem 1rem;backdrop-filter:blur(8px)">
+            <div style="font-size:.63rem;color:#0ea5e9;text-transform:uppercase;letter-spacing:.1em;font-weight:700">🌐 CyberRemote · Space View</div>
+            <div style="font-size:.72rem;color:#94a3b8;margin-top:.1rem">Globo 3D · arrastra · scroll · clic</div>
           </div>
-          <div class="legend">
-            <div><span class="dot" style="background:#16a34a"></span>Muy alta (90+)</div>
-            <div><span class="dot" style="background:#4ade80"></span>Alta (75–89)</div>
-            <div><span class="dot" style="background:#f59e0b"></span>Media (60–74)</div>
-            <div><span class="dot" style="background:#0ea5e9"></span>Baja–media (45–59)</div>
-            <div><span class="dot" style="background:#1e3a5f"></span>Baja (&lt;45)</div>
-          </div>
-          <div id="map"></div>
         </div>
-        <aside class="sidebar">
-          <div>
-            <div class="side-title">Panel de país</div>
-            <div class="country-box" id="countryBox">
-              <div class="country-name">Selecciona un país</div>
-              <div class="muted-text">Haz clic sobre cualquier país del mapa para ver la estrategia de contratación recomendada.</div>
-              <div class="metrics">
-                <div class="metric"><strong>Heatmap global</strong><span>Países coloreados por intensidad de mercado en 5 niveles.</span></div>
-                <div class="metric"><strong>Filtros de contrato</strong><span>Empleo fijo, freelance, obra/contrato, capacitación y entrada rápida.</span></div>
-              </div>
+      </div>
+
+      <!-- UNIFIED INFO PANEL -->
+      <div class="umap-panel" id="umapPanel">
+        <div>
+          <div class="up-section-title">Panel de país</div>
+          <div class="up-country-name" id="upCountryName">Selecciona un país</div>
+          <div class="up-region" id="upRegion">Haz clic en el mapa o el globo</div>
+        </div>
+        <div id="upIntensityWrap" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem">
+            <span style="font-size:.65rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Intensidad de mercado</span>
+            <span style="font-size:1.05rem;font-weight:800;color:#dbe7ff" id="upIntensityVal">0</span>
+          </div>
+          <div class="up-intensity-bar"><div class="up-intensity-fill" id="upIntensityFill" style="width:0%"></div></div>
+        </div>
+        <div class="up-kpi-grid" id="upKpiGrid" style="display:none">
+          <div class="up-kpi"><div class="lbl">Empleos</div><div class="val" id="upJobs">—</div></div>
+          <div class="up-kpi"><div class="lbl">Freelance</div><div class="val" id="upFreelance">—</div></div>
+          <div class="up-kpi"><div class="lbl">Contratos</div><div class="val" id="upContract">—</div></div>
+          <div class="up-kpi"><div class="lbl">Salario</div><div class="val" style="font-size:.82rem" id="upSalary">—</div></div>
+        </div>
+        <div id="upRolesWrap" style="display:none">
+          <div class="up-section-title" style="margin-bottom:.5rem">📊 Roles más demandados</div>
+          <div class="up-role-list" id="upRoleList"></div>
+        </div>
+        <!-- city drill-down -->
+        <div id="cityPanel">
+          <div class="up-section-title">🏙️ Ciudades del país</div>
+          <div class="city-list" id="cityList"></div>
+        </div>
+        <div class="up-tags" id="upTags"></div>
+        <div class="up-note" id="upNote"></div>
+        <!-- Ranking -->
+        <div style="border-top:1px solid #1e3a5f;padding-top:.8rem">
+          <div class="up-section-title">🏆 Top mercados</div>
+          <div id="ranking"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colombia drill-down toggle bar -->
+    <div class="co-toggle-row">
+      <span style="font-size:.65rem;color:#334155;align-self:center">// drill-down por país ·</span>
+      <button class="co-toggle-btn" id="btnColombiaToggle" onclick="toggleColombia()">🇨🇴 Colombia · 33 depts · 47 ciudades</button>
+    </div>
+
+    <!-- KPIs + signal feed -->
+    <div class="dashboard-grid" id="insights">
+      <div class="cards">
+        <div class="section-head dash-head"><h2 class="sub-h2">KPIs del radar</h2></div>
+        <div class="mini-grid">
+          <div class="kpi"><div class="label">Europa</div><div class="value" id="kpiEurope">0</div></div>
+          <div class="kpi"><div class="label">LATAM</div><div class="value" id="kpiLatam">0</div></div>
+          <div class="kpi"><div class="label">N. América</div><div class="value" id="kpiNorthAm">0</div></div>
+          <div class="kpi"><div class="label">Asia-Pac</div><div class="value" id="kpiAsia">0</div></div>
+          <div class="kpi"><div class="label">África</div><div class="value" id="kpiAfrica">0</div></div>
+          <div class="kpi"><div class="label">Freelance</div><div class="value" id="kpiFreelance">0</div></div>
+          <div class="kpi"><div class="label">Obra/Contrato</div><div class="value" id="kpiContract">0</div></div>
+          <div class="kpi"><div class="label">Empleo fijo</div><div class="value" id="kpiJobs">0</div></div>
+          <div class="kpi"><div class="label">⚡ Entrada rápida</div><div class="value" id="kpiFast">0</div></div>
+        </div>
+      </div>
+      <div class="feed" id="signals">
+        <div class="section-head dash-head"><h2 class="sub-h2">Signal feed — contratación activa</h2></div>
+        <div class="feed-list" id="feedList"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       🇨🇴 COLOMBIA DEEP-DRILL — embedded, toggled
+  ═══════════════════════════════════════════════════════ -->
+  <div id="colombiaSub">
+    <div class="container">
+      <div class="co-header">
+        <div>
+          <div class="co-eyebrow">Colombia · Deep-Drill Intelligence · 2026</div>
+          <h2 class="co-title">🇨🇴 Mapa de Ciberseguridad — Colombia</h2>
+          <p class="co-subtitle">33 departamentos · 47 ciudades · heatmap por intensidad de mercado remoto</p>
+        </div>
+        <div class="co-badges">
+          <span class="co-badge" style="background:#4ade8010;border-color:#4ade8040;color:#4ade80">⬤ LIVE · Score 68/100</span>
+          <span class="co-badge" style="background:#0ea5e910;border-color:#0ea5e940;color:#0ea5e9">262 freelance</span>
+          <span class="co-badge" style="background:#f59e0b10;border-color:#f59e0b40;color:#f59e0b">167 empleos</span>
+          <span class="co-badge" style="background:#a78bfa10;border-color:#a78bfa40;color:#a78bfa">⚡ 7/7 entrada rápida</span>
+          <button onclick="toggleColombia()" style="background:transparent;border:1px solid #334155;color:#475569;font-size:.68rem;padding:4px 10px;border-radius:999px;cursor:pointer">✕ Cerrar</button>
+        </div>
+      </div>
+      <div class="co-kpi-strip">
+        <div class="co-kpi-box"><span class="co-kpi-val" style="color:#dbe7ff">33</span><span class="co-kpi-lbl">Departamentos</span></div>
+        <div class="co-kpi-box"><span class="co-kpi-val" style="color:#dbe7ff">47</span><span class="co-kpi-lbl">Ciudades</span></div>
+        <div class="co-kpi-box"><span class="co-kpi-val" style="color:#4ade80">167</span><span class="co-kpi-lbl">Empleos</span></div>
+        <div class="co-kpi-box"><span class="co-kpi-val" style="color:#0ea5e9">262</span><span class="co-kpi-lbl">Freelance</span></div>
+        <div class="co-kpi-box"><span class="co-kpi-val" style="color:#f59e0b">148</span><span class="co-kpi-lbl">Contratos</span></div>
+        <div class="co-kpi-box"><span class="co-kpi-val" style="color:#a78bfa">68</span><span class="co-kpi-lbl">Score nacional</span></div>
+      </div>
+      <div class="co-legend">
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#16a34a"></span>Muy alto (80+)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#4ade80"></span>Alto (65–79)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#f59e0b"></span>Medio (50–64)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#0ea5e9"></span>Emergente (30–49)</span>
+        <span class="co-leg-item"><span class="co-leg-dot" style="background:#1e3a5f"></span>Bajo (&lt;30)</span>
+      </div>
+      <div class="co-controls">
+        <span class="co-ctrl-label">Vista ·</span>
+        <button class="co-view-btn active" data-view="departments" onclick="colToggleView('departments')">🏛️ Departamentos</button>
+        <button class="co-view-btn" data-view="cities" onclick="colToggleView('cities')">🏙️ Ciudades</button>
+        <div style="width:1px;height:20px;background:#1e3a5f;flex-shrink:0"></div>
+        <span class="co-ctrl-label">Zoom ·</span>
+        <div id="col-quick-nav" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+      </div>
+      <div class="co-main-grid">
+        <div style="position:relative">
+          <div class="co-scan-badge">
+            <div class="co-scan-label">// intel map · colombia</div>
+            <div class="co-scan-sub">33 depts · 47 cities · cyber jobs 2026</div>
+          </div>
+          <div id="col-map"></div>
+        </div>
+        <div class="co-side">
+          <div class="co-panel-card scrollable" id="col-detail-panel">
+            <div style="color:#1e3a5f;font-size:.75rem;text-align:center;padding:2rem 0">
+              <div style="font-size:1.5rem;margin-bottom:.5rem">🇨🇴</div>
+              <div>Haz clic en un departamento<br>para ver intel completa</div>
             </div>
           </div>
-          <div>
-            <div class="side-title">🏆 Top mercados activos</div>
-            <div class="ranking" id="ranking"></div>
-          </div>
-        </aside>
-      </div>
-      <div class="dashboard-grid" id="insights">
-        <div class="cards">
-          <div class="section-head dash-head"><h2 class="sub-h2">KPIs del radar</h2></div>
-          <div class="mini-grid">
-            <div class="kpi"><div class="label">Europa</div><div class="value" id="kpiEurope">0</div></div>
-            <div class="kpi"><div class="label">LATAM</div><div class="value" id="kpiLatam">0</div></div>
-            <div class="kpi"><div class="label">N. América</div><div class="value" id="kpiNorthAm">0</div></div>
-            <div class="kpi"><div class="label">Asia-Pac</div><div class="value" id="kpiAsia">0</div></div>
-            <div class="kpi"><div class="label">Freelance</div><div class="value" id="kpiFreelance">0</div></div>
-            <div class="kpi"><div class="label">Obra/Contrato</div><div class="value" id="kpiContract">0</div></div>
-            <div class="kpi"><div class="label">Empleo fijo</div><div class="value" id="kpiJobs">0</div></div>
-            <div class="kpi"><div class="label">⚡ Rápida entrada</div><div class="value" id="kpiFast">0</div></div>
-          </div>
-        </div>
-        <div class="feed" id="signals">
-          <div class="section-head dash-head"><h2 class="sub-h2">Signal feed — contratación activa</h2></div>
-          <div class="feed-list" id="feedList"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════
-       🌐 GLOBO 3D — SPACE VIEW
-  ══════════════════════════════════════════ -->
-  <section id="globe3d" class="globe-section">
-    <div class="globe-section-inner">
-      <div style="position:relative">
-        <canvas id="globeCanvas"></canvas>
-        <div style="position:absolute;top:1.2rem;left:1.4rem;pointer-events:none">
-          <div style="background:rgba(2,8,23,.75);border:1px solid #1e3a5f;border-radius:10px;padding:.6rem 1rem;backdrop-filter:blur(8px)">
-            <div style="font-size:.65rem;color:#0ea5e9;text-transform:uppercase;letter-spacing:.1em;font-weight:700">🌐 CyberRemote · Space View</div>
-            <div style="font-size:.78rem;color:#94a3b8;margin-top:.15rem">Globo 3D interactivo · heatmap de contratación</div>
-          </div>
-        </div>
-        <div style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);pointer-events:none">
-          <div style="background:rgba(2,8,23,.6);border:1px solid #1e3a5f22;border-radius:999px;padding:.35rem 1rem;font-size:.67rem;color:#334155;backdrop-filter:blur(4px);white-space:nowrap">
-            🖱️ Arrastra para rotar · Scroll para zoom · Clic en punto para ver país
-          </div>
-        </div>
-      </div>
-      <div class="globe-panel-right">
-        <div>
-          <div class="globe-title">Vista desde el espacio</div>
-          <div class="globe-country-name" id="globeCountryName">Haz clic en un punto</div>
-          <div style="font-size:.73rem;color:#475569;margin-top:.2rem" id="globeCountryRegion">Selecciona un mercado en el globo</div>
-        </div>
-        <div id="globeIntensityWrap" style="display:none">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
-            <span style="font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em">Intensidad de mercado</span>
-            <span style="font-size:1.1rem;font-weight:800;color:#dbe7ff" id="globeIntensityVal">0</span>
-          </div>
-          <div class="globe-intensity-bar">
-            <div class="globe-intensity-fill" id="globeIntensityFill" style="width:0%"></div>
-          </div>
-        </div>
-        <div class="globe-kpi-grid" id="globeKpiGrid" style="display:none">
-          <div class="globe-kpi"><div class="gk-lbl">Empleos</div><div class="gk-val" id="globeJobs">—</div></div>
-          <div class="globe-kpi"><div class="gk-lbl">Freelance</div><div class="gk-val" id="globeFreelance">—</div></div>
-          <div class="globe-kpi"><div class="gk-lbl">Contratos</div><div class="gk-val" id="globeContract">—</div></div>
-          <div class="globe-kpi"><div class="gk-lbl">Salario</div><div class="gk-val" style="font-size:.85rem" id="globeSalary">—</div></div>
-        </div>
-        <div id="globeRolesWrap" style="display:none">
-          <div class="globe-title" style="margin-bottom:.6rem">📊 Roles más demandados</div>
-          <div class="globe-role-list" id="globeRoleList"></div>
-        </div>
-        <div class="globe-tags" id="globeTags"></div>
-        <div style="font-size:.72rem;color:#334155;line-height:1.5" id="globeNote"></div>
-        <div>
-          <div class="globe-title" style="margin-bottom:.5rem">Controles del globo</div>
-          <div class="globe-controls">
-            <button class="globe-btn active" id="btnAutoRotate" onclick="toggleAutoRotate()">⟳ Auto-rotar</button>
-            <button class="globe-btn" onclick="resetGlobeView()">⊙ Reset vista</button>
-            <button class="globe-btn" id="btnAtmo" onclick="toggleAtmosphere()">✦ Atmósfera</button>
-          </div>
-        </div>
-        <div>
-          <div class="globe-title" style="margin-bottom:.5rem">Intensidad</div>
-          <div class="globe-legend">
-            <div class="globe-legend-item"><span class="globe-legend-dot" style="background:#16a34a"></span>Muy alta (90+) — EE.UU., Canadá</div>
-            <div class="globe-legend-item"><span class="globe-legend-dot" style="background:#4ade80"></span>Alta (75–89) — UK, Israel, Singapur</div>
-            <div class="globe-legend-item"><span class="globe-legend-dot" style="background:#f59e0b"></span>Media (60–74) — España, Brasil</div>
-            <div class="globe-legend-item"><span class="globe-legend-dot" style="background:#0ea5e9"></span>Emergente (45–59) — África, SEA</div>
-            <div class="globe-legend-item"><span class="globe-legend-dot" style="background:#1e3a5f"></span>Baja (&lt;45)</div>
+          <div class="co-panel-card">
+            <div class="co-panel-title">// ranking top 10 departamentos</div>
+            <div id="col-ranking"></div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- REGIONAL INTELLIGENCE BOARD -->
+  <!-- ═══════════════════════════════════════════════════════
+       REGIONAL INTELLIGENCE BOARD
+  ═══════════════════════════════════════════════════════ -->
   <section class="rib" id="regional">
     <div class="container">
       <div class="rib-header">
         <h2>🌍 Regional Intelligence Board</h2>
-        <span class="rib-badge">8 continentes · 45 países · datos verificados 2026</span>
+        <span class="rib-badge">8 regiones · 68+ países · datos verificados 2026</span>
       </div>
       <div class="rib-kpis">
         <div class="rib-kpi"><span class="rk-lbl">Total oportunidades</span><span class="rk-val">2 284</span><span class="rk-sub">↑ empleo + freelance + contratos</span></div>
         <div class="rib-kpi"><span class="rk-lbl">Intensidad promedio global</span><span class="rk-val">68.2</span><span class="rk-sub">/ 100 · escala mercado activo</span></div>
-        <div class="rib-kpi"><span class="rk-lbl">Países monitoreados</span><span class="rk-val">45</span><span class="rk-sub">en 8 regiones geográficas</span></div>
-        <div class="rib-kpi"><span class="rk-lbl">Países con entrada rápida</span><span class="rk-val">31</span><span class="rk-sub">barrera baja para juniors</span></div>
+        <div class="rib-kpi"><span class="rk-lbl">Países monitoreados</span><span class="rk-val">68+</span><span class="rk-sub">en 8 regiones geográficas</span></div>
+        <div class="rib-kpi"><span class="rk-lbl">Países con entrada rápida</span><span class="rk-val">40+</span><span class="rk-sub">barrera baja para juniors</span></div>
       </div>
       <div class="rib-grid2">
         <div class="rib-card">
@@ -732,7 +584,7 @@
             <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>Freelance</span>
             <span class="leg"><span class="leg-dot" style="background:#0ea5e9"></span>Contratos</span>
           </div>
-          <div class="sbar"><span class="sbar-lbl">Europa</span><div class="sbar-track" style="width:100%"><div class="sbar-seg" style="width:35.7%;background:#4ade80"></div><div class="sbar-seg" style="width:34.5%;background:#f59e0b"></div><div class="sbar-seg" style="width:29.8%;background:#0ea5e9"></div></div><span class="sbar-tot">843</span></div>
+          <div class="sbar"><span class="sbar-lbl">Europa</span><div class="sbar-track"><div class="sbar-seg" style="width:35.7%;background:#4ade80"></div><div class="sbar-seg" style="width:34.5%;background:#f59e0b"></div><div class="sbar-seg" style="width:29.8%;background:#0ea5e9"></div></div><span class="sbar-tot">843</span></div>
           <div class="sbar"><span class="sbar-lbl">LATAM</span><div class="sbar-track"><div class="sbar-seg" style="width:31%;background:#4ade80"></div><div class="sbar-seg" style="width:41.5%;background:#f59e0b"></div><div class="sbar-seg" style="width:27.5%;background:#0ea5e9"></div></div><span class="sbar-tot">357</span></div>
           <div class="sbar"><span class="sbar-lbl">N. América</span><div class="sbar-track"><div class="sbar-seg" style="width:26.5%;background:#4ade80"></div><div class="sbar-seg" style="width:21.3%;background:#f59e0b"></div><div class="sbar-seg" style="width:19.1%;background:#0ea5e9"></div></div><span class="sbar-tot">272</span></div>
           <div class="sbar"><span class="sbar-lbl">Asia Oriental</span><div class="sbar-track"><div class="sbar-seg" style="width:35.2%;background:#4ade80"></div><div class="sbar-seg" style="width:35.2%;background:#f59e0b"></div><div class="sbar-seg" style="width:29.5%;background:#0ea5e9"></div></div><span class="sbar-tot">210</span></div>
@@ -779,105 +631,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════════
-       🇨🇴 COLOMBIA DEEP-DRILL — HACKER DARK INTEL MAP
-  ════════════════════════════════════════════════════════════ -->
-  <section id="colombia">
-    <div class="container">
-
-      <!-- Header -->
-      <div class="co-header">
-        <div>
-          <div class="co-eyebrow">Colombia · Deep-Drill Intelligence · 2026</div>
-          <h2 class="co-title">🇨🇴 Mapa de Ciberseguridad — Colombia</h2>
-          <p class="co-subtitle">33 departamentos · 47 ciudades · heatmap por intensidad de mercado remoto</p>
-        </div>
-        <div class="co-status-badges">
-          <span class="co-badge" style="background:#4ade8010;border-color:#4ade8040;color:#4ade80">⬤ LIVE · Score 68/100</span>
-          <span class="co-badge" style="background:#0ea5e910;border-color:#0ea5e940;color:#0ea5e9">262 freelance</span>
-          <span class="co-badge" style="background:#f59e0b10;border-color:#f59e0b40;color:#f59e0b">167 empleos</span>
-          <span class="co-badge" style="background:#a78bfa10;border-color:#a78bfa40;color:#a78bfa">⚡ 7/7 entrada rápida top dept.</span>
-        </div>
-      </div>
-
-      <!-- KPI strip -->
-      <div class="co-kpi-strip">
-        <div class="co-kpi-box">
-          <span class="co-kpi-val" id="col-kpi-depts" style="color:#dbe7ff">33</span>
-          <span class="co-kpi-lbl">Departamentos</span>
-        </div>
-        <div class="co-kpi-box">
-          <span class="co-kpi-val" id="col-kpi-cities" style="color:#dbe7ff">47</span>
-          <span class="co-kpi-lbl">Ciudades</span>
-        </div>
-        <div class="co-kpi-box">
-          <span class="co-kpi-val" id="col-kpi-jobs" style="color:#4ade80">167</span>
-          <span class="co-kpi-lbl">Empleos</span>
-        </div>
-        <div class="co-kpi-box">
-          <span class="co-kpi-val" id="col-kpi-freelance" style="color:#0ea5e9">262</span>
-          <span class="co-kpi-lbl">Freelance</span>
-        </div>
-        <div class="co-kpi-box">
-          <span class="co-kpi-val" id="col-kpi-contracts" style="color:#f59e0b">148</span>
-          <span class="co-kpi-lbl">Contratos</span>
-        </div>
-        <div class="co-kpi-box">
-          <span class="co-kpi-val" id="col-kpi-score" style="color:#a78bfa">68</span>
-          <span class="co-kpi-lbl">Score nacional</span>
-        </div>
-      </div>
-
-      <!-- Legend -->
-      <div class="co-legend">
-        <span class="co-leg-item"><span class="co-leg-dot" style="background:#16a34a"></span>Muy alto (80+)</span>
-        <span class="co-leg-item"><span class="co-leg-dot" style="background:#4ade80"></span>Alto (65–79)</span>
-        <span class="co-leg-item"><span class="co-leg-dot" style="background:#f59e0b"></span>Medio (50–64)</span>
-        <span class="co-leg-item"><span class="co-leg-dot" style="background:#0ea5e9"></span>Emergente (30–49)</span>
-        <span class="co-leg-item"><span class="co-leg-dot" style="background:#1e3a5f"></span>Bajo (&lt;30)</span>
-        <span style="margin-left:auto;font-size:.6rem;color:#1e3a5f">// clic en marcador para intel completa</span>
-      </div>
-
-      <!-- Controls bar -->
-      <div class="co-controls">
-        <span class="co-ctrl-label">Vista ·</span>
-        <button class="co-view-btn active" data-view="departments" onclick="colToggleView('departments')">🏛️ Departamentos</button>
-        <button class="co-view-btn" data-view="cities" onclick="colToggleView('cities')">🏙️ Ciudades</button>
-        <div class="co-divider"></div>
-        <span class="co-ctrl-label">Zoom rápido ·</span>
-        <div id="col-quick-nav" style="display:flex;gap:5px;flex-wrap:wrap"></div>
-      </div>
-
-      <!-- Map + Side panel -->
-      <div class="co-main-grid">
-        <div class="co-map-wrap">
-          <!-- Scan overlay badge -->
-          <div class="co-scan-badge">
-            <div class="co-scan-label">// intel map · colombia</div>
-            <div class="co-scan-sub">33 depts · 47 cities · cyber jobs 2026</div>
-          </div>
-          <div id="col-map"></div>
-        </div>
-
-        <div class="co-side">
-          <!-- Detail panel -->
-          <div class="co-panel-card scrollable" id="col-detail-panel">
-            <div style="color:#1e3a5f;font-size:.75rem;text-align:center;padding:2rem 0">
-              <div style="font-size:1.5rem;margin-bottom:.5rem">🇨🇴</div>
-              <div>Haz clic en un departamento<br>para ver intel completa</div>
-            </div>
-          </div>
-          <!-- Ranking -->
-          <div class="co-panel-card">
-            <div class="co-panel-title">// ranking top 10 departamentos</div>
-            <div id="col-ranking"></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
   <footer class="footer">
     <div class="container footer-inner">
       <div>
@@ -896,40 +649,156 @@
   <script src="globe3d.js"></script>
   <script src="colombia-map.js"></script>
   <script>
+  /* ── VIEW TOGGLE 2D / 3D ─────────────────────── */
+  let currentView = '2d';
+  function switchView(v) {
+    currentView = v;
+    const map2d = document.getElementById('map2d');
+    const globe = document.getElementById('globeCanvas');
+    const badge = document.getElementById('globeBadge');
+    const ctrl  = document.getElementById('globeCtrlOverlay');
+    const btn2d = document.getElementById('btn2d');
+    const btn3d = document.getElementById('btn3d');
+    if (v === '2d') {
+      map2d.style.display = 'block';
+      globe.style.display = 'none';
+      if (badge) badge.style.display = 'none';
+      if (ctrl)  ctrl.classList.remove('visible');
+      btn2d.classList.add('active'); btn3d.classList.remove('active');
+      if (window._leafletMap) window._leafletMap.invalidateSize();
+    } else {
+      map2d.style.display = 'none';
+      globe.style.display = 'block';
+      if (badge) badge.style.display = 'block';
+      if (ctrl)  ctrl.classList.add('visible');
+      btn3d.classList.add('active'); btn2d.classList.remove('active');
+      if (typeof resizeGlobe === 'function') resizeGlobe();
+    }
+  }
+
+  /* ── COLOMBIA TOGGLE ─────────────────────────── */
+  let colInited = false;
+  function toggleColombia() {
+    const sub = document.getElementById('colombiaSub');
+    const btn = document.getElementById('btnColombiaToggle');
+    const isOpen = sub.classList.contains('open');
+    if (isOpen) {
+      sub.classList.remove('open');
+      btn.classList.remove('active');
+    } else {
+      sub.classList.add('open');
+      btn.classList.add('active');
+      if (!colInited) {
+        colInited = true;
+        if (typeof initColombiaMap === 'function') initColombiaMap();
+      }
+      setTimeout(() => sub.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+  }
+  function openColombia() {
+    const sub = document.getElementById('colombiaSub');
+    const btn = document.getElementById('btnColombiaToggle');
+    if (!sub.classList.contains('open')) {
+      sub.classList.add('open');
+      btn.classList.add('active');
+      if (!colInited) {
+        colInited = true;
+        if (typeof initColombiaMap === 'function') initColombiaMap();
+      }
+    }
+  }
+  window.openColombia = openColombia;
+
+  /* ── UNIFIED COUNTRY PANEL ───────────────────── */
   function getHC(i){
     if(i>=90)return'#16a34a';if(i>=75)return'#4ade80';
-    if(i>=60)return'#f59e0b';if(i>=45)return'#0ea5e9';return'#1e3a5f';
+    if(i>=60)return'#f59e0b';if(i>=45)return'#0ea5e9';
+    if(i>=25)return'#6366f1';return'#1e3a5f';
   }
+  function showCountryPanel(code) {
+    const d = window.dataset && window.dataset[code];
+    if (!d) return;
+    const col = getHC(d.intensity);
+    document.getElementById('upCountryName').textContent = d.name + (d.fastEntry ? ' ⚡' : '');
+    document.getElementById('upRegion').textContent = d.region + (d.contractType ? ' · ' + d.contractType : '');
+    // intensity bar
+    const iw = document.getElementById('upIntensityWrap');
+    iw.style.display = 'block';
+    document.getElementById('upIntensityVal').textContent = d.intensity;
+    const fill = document.getElementById('upIntensityFill');
+    fill.style.width = d.intensity + '%';
+    fill.style.background = col;
+    // kpis
+    document.getElementById('upKpiGrid').style.display = 'grid';
+    document.getElementById('upJobs').textContent     = d.jobs     ?? '—';
+    document.getElementById('upFreelance').textContent= d.freelance ?? '—';
+    document.getElementById('upContract').textContent = d.contract  ?? '—';
+    document.getElementById('upSalary').textContent   = d.salary    ?? '—';
+    // roles
+    const rw = document.getElementById('upRolesWrap');
+    const rl = document.getElementById('upRoleList');
+    if (d.topRoles && d.topRoles.length) {
+      rw.style.display = 'block';
+      rl.innerHTML = d.topRoles.map(r => `
+        <div class="up-role">
+          <div class="up-role-top">
+            <span class="up-role-name">${r.role}</span>
+            <span style="font-size:.7rem;font-weight:700;color:${getHC(r.demand)}">${r.demand}</span>
+          </div>
+          <div class="up-role-track"><div class="up-role-fill" style="width:${r.demand}%;background:${getHC(r.demand)}"></div></div>
+          <span class="up-role-note">${r.note||''}</span>
+        </div>`).join('');
+    } else { rw.style.display = 'none'; }
+    // cities drill-down
+    const cp = document.getElementById('cityPanel');
+    const cl = document.getElementById('cityList');
+    if (d.cities && d.cities.length) {
+      cp.style.display = 'block';
+      cl.innerHTML = d.cities.map(c => `
+        <div class="city-row">
+          <span class="city-dot" style="background:${getHC(c.score)}"></span>
+          <span class="city-name">${c.name}</span>
+          <span class="city-score" style="color:${getHC(c.score)}">${c.score}</span>
+        </div>`).join('');
+    } else { cp.style.display = 'none'; }
+    // tags + note
+    document.getElementById('upTags').innerHTML = (d.signals||[]).map(s=>`<span class="up-tag">${s}</span>`).join('');
+    document.getElementById('upNote').textContent = d.note || '';
+  }
+  window.updateCountryPanel = showCountryPanel;
+
+  /* ── CARDS + FILTER ─────────────────────────── */
   function renderCards(filter){
     if(!window.dataset)return;
     const wrap=document.getElementById('ribCountries');
     wrap.innerHTML='';
     const entries=Object.entries(window.dataset)
       .filter(([,d])=>filter==='all'||d.region===filter||
-        (filter==='Asia'&&['Asia','Asia Oriental','Asia Meridional','Asia Occidental'].some(r=>d.region===r))||
-        (filter==='Middle East'&&d.region==='Middle East'))
+        (filter==='Asia'&&['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Asia Central','Sudeste Asiatico'].some(r=>d.region===r))||
+        (filter==='Middle East'&&d.region==='Middle East')||
+        (filter==='Africa'&&['África Austral','África Oriental','África Central','África Septentrional','África Subsahariana','África Occidental','África del Norte'].some(r=>d.region===r))||
+        (filter==='Oceania'&&['Pacífico','Oceanía'].some(r=>d.region===r)))
       .sort((a,b)=>b[1].intensity-a[1].intensity);
-    if(!entries.length){wrap.innerHTML='<p style="color:#64748b;font-size:.8rem">No hay países en esta región en el dataset actual.</p>';return;}
+    if(!entries.length){wrap.innerHTML='<p style="color:#64748b;font-size:.8rem">Sin países en esta región.</p>';return;}
     entries.forEach(([code,d])=>{
-      const maxVal=Math.max(d.jobs,d.freelance,d.contract,1);
+      const maxVal=Math.max(d.jobs,d.freelance,d.contract||0,1);
       const col=getHC(d.intensity);
       const card=document.createElement('div');
       card.className='country-card';
       card.setAttribute('data-region',d.region);
-      card.onclick=()=>{updateCountryPanel(code);window.scrollTo({top:document.getElementById('monitor').offsetTop-60,behavior:'smooth'});}
+      card.onclick=()=>{showCountryPanel(code);window.scrollTo({top:document.getElementById('monitor').offsetTop-60,behavior:'smooth'});}
       card.innerHTML=`
         <div class="cc-name">${d.name}${d.fastEntry?' <span style="color:#f59e0b;font-size:.7rem">⚡</span>':''}</div>
-        <div class="cc-int" style="color:${col}">${d.region} &bull; Intensidad: <strong style="color:${col}">${d.intensity}/100</strong></div>
+        <div class="cc-int" style="color:${col}">${d.region} · <strong style="color:${col}">${d.intensity}/100</strong></div>
         <div class="cc-bars">
           <div class="cc-bar"><span class="cc-bar-lbl">Empleos</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.jobs/maxVal*100}%;background:#4ade80"></div></div><span class="cc-bar-val">${d.jobs}</span></div>
           <div class="cc-bar"><span class="cc-bar-lbl">Freelance</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.freelance/maxVal*100}%;background:#f59e0b"></div></div><span class="cc-bar-val">${d.freelance}</span></div>
-          <div class="cc-bar"><span class="cc-bar-lbl">Contratos</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.contract/maxVal*100}%;background:#0ea5e9"></div></div><span class="cc-bar-val">${d.contract}</span></div>
+          <div class="cc-bar"><span class="cc-bar-lbl">Contratos</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${(d.contract||0)/maxVal*100}%;background:#0ea5e9"></div></div><span class="cc-bar-val">${d.contract||0}</span></div>
         </div>
         <div class="cc-footer">
           <span class="cc-salary">${d.salary||''}</span>
           <span class="cc-pill" style="background:rgba(${d.intensity>=75?'74,222,128':d.intensity>=60?'245,158,11':'14,165,233'},.15);color:${col}">${d.intensity}</span>
-        </div>
-      `;
+        </div>`;
       wrap.appendChild(card);
     });
   }
@@ -939,20 +808,8 @@
     renderCards(region);
   }
 
-  // Init order: app → globe → colombia map
   document.addEventListener('DOMContentLoaded',()=>{
-    setTimeout(()=>renderCards('all'),1200);
-
-    // Lazy-init Colombia map when section scrolls into view
-    let colInited = false;
-    const colSection = document.getElementById('colombia');
-    const colObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !colInited) {
-        colInited = true;
-        if (typeof initColombiaMap === 'function') initColombiaMap();
-      }
-    }, { threshold: 0.1 });
-    if (colSection) colObserver.observe(colSection);
+    setTimeout(()=>renderCards('all'),1400);
   });
   </script>
 </body>
