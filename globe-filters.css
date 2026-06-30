@@ -1,0 +1,130 @@
+/* ── Globe Filter Panel Styles ─────────────────────── */
+.gfp-inner {
+  background: rgba(2,8,23,0.92);
+  border: 1px solid rgba(14,165,233,0.22);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+  backdrop-filter: blur(12px);
+  margin-bottom: 10px;
+}
+.gfp-title {
+  font-size: .78rem;
+  font-weight: 700;
+  color: #0ea5e9;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gfp-badge {
+  background: rgba(14,165,233,0.15);
+  border: 1px solid rgba(14,165,233,0.3);
+  border-radius: 20px;
+  padding: 1px 8px;
+  font-size: .72rem;
+  color: #7dd3fc;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.gfp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.gfp-label {
+  font-size: .72rem;
+  color: #94a3b8;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+.gfp-select {
+  flex: 1;
+  background: rgba(15,23,42,0.9);
+  border: 1px solid rgba(14,165,233,0.2);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: .75rem;
+  padding: 4px 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.gfp-select:focus { border-color: #0ea5e9; }
+.gfp-range {
+  flex: 1;
+  accent-color: #0ea5e9;
+  cursor: pointer;
+}
+.gfp-range-val {
+  font-size: .72rem;
+  color: #0ea5e9;
+  font-weight: 700;
+  min-width: 26px;
+  text-align: right;
+}
+.gfp-check-row { gap: 12px; }
+.gfp-check {
+  width: 16px;
+  height: 16px;
+  accent-color: #f59e0b;
+  cursor: pointer;
+}
+.gfp-presets {
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+  align-items: center;
+}
+.gfp-preset-label {
+  font-size: .68rem;
+  color: #64748b;
+  min-width: auto;
+}
+.gfp-preset-btn {
+  background: rgba(14,165,233,0.1);
+  border: 1px solid rgba(14,165,233,0.25);
+  border-radius: 20px;
+  color: #7dd3fc;
+  font-size: .68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+.gfp-preset-btn:hover {
+  background: rgba(14,165,233,0.22);
+  border-color: #0ea5e9;
+  color: #e0f2fe;
+}
+.gfp-preset-btn.gfp-reset {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
+  color: #fca5a5;
+}
+.gfp-preset-btn.gfp-reset:hover {
+  background: rgba(239,68,68,0.22);
+  border-color: #ef4444;
+  color: #fee2e2;
+}
+#globeTierBadge {
+  font-size: .72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(14,165,233,0.1);
+  border: 1px solid rgba(14,165,233,0.2);
+  color: #7dd3fc;
+  margin-top: 2px;
+  display: inline-block;
+}
+#globePlatforms {
+  font-size: .7rem;
+  color: #64748b;
+  font-style: italic;
+  margin-top: 4px;
+}
