@@ -42,8 +42,9 @@
     /* 3D canvas */
     #globeCanvas {
       width:100%; height:640px;
-      display:none;   /* hidden by default */
+      display:none;
       cursor:grab;
+      background:#020817;
     }
     #globeCanvas:active{ cursor:grabbing; }
     /* Right info panel — shared by 2D & 3D */
@@ -651,28 +652,46 @@
   <script>
   /* ── VIEW TOGGLE 2D / 3D ─────────────────────── */
   let currentView = '2d';
+  let globeStarted = false;   // ← NEW: lazy-init guard
+
   function switchView(v) {
     currentView = v;
-    const map2d = document.getElementById('map2d');
-    const globe = document.getElementById('globeCanvas');
-    const badge = document.getElementById('globeBadge');
-    const ctrl  = document.getElementById('globeCtrlOverlay');
-    const btn2d = document.getElementById('btn2d');
-    const btn3d = document.getElementById('btn3d');
+    const map2d  = document.getElementById('map2d');
+    const canvas = document.getElementById('globeCanvas');
+    const badge  = document.getElementById('globeBadge');
+    const ctrl   = document.getElementById('globeCtrlOverlay');
+    const btn2d  = document.getElementById('btn2d');
+    const btn3d  = document.getElementById('btn3d');
+
     if (v === '2d') {
-      map2d.style.display = 'block';
-      globe.style.display = 'none';
+      map2d.style.display  = 'block';
+      canvas.style.display = 'none';
       if (badge) badge.style.display = 'none';
       if (ctrl)  ctrl.classList.remove('visible');
-      btn2d.classList.add('active'); btn3d.classList.remove('active');
+      btn2d.classList.add('active');
+      btn3d.classList.remove('active');
       if (window._leafletMap) window._leafletMap.invalidateSize();
     } else {
-      map2d.style.display = 'none';
-      globe.style.display = 'block';
+      /* ── Show canvas FIRST so clientWidth > 0 ── */
+      map2d.style.display  = 'none';
+      canvas.style.display = 'block';
       if (badge) badge.style.display = 'block';
       if (ctrl)  ctrl.classList.add('visible');
-      btn3d.classList.add('active'); btn2d.classList.remove('active');
-      if (typeof resizeGlobe === 'function') resizeGlobe();
+      btn3d.classList.add('active');
+      btn2d.classList.remove('active');
+
+      /* ── Init globe on first open, resize on subsequent ── */
+      if (!globeStarted) {
+        globeStarted = true;
+        // Small rAF so the browser paints canvas dimensions before Three.js reads them
+        requestAnimationFrame(() => {
+          if (typeof window.initGlobe === 'function') window.initGlobe();
+        });
+      } else {
+        requestAnimationFrame(() => {
+          if (typeof window.resizeGlobe === 'function') window.resizeGlobe();
+        });
+      }
     }
   }
 
@@ -721,20 +740,17 @@
     const col = getHC(d.intensity);
     document.getElementById('upCountryName').textContent = d.name + (d.fastEntry ? ' ⚡' : '');
     document.getElementById('upRegion').textContent = d.region + (d.contractType ? ' · ' + d.contractType : '');
-    // intensity bar
     const iw = document.getElementById('upIntensityWrap');
     iw.style.display = 'block';
     document.getElementById('upIntensityVal').textContent = d.intensity;
     const fill = document.getElementById('upIntensityFill');
     fill.style.width = d.intensity + '%';
     fill.style.background = col;
-    // kpis
     document.getElementById('upKpiGrid').style.display = 'grid';
-    document.getElementById('upJobs').textContent     = d.jobs     ?? '—';
-    document.getElementById('upFreelance').textContent= d.freelance ?? '—';
-    document.getElementById('upContract').textContent = d.contract  ?? '—';
-    document.getElementById('upSalary').textContent   = d.salary    ?? '—';
-    // roles
+    document.getElementById('upJobs').textContent      = d.jobs     ?? '—';
+    document.getElementById('upFreelance').textContent = d.freelance ?? '—';
+    document.getElementById('upContract').textContent  = d.contract  ?? '—';
+    document.getElementById('upSalary').textContent    = d.salary    ?? '—';
     const rw = document.getElementById('upRolesWrap');
     const rl = document.getElementById('upRoleList');
     if (d.topRoles && d.topRoles.length) {
@@ -749,7 +765,6 @@
           <span class="up-role-note">${r.note||''}</span>
         </div>`).join('');
     } else { rw.style.display = 'none'; }
-    // cities drill-down
     const cp = document.getElementById('cityPanel');
     const cl = document.getElementById('cityList');
     if (d.cities && d.cities.length) {
@@ -761,7 +776,6 @@
           <span class="city-score" style="color:${getHC(c.score)}">${c.score}</span>
         </div>`).join('');
     } else { cp.style.display = 'none'; }
-    // tags + note
     document.getElementById('upTags').innerHTML = (d.signals||[]).map(s=>`<span class="up-tag">${s}</span>`).join('');
     document.getElementById('upNote').textContent = d.note || '';
   }
