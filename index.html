@@ -4,73 +4,96 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CyberRemote Monitor — World Jobs Intelligence</title>
-  <meta name="description" content="Monitor mundial interactivo de empleo remoto junior en ciberseguridad: mapa coroplético, ranking de mercados, signal feed y dashboard tipo intelligence board." />
+  <meta name="description" content="Monitor mundial interactivo de empleo remoto junior en ciberseguridad." />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="styles.css" />
   <style>
     #map { height: 540px; width: 100%; background: #101e30; border-radius: 12px; }
 
     /* ── REGIONAL INTELLIGENCE BOARD ── */
-    .rib-section { background: #070f1a; padding: 3rem 0 4rem; border-top: 1px solid #1e3a5f; }
-    .rib-header { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; }
-    .rib-header h2 { font-size:1.5rem; color:#dbe7ff; margin:0; }
-    .rib-header .badge { background:#1e3a5f; color:#0ea5e9; font-size:.72rem; font-weight:700;
-      padding:.25rem .65rem; border-radius:999px; letter-spacing:.08em; text-transform:uppercase; }
+    .rib { background:#070f1a; padding:3.5rem 0 4rem; border-top:1px solid #1e3a5f; }
+    .rib-header { display:flex; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap; }
+    .rib-header h2 { font-size:1.45rem; color:#dbe7ff; margin:0; }
+    .rib-badge { background:#1e3a5f; color:#0ea5e9; font-size:.7rem; font-weight:700;
+      padding:.22rem .6rem; border-radius:999px; letter-spacing:.08em; text-transform:uppercase; }
 
     /* KPI strip */
-    .rib-kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2.5rem; }
-    @media(max-width:700px){ .rib-kpi-strip{ grid-template-columns:repeat(2,1fr); } }
-    .rib-kpi { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:12px; padding:1.1rem 1.4rem;
-      display:flex; flex-direction:column; gap:.25rem; }
-    .rib-kpi .rk-label { font-size:.72rem; color:#64748b; text-transform:uppercase; letter-spacing:.07em; }
-    .rib-kpi .rk-val   { font-size:2rem; font-weight:800; color:#dbe7ff; line-height:1; }
-    .rib-kpi .rk-sub   { font-size:.72rem; color:#4ade80; }
+    .rib-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2.5rem; }
+    @media(max-width:700px){ .rib-kpis{ grid-template-columns:repeat(2,1fr); } }
+    .rib-kpi { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:12px;
+      padding:1.1rem 1.3rem; display:flex; flex-direction:column; gap:.2rem; }
+    .rib-kpi .rk-lbl { font-size:.7rem; color:#64748b; text-transform:uppercase; letter-spacing:.07em; }
+    .rib-kpi .rk-val { font-size:1.9rem; font-weight:800; color:#dbe7ff; line-height:1.1; }
+    .rib-kpi .rk-sub { font-size:.7rem; color:#4ade80; }
 
-    /* Charts row */
-    .rib-charts { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2.5rem; }
-    @media(max-width:900px){ .rib-charts{ grid-template-columns:1fr; } }
-    .rib-chart-card { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:14px;
-      padding:1.4rem 1.6rem; }
-    .rib-chart-title { font-size:.8rem; font-weight:700; color:#64748b;
-      text-transform:uppercase; letter-spacing:.09em; margin-bottom:1.2rem; }
+    /* Grid 2 cols for charts */
+    .rib-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; margin-bottom:1.4rem; }
+    @media(max-width:900px){ .rib-grid2{ grid-template-columns:1fr; } }
 
-    /* Bar chart inline */
-    .ibar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.7rem; }
-    .ibar-label { font-size:.75rem; color:#a0aec0; min-width:120px; white-space:nowrap;
-      overflow:hidden; text-overflow:ellipsis; }
+    /* Card base */
+    .rib-card { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:14px; padding:1.4rem 1.5rem; }
+    .rib-card-title { font-size:.72rem; font-weight:700; color:#64748b;
+      text-transform:uppercase; letter-spacing:.09em; margin-bottom:1.1rem; }
+
+    /* Horizontal intensity bar */
+    .ibar { display:flex; align-items:center; gap:.65rem; margin-bottom:.6rem; }
+    .ibar-lbl { font-size:.74rem; color:#a0aec0; min-width:128px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .ibar-track { flex:1; background:#1e3a5f; border-radius:6px; height:8px; overflow:hidden; }
-    .ibar-fill  { height:100%; border-radius:6px; transition:width .4s ease; }
-    .ibar-val   { font-size:.75rem; color:#dbe7ff; min-width:38px; text-align:right;
-      font-weight:700; }
+    .ibar-fill  { height:100%; border-radius:6px; }
+    .ibar-val   { font-size:.74rem; color:#dbe7ff; min-width:36px; text-align:right; font-weight:700; }
+    .ibar-sub   { font-size:.67rem; color:#64748b; min-width:56px; text-align:right; }
 
     /* Stacked bar */
-    .sbar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.65rem; }
-    .sbar-label { font-size:.74rem; color:#a0aec0; min-width:110px; }
-    .sbar-track { flex:1; display:flex; border-radius:6px; overflow:hidden; height:12px; }
-    .sbar-seg   { height:100%; transition:width .4s ease; }
-    .sbar-total { font-size:.74rem; color:#dbe7ff; min-width:32px; text-align:right; font-weight:700; }
+    .sbar { display:flex; align-items:center; gap:.65rem; margin-bottom:.55rem; }
+    .sbar-lbl { font-size:.73rem; color:#a0aec0; min-width:116px; }
+    .sbar-track { flex:1; display:flex; border-radius:6px; overflow:hidden; height:11px; }
+    .sbar-seg   { height:100%; }
+    .sbar-tot   { font-size:.73rem; color:#dbe7ff; min-width:30px; text-align:right; font-weight:700; }
 
-    /* Table */
+    /* Legend row */
+    .rib-legend { display:flex; gap:.85rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .leg { display:flex; align-items:center; gap:.3rem; font-size:.7rem; color:#64748b; }
+    .leg-dot { width:9px; height:9px; border-radius:50%; }
+
+    /* Continent tabs */
+    .rib-tabs { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .rib-tab { background:#0d1b2a; border:1px solid #1e3a5f; color:#64748b;
+      font-size:.74rem; font-weight:600; padding:.3rem .85rem; border-radius:999px;
+      cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .rib-tab.active, .rib-tab:hover { background:#1e3a5f; color:#dbe7ff; border-color:#0ea5e9; }
+
+    /* Country cards grid */
+    .rib-countries { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:1rem; }
+    .country-card { background:#0d1b2a; border:1px solid #1e3a5f; border-radius:12px;
+      padding:1rem 1.1rem; cursor:pointer; transition:border-color .2s; }
+    .country-card:hover { border-color:#0ea5e9; }
+    .cc-name { font-size:.88rem; font-weight:700; color:#dbe7ff; margin-bottom:.2rem; }
+    .cc-int  { font-size:.72rem; color:#64748b; margin-bottom:.5rem; }
+    .cc-bars { display:flex; flex-direction:column; gap:3px; }
+    .cc-bar  { display:flex; align-items:center; gap:.4rem; }
+    .cc-bar-lbl { font-size:.65rem; color:#64748b; min-width:58px; }
+    .cc-bar-track { flex:1; background:#1e3a5f; border-radius:4px; height:5px; overflow:hidden; }
+    .cc-bar-fill  { height:100%; border-radius:4px; }
+    .cc-bar-val   { font-size:.65rem; color:#94a3b8; min-width:18px; text-align:right; }
+    .cc-footer { display:flex; justify-content:space-between; align-items:center; margin-top:.55rem; }
+    .cc-salary { font-size:.66rem; color:#4ade80; }
+    .cc-fast   { font-size:.66rem; color:#f59e0b; }
+    .cc-pill   { display:inline-block; padding:.1rem .45rem; border-radius:999px;
+      font-size:.65rem; font-weight:700; }
+
+    /* Table exec */
     .rib-table-wrap { overflow-x:auto; }
-    .rib-table { width:100%; border-collapse:collapse; font-size:.8rem; }
-    .rib-table thead th { background:#0d1b2a; color:#64748b; font-size:.7rem; text-transform:uppercase;
-      letter-spacing:.08em; padding:.6rem 1rem; border-bottom:1px solid #1e3a5f; text-align:left; white-space:nowrap; }
+    .rib-table { width:100%; border-collapse:collapse; font-size:.79rem; }
+    .rib-table thead th { background:#070f1a; color:#64748b; font-size:.68rem;
+      text-transform:uppercase; letter-spacing:.08em; padding:.55rem .9rem;
+      border-bottom:1px solid #1e3a5f; text-align:left; white-space:nowrap; }
     .rib-table tbody tr { border-bottom:1px solid #0f2540; transition:background .15s; }
     .rib-table tbody tr:hover { background:#0d1b2a; }
-    .rib-table tbody td { padding:.65rem 1rem; color:#dbe7ff; vertical-align:middle; white-space:nowrap; }
-    .rib-table .td-region { color:#dbe7ff; font-weight:700; }
-    .rib-table .td-int   { font-size:1rem; font-weight:800; }
-    .intensity-pill { display:inline-block; padding:.2rem .65rem; border-radius:999px;
-      font-size:.72rem; font-weight:700; }
-    .td-leader { color:#4ade80; font-size:.78rem; }
-    .td-num    { color:#94a3b8; }
-    .td-fast span { background:#1e3a5f; color:#f59e0b; font-size:.7rem;
-      padding:.15rem .5rem; border-radius:999px; font-weight:700; }
-
-    /* Legend pills */
-    .rib-legend { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
-    .leg-item   { display:flex; align-items:center; gap:.35rem; font-size:.72rem; color:#64748b; }
-    .leg-dot    { width:10px; height:10px; border-radius:50%; }
+    .rib-table tbody td { padding:.6rem .9rem; color:#dbe7ff; vertical-align:middle; white-space:nowrap; }
+    .ipill { display:inline-block; padding:.18rem .6rem; border-radius:999px; font-size:.7rem; font-weight:800; }
+    .td-lead { color:#4ade80; font-size:.76rem; }
+    .td-num  { color:#94a3b8; }
+    .td-f    { color:#f59e0b; font-size:.7rem; font-weight:700; }
   </style>
 </head>
 <body>
@@ -104,6 +127,10 @@
           <button class="btn btn-secondary" onclick="jumpRegion('Europe')">Europa</button>
           <button class="btn btn-secondary" onclick="jumpRegion('LATAM')">LATAM</button>
           <button class="btn btn-secondary" onclick="jumpRegion('NorthAmerica')">Norteamérica</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('Asia')">Asia</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('MiddleEast')">Oriente Medio</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('Africa')">África</button>
+          <button class="btn btn-secondary" onclick="jumpRegion('Oceania')">Oceanía</button>
           <button class="btn btn-secondary" onclick="jumpRegion('Arctic')">🧊 Ártico</button>
         </div>
         <div class="hero-stats">
@@ -114,18 +141,9 @@
         </div>
       </div>
       <div class="panel hero-side">
-        <div class="mini">
-          <h3>🔴 Heatmap por intensidad</h3>
-          <p>Más color = más intensidad de contratación real. El mapa usa coropléticos con gradiente de 5 niveles para identificar mercados calientes de un vistazo.</p>
-        </div>
-        <div class="mini">
-          <h3>🎛️ Filtros de contratación</h3>
-          <p>Filtra por <strong>Empleo fijo</strong>, <strong>Freelance</strong>, <strong>Obra/Contrato</strong> o <strong>Capacitación</strong>. El mapa y el ranking se actualizan en tiempo real.</p>
-        </div>
-        <div class="mini">
-          <h3>⚡ Entrada rápida</h3>
-          <p>Los países marcados con ⚡ tienen menor barrera de entrada para contratistas y juniors con experiencia básica.</p>
-        </div>
+        <div class="mini"><h3>🔴 Heatmap por intensidad</h3><p>Más color = más intensidad de contratación real. El mapa usa coropléticos con gradiente de 5 niveles para identificar mercados calientes.</p></div>
+        <div class="mini"><h3>🎛️ Filtros de contratación</h3><p>Filtra por <strong>Empleo fijo</strong>, <strong>Freelance</strong>, <strong>Obra/Contrato</strong> o <strong>Capacitación</strong>. El mapa y el ranking se actualizan en tiempo real.</p></div>
+        <div class="mini"><h3>⚡ Entrada rápida</h3><p>Los países marcados con ⚡ tienen menor barrera de entrada para contratistas y juniors con experiencia básica.</p></div>
       </div>
     </div>
   </header>
@@ -138,7 +156,6 @@
           <p>Heatmap mundial de contratación en ciberseguridad. Haz clic en un país para ver ruta, intensidad, tipo de contrato y señales tácticas.</p>
         </div>
       </div>
-
       <div class="monitor-layout">
         <div class="map-wrap">
           <div class="toolbar">
@@ -159,7 +176,6 @@
           </div>
           <div id="map"></div>
         </div>
-
         <aside class="sidebar">
           <div>
             <div class="side-title">Panel de país</div>
@@ -178,12 +194,9 @@
           </div>
         </aside>
       </div>
-
       <div class="dashboard-grid" id="insights">
         <div class="cards">
-          <div class="section-head dash-head">
-            <h2 class="sub-h2">KPIs del radar</h2>
-          </div>
+          <div class="section-head dash-head"><h2 class="sub-h2">KPIs del radar</h2></div>
           <div class="mini-grid">
             <div class="kpi"><div class="label">Europa</div><div class="value" id="kpiEurope">0</div></div>
             <div class="kpi"><div class="label">LATAM</div><div class="value" id="kpiLatam">0</div></div>
@@ -196,264 +209,307 @@
           </div>
         </div>
         <div class="feed" id="signals">
-          <div class="section-head dash-head">
-            <h2 class="sub-h2">Signal feed — contratación activa</h2>
-          </div>
+          <div class="section-head dash-head"><h2 class="sub-h2">Signal feed — contratación activa</h2></div>
           <div class="feed-list" id="feedList"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
+  <!-- ══════════════════════════════════════════
        REGIONAL INTELLIGENCE BOARD
-  ══════════════════════════════════════════════ -->
-  <section class="rib-section" id="regional">
+  ══════════════════════════════════════════ -->
+  <section class="rib" id="regional">
     <div class="container">
 
       <div class="rib-header">
         <h2>🌍 Regional Intelligence Board</h2>
-        <span class="badge">7 regiones · datos 2026</span>
+        <span class="rib-badge">8 continentes · 45 países · datos verificados 2026</span>
       </div>
 
-      <!-- KPI strip -->
-      <div class="rib-kpi-strip">
+      <!-- KPI strip global -->
+      <div class="rib-kpis">
         <div class="rib-kpi">
-          <span class="rk-label">Total oportunidades</span>
-          <span class="rk-val">1 592</span>
+          <span class="rk-lbl">Total oportunidades</span>
+          <span class="rk-val">2 284</span>
           <span class="rk-sub">↑ empleo + freelance + contratos</span>
         </div>
         <div class="rib-kpi">
-          <span class="rk-label">Intensidad promedio global</span>
-          <span class="rk-val">69.4</span>
+          <span class="rk-lbl">Intensidad promedio global</span>
+          <span class="rk-val">68.2</span>
           <span class="rk-sub">/ 100 · escala mercado activo</span>
         </div>
         <div class="rib-kpi">
-          <span class="rk-label">Países cubiertos</span>
-          <span class="rk-val">33</span>
-          <span class="rk-sub">distribuidos en 7 regiones</span>
+          <span class="rk-lbl">Países monitoreados</span>
+          <span class="rk-val">45</span>
+          <span class="rk-sub">en 8 regiones geográficas</span>
         </div>
         <div class="rib-kpi">
-          <span class="rk-label">Entrada rápida disponible</span>
-          <span class="rk-val">22</span>
-          <span class="rk-sub">países con barrera baja</span>
+          <span class="rk-lbl">Países con entrada rápida</span>
+          <span class="rk-val">31</span>
+          <span class="rk-sub">barrera baja para juniors</span>
         </div>
       </div>
 
-      <!-- Charts row -->
-      <div class="rib-charts">
+      <!-- Chart row: Intensidad + Modalidades -->
+      <div class="rib-grid2">
 
-        <!-- Chart 1: Intensidad promedio -->
-        <div class="rib-chart-card">
-          <div class="rib-chart-title">📊 Intensidad de mercado por región (0–100)</div>
-          <div id="chart-intensity">
-            <div class="ibar-row">
-              <span class="ibar-label">Asia Occidental</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:78.7%;background:#00c9a7"></div></div>
-              <span class="ibar-val">78.7</span>
-            </div>
-            <div class="ibar-row">
-              <span class="ibar-label">Europa</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:76.3%;background:#4ade80"></div></div>
-              <span class="ibar-val">76.3</span>
-            </div>
-            <div class="ibar-row">
-              <span class="ibar-label">Asia Meridional</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:76%;background:#f59e0b"></div></div>
-              <span class="ibar-val">76.0</span>
-            </div>
-            <div class="ibar-row">
-              <span class="ibar-label">Australia / NZ</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:75%;background:#0ea5e9"></div></div>
-              <span class="ibar-val">75.0</span>
-            </div>
-            <div class="ibar-row">
-              <span class="ibar-label">Asia Oriental</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:72%;background:#a78bfa"></div></div>
-              <span class="ibar-val">72.0</span>
-            </div>
-            <div class="ibar-row">
-              <span class="ibar-label">Áf. Subsahariana</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:56.3%;background:#f87171"></div></div>
-              <span class="ibar-val">56.3</span>
-            </div>
-            <div class="ibar-row">
-              <span class="ibar-label">Áf. Septentrional</span>
-              <div class="ibar-track"><div class="ibar-fill" style="width:51.2%;background:#38bdf8"></div></div>
-              <span class="ibar-val">51.2</span>
-            </div>
+        <!-- Chart 1: Intensidad por continente -->
+        <div class="rib-card">
+          <div class="rib-card-title">📊 Intensidad promedio por región (0–100)</div>
+
+          <!-- N. América 91.5 -->
+          <div class="ibar">
+            <span class="ibar-lbl">N. América</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:91.5%;background:#16a34a"></div></div>
+            <span class="ibar-val">91.5</span>
+            <span class="ibar-sub">2 países</span>
+          </div>
+          <!-- Asia Occidental 78.7 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Asia Occidental</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:78.7%;background:#00c9a7"></div></div>
+            <span class="ibar-val">78.7</span>
+            <span class="ibar-sub">3 países</span>
+          </div>
+          <!-- Europa 76.3 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Europa</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:76.3%;background:#4ade80"></div></div>
+            <span class="ibar-val">76.3</span>
+            <span class="ibar-sub">16 países</span>
+          </div>
+          <!-- Asia Meridional 76.0 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Asia Meridional</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:76%;background:#4ade80"></div></div>
+            <span class="ibar-val">76.0</span>
+            <span class="ibar-sub">1 país</span>
+          </div>
+          <!-- Australia / NZ 75.0 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Australia / NZ</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:75%;background:#f59e0b"></div></div>
+            <span class="ibar-val">75.0</span>
+            <span class="ibar-sub">2 países</span>
+          </div>
+          <!-- Asia Oriental 72.0 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Asia Oriental</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:72%;background:#0ea5e9"></div></div>
+            <span class="ibar-val">72.0</span>
+            <span class="ibar-sub">4 países</span>
+          </div>
+          <!-- LATAM 60.3 -->
+          <div class="ibar">
+            <span class="ibar-lbl">LATAM</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:60.3%;background:#a78bfa"></div></div>
+            <span class="ibar-val">60.3</span>
+            <span class="ibar-sub">11 países</span>
+          </div>
+          <!-- Áf. Subsahariana 56.3 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Áf. Subsahariana</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:56.3%;background:#f87171"></div></div>
+            <span class="ibar-val">56.3</span>
+            <span class="ibar-sub">3 países</span>
+          </div>
+          <!-- Áf. Septentrional 51.2 -->
+          <div class="ibar">
+            <span class="ibar-lbl">Áf. Septentrional</span>
+            <div class="ibar-track"><div class="ibar-fill" style="width:51.2%;background:#38bdf8"></div></div>
+            <span class="ibar-val">51.2</span>
+            <span class="ibar-sub">4 países</span>
           </div>
         </div>
 
-        <!-- Chart 2: Modalidades stacked -->
-        <div class="rib-chart-card">
-          <div class="rib-chart-title">💼 Oportunidades por modalidad y región</div>
+        <!-- Chart 2: Oportunidades stacked -->
+        <div class="rib-card">
+          <div class="rib-card-title">💼 Oportunidades totales por región (stacked)</div>
           <div class="rib-legend">
-            <span class="leg-item"><span class="leg-dot" style="background:#4ade80"></span>Empleos</span>
-            <span class="leg-item"><span class="leg-dot" style="background:#f59e0b"></span>Freelance</span>
-            <span class="leg-item"><span class="leg-dot" style="background:#0ea5e9"></span>Contratos</span>
+            <span class="leg"><span class="leg-dot" style="background:#4ade80"></span>Empleos</span>
+            <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>Freelance</span>
+            <span class="leg"><span class="leg-dot" style="background:#0ea5e9"></span>Contratos</span>
           </div>
-          <div id="chart-modality">
-            <!-- Europa 843 total -->
-            <div class="sbar-row">
-              <span class="sbar-label">Europa</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:35.7%;background:#4ade80" title="Empleos 301"></div>
-                <div class="sbar-seg" style="width:34.5%;background:#f59e0b" title="Freelance 291"></div>
-                <div class="sbar-seg" style="width:29.8%;background:#0ea5e9" title="Contratos 251"></div>
-              </div>
-              <span class="sbar-total">843</span>
+          <!-- Europa 843 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Europa</span>
+            <div class="sbar-track" style="width:100%">
+              <div class="sbar-seg" style="width:35.7%;background:#4ade80" title="Empleos 301"></div>
+              <div class="sbar-seg" style="width:34.5%;background:#f59e0b" title="Freelance 291"></div>
+              <div class="sbar-seg" style="width:29.8%;background:#0ea5e9" title="Contratos 251"></div>
             </div>
-            <!-- Asia Oriental 210 -->
-            <div class="sbar-row">
-              <span class="sbar-label">Asia Oriental</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:35.2%;background:#4ade80" title="Empleos 74"></div>
-                <div class="sbar-seg" style="width:35.2%;background:#f59e0b" title="Freelance 74"></div>
-                <div class="sbar-seg" style="width:29.5%;background:#0ea5e9" title="Contratos 62"></div>
-              </div>
-              <span class="sbar-total">210</span>
+            <span class="sbar-tot">843</span>
+          </div>
+          <!-- LATAM 357 -->
+          <div class="sbar">
+            <span class="sbar-lbl">LATAM</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:31%;background:#4ade80" title="Empleos 113"></div>
+              <div class="sbar-seg" style="width:41.5%;background:#f59e0b" title="Freelance 149"></div>
+              <div class="sbar-seg" style="width:27.5%;background:#0ea5e9" title="Contratos 98"></div>
             </div>
-            <!-- Asia Occidental 164 -->
-            <div class="sbar-row">
-              <span class="sbar-label">Asia Occidental</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:38.4%;background:#4ade80" title="Empleos 63"></div>
-                <div class="sbar-seg" style="width:27.4%;background:#f59e0b" title="Freelance 45"></div>
-                <div class="sbar-seg" style="width:34.1%;background:#0ea5e9" title="Contratos 56"></div>
-              </div>
-              <span class="sbar-total">164</span>
+            <span class="sbar-tot">357</span>
+          </div>
+          <!-- N. América 272 -->
+          <div class="sbar">
+            <span class="sbar-lbl">N. América</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:26.5%;background:#4ade80" title="Empleos 72"></div>
+              <div class="sbar-seg" style="width:21.3%;background:#f59e0b" title="Freelance 58"></div>
+              <div class="sbar-seg" style="width:19.1%;background:#0ea5e9" title="Contratos 52"></div>
             </div>
-            <!-- Áf. Septentrional 110 -->
-            <div class="sbar-row">
-              <span class="sbar-label">Áf. Septentrional</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:26.4%;background:#4ade80" title="Empleos 29"></div>
-                <div class="sbar-seg" style="width:47.3%;background:#f59e0b" title="Freelance 52"></div>
-                <div class="sbar-seg" style="width:26.4%;background:#0ea5e9" title="Contratos 29"></div>
-              </div>
-              <span class="sbar-total">110</span>
+            <span class="sbar-tot">272</span>
+          </div>
+          <!-- Asia Oriental 210 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Asia Oriental</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:35.2%;background:#4ade80" title="Empleos 74"></div>
+              <div class="sbar-seg" style="width:35.2%;background:#f59e0b" title="Freelance 74"></div>
+              <div class="sbar-seg" style="width:29.5%;background:#0ea5e9" title="Contratos 62"></div>
             </div>
-            <!-- Áf. Subsahariana 96 -->
-            <div class="sbar-row">
-              <span class="sbar-label">Áf. Subsahariana</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:28.1%;background:#4ade80" title="Empleos 27"></div>
-                <div class="sbar-seg" style="width:45.8%;background:#f59e0b" title="Freelance 44"></div>
-                <div class="sbar-seg" style="width:26%;background:#0ea5e9" title="Contratos 25"></div>
-              </div>
-              <span class="sbar-total">96</span>
+            <span class="sbar-tot">210</span>
+          </div>
+          <!-- Asia Occidental 164 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Asia Occidental</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:38.4%;background:#4ade80" title="Empleos 63"></div>
+              <div class="sbar-seg" style="width:27.4%;background:#f59e0b" title="Freelance 45"></div>
+              <div class="sbar-seg" style="width:34.1%;background:#0ea5e9" title="Contratos 56"></div>
             </div>
-            <!-- Australia/NZ 86 -->
-            <div class="sbar-row">
-              <span class="sbar-label">Australia / NZ</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:39.5%;background:#4ade80" title="Empleos 34"></div>
-                <div class="sbar-seg" style="width:32.6%;background:#f59e0b" title="Freelance 28"></div>
-                <div class="sbar-seg" style="width:27.9%;background:#0ea5e9" title="Contratos 24"></div>
-              </div>
-              <span class="sbar-total">86</span>
+            <span class="sbar-tot">164</span>
+          </div>
+          <!-- Áf. Septentrional 110 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Áf. Septentrional</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:26.4%;background:#4ade80" title="Empleos 29"></div>
+              <div class="sbar-seg" style="width:47.3%;background:#f59e0b" title="Freelance 52"></div>
+              <div class="sbar-seg" style="width:26.4%;background:#0ea5e9" title="Contratos 29"></div>
             </div>
-            <!-- Asia Meridional 83 -->
-            <div class="sbar-row">
-              <span class="sbar-label">Asia Meridional</span>
-              <div class="sbar-track">
-                <div class="sbar-seg" style="width:24.1%;background:#4ade80" title="Empleos 20"></div>
-                <div class="sbar-seg" style="width:42.2%;background:#f59e0b" title="Freelance 35"></div>
-                <div class="sbar-seg" style="width:33.7%;background:#0ea5e9" title="Contratos 28"></div>
-              </div>
-              <span class="sbar-total">83</span>
+            <span class="sbar-tot">110</span>
+          </div>
+          <!-- Áf. Subsahariana 96 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Áf. Subsahariana</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:28.1%;background:#4ade80" title="Empleos 27"></div>
+              <div class="sbar-seg" style="width:45.8%;background:#f59e0b" title="Freelance 44"></div>
+              <div class="sbar-seg" style="width:26%;background:#0ea5e9" title="Contratos 25"></div>
             </div>
+            <span class="sbar-tot">96</span>
+          </div>
+          <!-- Australia/NZ 86 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Australia / NZ</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:39.5%;background:#4ade80" title="Empleos 34"></div>
+              <div class="sbar-seg" style="width:32.6%;background:#f59e0b" title="Freelance 28"></div>
+              <div class="sbar-seg" style="width:27.9%;background:#0ea5e9" title="Contratos 24"></div>
+            </div>
+            <span class="sbar-tot">86</span>
+          </div>
+          <!-- Asia Meridional 83 -->
+          <div class="sbar">
+            <span class="sbar-lbl">Asia Meridional</span>
+            <div class="sbar-track">
+              <div class="sbar-seg" style="width:24.1%;background:#4ade80" title="Empleos 20"></div>
+              <div class="sbar-seg" style="width:42.2%;background:#f59e0b" title="Freelance 35"></div>
+              <div class="sbar-seg" style="width:33.7%;background:#0ea5e9" title="Contratos 28"></div>
+            </div>
+            <span class="sbar-tot">83</span>
           </div>
         </div>
       </div>
 
-      <!-- Tabla ejecutiva -->
-      <div class="rib-chart-card">
-        <div class="rib-chart-title">🗂️ Tabla ejecutiva — resumen completo por región · 2026</div>
+      <!-- Tabla ejecutiva regional -->
+      <div class="rib-card" style="margin-bottom:1.4rem">
+        <div class="rib-card-title">🗂️ Tabla ejecutiva — resumen por región · 2026</div>
         <div class="rib-table-wrap">
           <table class="rib-table">
             <thead>
               <tr>
-                <th>Región</th>
-                <th>Países</th>
-                <th>Intensidad</th>
-                <th>Empleos</th>
-                <th>Freelance</th>
-                <th>Contratos</th>
-                <th>Formación</th>
-                <th>Total</th>
-                <th>⚡ Rápida</th>
-                <th>🏆 Líder</th>
+                <th>Región</th><th>Países</th><th>Intensidad</th>
+                <th>Empleos</th><th>Freelance</th><th>Contratos</th><th>Formación</th>
+                <th>Total</th><th>⚡</th><th>🏆 Líder</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="td-region">Asia Occidental</td>
-                <td class="td-num">3</td>
-                <td><span class="intensity-pill" style="background:rgba(0,201,167,.15);color:#00c9a7">78.7</span></td>
+                <td><strong>N. América</strong></td><td class="td-num">2</td>
+                <td><span class="ipill" style="background:rgba(22,163,74,.18);color:#16a34a">91.5</span></td>
+                <td class="td-num">72</td><td class="td-num">58</td><td class="td-num">52</td><td class="td-num">29</td>
+                <td><strong>272</strong></td><td class="td-f">2</td><td class="td-lead">EE.UU.</td>
+              </tr>
+              <tr>
+                <td><strong>Asia Occidental</strong></td><td class="td-num">3</td>
+                <td><span class="ipill" style="background:rgba(0,201,167,.18);color:#00c9a7">78.7</span></td>
                 <td class="td-num">63</td><td class="td-num">45</td><td class="td-num">56</td><td class="td-num">23</td>
-                <td><strong style="color:#dbe7ff">164</strong></td>
-                <td class="td-fast"><span>1</span></td>
-                <td class="td-leader">Israel</td>
+                <td><strong>164</strong></td><td class="td-f">1</td><td class="td-lead">Israel</td>
               </tr>
               <tr>
-                <td class="td-region">Europa</td>
-                <td class="td-num">16</td>
-                <td><span class="intensity-pill" style="background:rgba(74,222,128,.15);color:#4ade80">76.3</span></td>
+                <td><strong>Europa</strong></td><td class="td-num">16</td>
+                <td><span class="ipill" style="background:rgba(74,222,128,.18);color:#4ade80">76.3</span></td>
                 <td class="td-num">301</td><td class="td-num">291</td><td class="td-num">251</td><td class="td-num">140</td>
-                <td><strong style="color:#dbe7ff">843</strong></td>
-                <td class="td-fast"><span>10</span></td>
-                <td class="td-leader">Reino Unido</td>
+                <td><strong>843</strong></td><td class="td-f">10</td><td class="td-lead">Reino Unido</td>
               </tr>
               <tr>
-                <td class="td-region">Asia Meridional</td>
-                <td class="td-num">1</td>
-                <td><span class="intensity-pill" style="background:rgba(245,158,11,.15);color:#f59e0b">76.0</span></td>
+                <td><strong>Asia Meridional</strong></td><td class="td-num">1</td>
+                <td><span class="ipill" style="background:rgba(74,222,128,.18);color:#4ade80">76.0</span></td>
                 <td class="td-num">20</td><td class="td-num">35</td><td class="td-num">28</td><td class="td-num">20</td>
-                <td><strong style="color:#dbe7ff">83</strong></td>
-                <td class="td-fast"><span>1</span></td>
-                <td class="td-leader">India</td>
+                <td><strong>83</strong></td><td class="td-f">1</td><td class="td-lead">India</td>
               </tr>
               <tr>
-                <td class="td-region">Australia / NZ</td>
-                <td class="td-num">2</td>
-                <td><span class="intensity-pill" style="background:rgba(14,165,233,.15);color:#0ea5e9">75.0</span></td>
+                <td><strong>Australia / NZ</strong></td><td class="td-num">2</td>
+                <td><span class="ipill" style="background:rgba(245,158,11,.18);color:#f59e0b">75.0</span></td>
                 <td class="td-num">34</td><td class="td-num">28</td><td class="td-num">24</td><td class="td-num">15</td>
-                <td><strong style="color:#dbe7ff">86</strong></td>
-                <td class="td-fast"><span>0</span></td>
-                <td class="td-leader">Australia</td>
+                <td><strong>86</strong></td><td class="td-f">0</td><td class="td-lead">Australia</td>
               </tr>
               <tr>
-                <td class="td-region">Asia Oriental</td>
-                <td class="td-num">4</td>
-                <td><span class="intensity-pill" style="background:rgba(167,139,250,.15);color:#a78bfa">72.0</span></td>
+                <td><strong>Asia Oriental</strong></td><td class="td-num">4</td>
+                <td><span class="ipill" style="background:rgba(14,165,233,.18);color:#0ea5e9">72.0</span></td>
                 <td class="td-num">74</td><td class="td-num">74</td><td class="td-num">62</td><td class="td-num">46</td>
-                <td><strong style="color:#dbe7ff">210</strong></td>
-                <td class="td-fast"><span>3</span></td>
-                <td class="td-leader">Singapur</td>
+                <td><strong>210</strong></td><td class="td-f">3</td><td class="td-lead">Singapur</td>
               </tr>
               <tr>
-                <td class="td-region">África Subsahariana</td>
-                <td class="td-num">3</td>
-                <td><span class="intensity-pill" style="background:rgba(248,113,113,.15);color:#f87171">56.3</span></td>
+                <td><strong>LATAM</strong></td><td class="td-num">11</td>
+                <td><span class="ipill" style="background:rgba(167,139,250,.18);color:#a78bfa">60.3</span></td>
+                <td class="td-num">113</td><td class="td-num">149</td><td class="td-num">98</td><td class="td-num">94</td>
+                <td><strong>357</strong></td><td class="td-f">10</td><td class="td-lead">Brasil</td>
+              </tr>
+              <tr>
+                <td><strong>Áf. Subsahariana</strong></td><td class="td-num">3</td>
+                <td><span class="ipill" style="background:rgba(248,113,113,.18);color:#f87171">56.3</span></td>
                 <td class="td-num">27</td><td class="td-num">44</td><td class="td-num">25</td><td class="td-num">27</td>
-                <td><strong style="color:#dbe7ff">96</strong></td>
-                <td class="td-fast"><span>3</span></td>
-                <td class="td-leader">Sudáfrica</td>
+                <td><strong>96</strong></td><td class="td-f">3</td><td class="td-lead">Sudáfrica</td>
               </tr>
               <tr>
-                <td class="td-region">África Septentrional</td>
-                <td class="td-num">4</td>
-                <td><span class="intensity-pill" style="background:rgba(56,189,248,.15);color:#38bdf8">51.2</span></td>
+                <td><strong>Áf. Septentrional</strong></td><td class="td-num">4</td>
+                <td><span class="ipill" style="background:rgba(56,189,248,.18);color:#38bdf8">51.2</span></td>
                 <td class="td-num">29</td><td class="td-num">52</td><td class="td-num">29</td><td class="td-num">34</td>
-                <td><strong style="color:#dbe7ff">110</strong></td>
-                <td class="td-fast"><span>4</span></td>
-                <td class="td-leader">Egipto</td>
+                <td><strong>110</strong></td><td class="td-f">4</td><td class="td-lead">Egipto</td>
               </tr>
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- Country cards por continente con tabs -->
+      <div class="rib-card">
+        <div class="rib-card-title">🌐 Detalle por país — todos los continentes</div>
+        <div class="rib-tabs">
+          <button class="rib-tab active" onclick="filterCards('all',this)">🌐 Todos</button>
+          <button class="rib-tab" onclick="filterCards('North America',this)">🇺🇸 N. América</button>
+          <button class="rib-tab" onclick="filterCards('Europe',this)">🇪🇺 Europa</button>
+          <button class="rib-tab" onclick="filterCards('LATAM',this)">🌎 LATAM</button>
+          <button class="rib-tab" onclick="filterCards('Asia',this)">🌏 Asia</button>
+          <button class="rib-tab" onclick="filterCards('Middle East',this)">🕌 Oriente Medio</button>
+          <button class="rib-tab" onclick="filterCards('Africa',this)">🌍 África</button>
+          <button class="rib-tab" onclick="filterCards('Oceania',this)">🦘 Oceanía</button>
+        </div>
+        <div class="rib-countries" id="ribCountries"></div>
       </div>
 
     </div>
@@ -473,5 +529,69 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="app.js"></script>
+  <script>
+  // ── Regional country cards ──────────────────────────────
+  function getHC(i){
+    if(i>=90)return'#16a34a';if(i>=75)return'#4ade80';
+    if(i>=60)return'#f59e0b';if(i>=45)return'#0ea5e9';return'#1e3a5f';
+  }
+  function renderCards(filter){
+    if(!window.dataset)return;
+    const wrap=document.getElementById('ribCountries');
+    wrap.innerHTML='';
+    const entries=Object.entries(window.dataset)
+      .filter(([,d])=>filter==='all'||d.region===filter||
+        (filter==='Asia'&&['Asia','Asia Oriental','Asia Meridional','Asia Occidental'].some(r=>d.region===r))||
+        (filter==='Middle East'&&d.region==='Middle East'))
+      .sort((a,b)=>b[1].intensity-a[1].intensity);
+    if(!entries.length){wrap.innerHTML='<p style="color:#64748b;font-size:.8rem">No hay países en esta región en el dataset actual.</p>';return;}
+    entries.forEach(([code,d])=>{
+      const maxVal=Math.max(d.jobs,d.freelance,d.contract,1);
+      const col=getHC(d.intensity);
+      const card=document.createElement('div');
+      card.className='country-card';
+      card.setAttribute('data-region',d.region);
+      card.onclick=()=>{updateCountryPanel(code);window.scrollTo({top:document.getElementById('monitor').offsetTop-60,behavior:'smooth'});}
+      card.innerHTML=`
+        <div class="cc-name">${d.name}${d.fastEntry?' <span style="color:#f59e0b;font-size:.7rem">⚡</span>':''}</div>
+        <div class="cc-int" style="color:${col}">${d.region} &bull; Intensidad: <strong style="color:${col}">${d.intensity}/100</strong></div>
+        <div class="cc-bars">
+          <div class="cc-bar">
+            <span class="cc-bar-lbl">Empleos</span>
+            <div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.jobs/maxVal*100}%;background:#4ade80"></div></div>
+            <span class="cc-bar-val">${d.jobs}</span>
+          </div>
+          <div class="cc-bar">
+            <span class="cc-bar-lbl">Freelance</span>
+            <div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.freelance/maxVal*100}%;background:#f59e0b"></div></div>
+            <span class="cc-bar-val">${d.freelance}</span>
+          </div>
+          <div class="cc-bar">
+            <span class="cc-bar-lbl">Contratos</span>
+            <div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.contract/maxVal*100}%;background:#0ea5e9"></div></div>
+            <span class="cc-bar-val">${d.contract}</span>
+          </div>
+        </div>
+        <div class="cc-footer">
+          <span class="cc-salary">${d.salary||''}</span>
+          <span class="cc-pill" style="background:rgba(${d.intensity>=75?'74,222,128':d.intensity>=60?'245,158,11':'14,165,233'},.15);color:${col}">${d.intensity}</span>
+        </div>
+      `;
+      wrap.appendChild(card);
+    });
+  }
+  function filterCards(region,btn){
+    document.querySelectorAll('.rib-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards(region);
+  }
+  // Init after dataset loads
+  const _origInit=window.init;
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>renderCards('all'),1200);
+  });
+  // Also hook into refreshAll
+  const _origRefresh=window.refreshAll;
+  </script>
 </body>
 </html>
