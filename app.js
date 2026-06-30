@@ -5,15 +5,58 @@ let map = null;
 let activeFilter = 'all';
 
 const nameToCode = {
+  // Americas
   'United States of America':'US','United States':'US',
   'Canada':'CA','Greenland':'GL',
   'Mexico':'MX','Colombia':'CO','Venezuela':'VE','Ecuador':'EC',
   'Peru':'PE','Bolivia':'BO','Brazil':'BR','Argentina':'AR',
-  'Chile':'CL','Guatemala':'GT','Costa Rica':'CR','Panama':'PA',
+  'Chile':'CL','Guatemala':'GT','Costa Rica':'CR',
   'Uruguay':'UY',
   'Guyana':'GY',
   'Suriname':'SR','Surinam':'SR',
   'French Guiana':'GF','Guyane':'GF','Guyane française':'GF',
+  // batch3 — LATAM / Caribbean
+  'Panama':'PA',
+  'Nicaragua':'NI',
+  'Honduras':'HN',
+  'El Salvador':'SV',
+  'Belize':'BZ',
+  'Jamaica':'JM',
+  'Trinidad and Tobago':'TT','Trinidad & Tobago':'TT',
+  'Puerto Rico':'PR',
+  'Haiti':'HT','Haïti':'HT',
+  'Dominican Republic':'DO','República Dominicana':'DO',
+  'Cuba':'CU',
+  'The Bahamas':'BS','Bahamas':'BS',
+  // batch3 — Europe
+  'Iceland':'IS',
+  'Lithuania':'LT',
+  'Latvia':'LV',
+  'Estonia':'EE',
+  'Finland':'FI',
+  'Belarus':'BY',
+  // batch3 — Africa
+  'Benin':'BJ','Bénin':'BJ',
+  'Togo':'TG',
+  'Ghana':'GH',
+  'Burkina Faso':'BF',
+  'Guinea':'GN',
+  'Gambia':'GM','The Gambia':'GM',
+  'Libya':'LY','Libyan Arab Jamahiriya':'LY',
+  'Eritrea':'ER',
+  'Rwanda':'RW',
+  'Djibouti':'DJ',
+  // batch3 — Middle East / Asia
+  'Yemen':'YE',
+  'Oman':'OM',
+  'Qatar':'QA',
+  'Kuwait':'KW',
+  'Syria':'SY','Syrian Arab Republic':'SY',
+  'Jordan':'JO',
+  'Georgia':'GE',
+  'Armenia':'AM',
+  'Azerbaijan':'AZ',
+  // Existing entries
   'United Kingdom':'GB','Germany':'DE','France':'FR','Spain':'ES',
   'Portugal':'PT','Italy':'IT','Belgium':'BE','Netherlands':'NL',
   'Poland':'PL','Czech Republic':'CZ','Czech Rep.':'CZ',
@@ -224,19 +267,23 @@ window.jumpRegion = jumpRegion;
 
 async function init() {
   try {
-    const [r1, r2, r3, r4] = await Promise.all([
+    const [r1, r2, r3, r4, r5] = await Promise.all([
       fetch('data/countries.json'),
       fetch('data/countries-extra.json'),
       fetch('data/africa-new.json'),
-      fetch('data/world-expansion.json')
+      fetch('data/world-expansion.json'),
+      fetch('data/world-batch3.json')
     ]);
-    if (!r1.ok) throw new Error('countries.json ' + r1.status);
-    if (!r2.ok) throw new Error('countries-extra.json ' + r2.status);
-    if (!r3.ok) throw new Error('africa-new.json ' + r3.status);
-    if (!r4.ok) throw new Error('world-expansion.json ' + r4.status);
+    if (!r1.ok) throw new Error('countries.json '      + r1.status);
+    if (!r2.ok) throw new Error('countries-extra.json '+ r2.status);
+    if (!r3.ok) throw new Error('africa-new.json '     + r3.status);
+    if (!r4.ok) throw new Error('world-expansion.json '+ r4.status);
+    if (!r5.ok) throw new Error('world-batch3.json '   + r5.status);
 
-    const [main, extra, africaNew, worldExp] = await Promise.all([r1.json(), r2.json(), r3.json(), r4.json()]);
-    dataset = { ...main, ...extra, ...africaNew, ...worldExp };
+    const [main, extra, africaNew, worldExp, batch3] = await Promise.all([
+      r1.json(), r2.json(), r3.json(), r4.json(), r5.json()
+    ]);
+    dataset = { ...main, ...extra, ...africaNew, ...worldExp, ...batch3 };
     window.dataset = dataset;
 
     // Init 2D map — attach to #map2d
