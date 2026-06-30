@@ -1,0 +1,16 @@
+{
+  "PA": {
+    "name": "Panama",
+    "region": "LATAM",
+    "contractType": "Hub financiero + Canal OT",
+    "intensity": 58,
+    "tier": 2,
+    "fastEntry": true,
+    "latlng": [8.99, -79.52],
+    "jobs": 16,
+    "freelance": 14,
+    "contract": 10,
+    "training": 8,
+    "salary": "USD 1,500–4,200/mes · $20–50/h",
+    "platforms": "LinkedIn PA · Computrabajo PA · Indeed PA · Workana",
+    "note": "Ciudad de Panamá: hub financiero Latinoamérica — más de 90 bancos y sedes regionales multinacionales (Ca
