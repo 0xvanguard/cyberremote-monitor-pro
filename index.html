@@ -7,6 +7,7 @@
   <meta name="description" content="Monitor mundial interactivo de empleo remoto junior en ciberseguridad." />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="junior-features.css" />
   <style>
     /* ─── UNIFIED MAP SHELL ─────────────────────────────── */
     .umap-section { background:#020817; padding:0; position:relative; }
@@ -17,7 +18,6 @@
     }
     .umap-title { font-size:1.1rem; font-weight:800; color:#dbe7ff; margin:0; }
     .umap-sub   { font-size:.72rem; color:#475569; margin:.2rem 0 0; }
-    /* toggle pill */
     .view-toggle {
       display:flex; background:#030d1a; border:1px solid #1e3a5f;
       border-radius:999px; overflow:hidden;
@@ -28,18 +28,15 @@
       white-space:nowrap;
     }
     .vt-btn.active { background:#0ea5e9; color:#000; }
-    /* wrapper that swaps 2D <-> 3D */
     .umap-stage {
       display:grid; grid-template-columns:1fr 360px; min-height:640px;
     }
     @media(max-width:960px){ .umap-stage{ grid-template-columns:1fr; } }
-    /* 2D canvas */
     #map2d {
       height:640px; width:100%;
       background:#101e30;
       display:block;
     }
-    /* 3D canvas */
     #globeCanvas {
       width:100%; height:640px;
       display:none;
@@ -47,7 +44,6 @@
       background:#020817;
     }
     #globeCanvas:active{ cursor:grabbing; }
-    /* Right info panel — shared by 2D & 3D */
     .umap-panel {
       border-left:1px solid #1e3a5f;
       background:#030d1a;
@@ -73,14 +69,10 @@
     .up-kpi .lbl { font-size:.62rem; color:#64748b; text-transform:uppercase; letter-spacing:.06em; }
     .up-kpi .val { font-size:1.4rem; font-weight:800; color:#dbe7ff; line-height:1.1; }
     .up-role-list { display:flex; flex-direction:column; gap:6px; }
-    .up-role {
-      display:flex; flex-direction:column; gap:2px;
-    }
+    .up-role { display:flex; flex-direction:column; gap:2px; }
     .up-role-top { display:flex; justify-content:space-between; align-items:center; }
     .up-role-name { font-size:.76rem; color:#dbe7ff; }
-    .up-role-track {
-      background:#1e3a5f; border-radius:4px; height:5px; overflow:hidden;
-    }
+    .up-role-track { background:#1e3a5f; border-radius:4px; height:5px; overflow:hidden; }
     .up-role-fill { height:100%; border-radius:4px; }
     .up-role-note { font-size:.64rem; color:#475569; }
     .up-tags { display:flex; flex-wrap:wrap; gap:.4rem; }
@@ -93,7 +85,6 @@
       height:7px; border-radius:5px; background:#1e3a5f; overflow:hidden; margin-top:.2rem;
     }
     .up-intensity-fill { height:100%; border-radius:5px; transition:width .4s ease; }
-    /* city sub-panel */
     #cityPanel {
       border-top:1px solid #1e3a5f;
       padding-top:.8rem;
@@ -109,12 +100,10 @@
     .city-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
     .city-name { font-size:.74rem; color:#dbe7ff; flex:1; }
     .city-score { font-size:.7rem; font-weight:700; min-width:24px; text-align:right; }
-    /* toolbar */
     .umap-toolbar {
       display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
       padding:.75rem 1.6rem; border-top:1px solid #1e3a5f20; background:#020817;
     }
-    /* globe controls overlay */
     .globe-controls-overlay {
       display:none;
       gap:.5rem; flex-wrap:wrap;
@@ -126,14 +115,12 @@
     }
     .gc-btn:hover { background:#1e3a5f; color:#dbe7ff; border-color:#0ea5e9; }
     .gc-btn.active { background:#0ea5e9; color:#000; border-color:#0ea5e9; font-weight:700; }
-    /* legend bar */
     .umap-legend {
       display:flex; gap:1rem; flex-wrap:wrap; align-items:center;
       padding:.55rem 1.6rem; background:#020817; border-bottom:1px solid #1e3a5f20;
     }
     .ul-item { display:flex; align-items:center; gap:.35rem; font-size:.65rem; color:#475569; }
     .ul-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-    /* Colombia section toggle */
     .co-toggle-row {
       display:flex; gap:.5rem; flex-wrap:wrap;
       padding:.6rem 1.6rem; border-top:1px solid #1e3a5f20; background:#020817;
@@ -146,8 +133,6 @@
     .co-toggle-btn:hover, .co-toggle-btn.active {
       background:#4ade8020; color:#4ade80; border-color:#4ade8060;
     }
-
-    /* ─── COLOMBIA EMBEDDED MAP ────────────────────────── */
     #colombiaSub {
       display:none;
       border-top:1px solid #1e3a5f30;
@@ -244,8 +229,6 @@
     }
     .co-scan-label { font-size:.58rem; font-weight:700; color:#0ea5e9; text-transform:uppercase; letter-spacing:.1em; }
     .co-scan-sub   { font-size:.62rem; color:#334155; }
-
-    /* ─── REGIONAL INTELLIGENCE BOARD ──────────────────── */
     .rib{background:#070f1a;padding:3.5rem 0 4rem;border-top:1px solid #1e3a5f;}
     .rib-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;}
     .rib-header h2{font-size:1.45rem;color:#dbe7ff;margin:0;}
@@ -308,6 +291,115 @@
   </style>
 </head>
 <body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       #1 ONBOARDING MODAL
+  ═══════════════════════════════════════════════════════ -->
+  <div id="onboardingModal">
+    <div class="ob-box">
+      <div class="ob-logo">🛰️</div>
+      <h2 class="ob-title">Bienvenido al CyberRemote Monitor</h2>
+      <p class="ob-sub">El radar de empleo remoto junior en ciberseguridad más completo. Aquí está todo lo que necesitas para comenzar tu carrera global desde cualquier lugar.</p>
+      <div class="ob-steps">
+        <div class="ob-step">
+          <div class="ob-step-num">1</div>
+          <div>
+            <div class="ob-step-title">🔍 Busca tu rol ideal</div>
+            <div class="ob-step-desc">Escribe "SOC", "GRC", "Cloud" o cualquier rol en la barra de búsqueda de la toolbar para ver qué países lo demandan más.</div>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">2</div>
+          <div>
+            <div class="ob-step-title">⚡ Filtra por Entrada Rápida</div>
+            <div class="ob-step-desc">Activa el filtro "⚡ Entrada rápida" en la toolbar para ver solo mercados con baja barrera de entrada para juniors.</div>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">3</div>
+          <div>
+            <div class="ob-step-title">🗺️ Clic en tu país objetivo</div>
+            <div class="ob-step-desc">Selecciona un país en el mapa para ver roles, certificaciones recomendadas, tiempo estimado y plataformas de aprendizaje.</div>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-step-num">4</div>
+          <div>
+            <div class="ob-step-title">📤 Exporta tu plan de carrera</div>
+            <div class="ob-step-desc">Agrega países a tu lista con el botón "+ Añadir a mi lista" y exporta un CSV con roles, certs y tiempos para planificar tu roadmap.</div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-actions">
+        <button class="ob-btn-primary" onclick="closeOnboarding(document.getElementById('ob-remember').checked)">Comenzar exploración →</button>
+        <span class="ob-glossary-link" onclick="closeOnboarding(false); openGlossary()">📖 Ver glosario</span>
+      </div>
+      <label class="ob-dont-show">
+        <input type="checkbox" id="ob-remember" /> No mostrar de nuevo
+      </label>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       #1b GLOSSARY DRAWER
+  ═══════════════════════════════════════════════════════ -->
+  <div id="glossaryDrawer">
+    <div class="gl-header">
+      <div class="gl-title">📖 Glosario para Juniors</div>
+      <button class="gl-close" onclick="closeGlossary()">✕</button>
+    </div>
+    <div class="gl-section">
+      <div class="gl-section-title">🔑 Roles principales</div>
+      <div class="gl-item"><div class="gl-term">SOC Analyst</div><div class="gl-def">Security Operations Center — monitoras alertas de seguridad en tiempo real. El rol más accesible para juniors. Demanda 24/7.</div></div>
+      <div class="gl-item"><div class="gl-term">GRC</div><div class="gl-def">Governance, Risk & Compliance — gestionas marcos normativos (ISO 27001, NIST). Perfil más analítico, ideal si prefieres evitar el lado técnico profundo.</div></div>
+      <div class="gl-item"><div class="gl-term">Pentester</div><div class="gl-def">Ethical Hacker — simulas ataques para encontrar vulnerabilidades. Requiere práctica en labs (HackTheBox, TryHackMe). Mercado competitivo pero bien pagado.</div></div>
+      <div class="gl-item"><div class="gl-term">Cloud Security</div><div class="gl-def">Proteges infraestructura en AWS, Azure o GCP. Uno de los perfiles con mayor crecimiento 2024–2026.</div></div>
+      <div class="gl-item"><div class="gl-term">AppSec</div><div class="gl-def">Application Security — revisas código y APIs en busca de vulnerabilidades. Combina desarrollo + seguridad (DevSecOps).</div></div>
+      <div class="gl-item"><div class="gl-term">OT / ICS</div><div class="gl-def">Operational Technology / Industrial Control Systems — seguridad de infraestructuras críticas (energía, petróleo, manufactura). Nicho muy bien pagado.</div></div>
+    </div>
+    <div class="gl-section">
+      <div class="gl-section-title">📊 Cómo leer el Score de Intensidad</div>
+      <div class="gl-score-guide">
+        <div class="gl-score-row"><span class="gl-score-dot" style="background:#16a34a"></span><strong>90–100</strong> &nbsp;Mercado maduro, demanda constante, salarios altos</div>
+        <div class="gl-score-row"><span class="gl-score-dot" style="background:#4ade80"></span><strong>75–89</strong> &nbsp;Alta demanda, buenas oportunidades para juniors</div>
+        <div class="gl-score-row"><span class="gl-score-dot" style="background:#f59e0b"></span><strong>60–74</strong> &nbsp;Mercado activo, creciendo. Preparación 3–6 meses</div>
+        <div class="gl-score-row"><span class="gl-score-dot" style="background:#0ea5e9"></span><strong>45–59</strong> &nbsp;Emergente. Freelance remoto viable</div>
+        <div class="gl-score-row"><span class="gl-score-dot" style="background:#6366f1"></span><strong>25–44</strong> &nbsp;Incipiente. Nicho o muy pocas vacantes locales</div>
+        <div class="gl-score-row"><span class="gl-score-dot" style="background:#475569"></span><strong>0–24</strong> &nbsp;Sin mercado local. No recomendado para búsqueda activa</div>
+      </div>
+    </div>
+    <div class="gl-section">
+      <div class="gl-section-title">🏷️ Sistema de Tiers</div>
+      <div class="gl-item"><div class="gl-term">🟢 Tier 1 — Mercado maduro</div><div class="gl-def">Score 75+. Puedes postular activamente hoy. Empresas contratan con regularidad.</div></div>
+      <div class="gl-item"><div class="gl-term">🔵 Tier 2 — Mercado emergente</div><div class="gl-def">Score 60–74. Prepararse 3–6 meses. El mercado está creciendo rápido.</div></div>
+      <div class="gl-item"><div class="gl-term">🟡 Tier 3 — Incipiente</div><div class="gl-def">Score 45–59. Freelance remoto o plataformas internacionales son la vía más viable.</div></div>
+      <div class="gl-item"><div class="gl-term">🔴 Tier 4 — Sin mercado</div><div class="gl-def">Score &lt;45. No existe ecosistema local. Solo oportunidades de ONG/ONU con requisitos senior.</div></div>
+    </div>
+    <div class="gl-section">
+      <div class="gl-section-title">⚡ Filtros del mapa</div>
+      <div class="gl-item"><div class="gl-term">Entrada rápida ⚡</div><div class="gl-def">Países donde un junior con 0–12 meses de experiencia y CompTIA Security+ puede aplicar sin requisitos de grado universitario.</div></div>
+      <div class="gl-item"><div class="gl-term">Empleo 💼</div><div class="gl-def">Posiciones full-time con contrato laboral, beneficios y salario fijo en USD o moneda local.</div></div>
+      <div class="gl-item"><div class="gl-term">Freelance 🛠️</div><div class="gl-def">Proyectos por hora o entregable. Plataformas como Upwork, Toptal, Fiverr o contratación directa.</div></div>
+      <div class="gl-item"><div class="gl-term">Contrato 📋</div><div class="gl-def">Posiciones temporales de 3–12 meses, generalmente por agencias o consultoras.</div></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       #6 EXPORT BAR (flotante)
+  ═══════════════════════════════════════════════════════ -->
+  <div id="exportBar">
+    <span class="export-bar-label">Mi lista:</span>
+    <span class="export-bar-count" id="exportCounter">0</span>
+    <button class="exp-btn primary" id="exportBtn" onclick="exportToCSV()" style="opacity:.5;pointer-events:none">⬇ CSV</button>
+    <button class="exp-btn" onclick="exportToJSON()">{ } JSON</button>
+    <button class="exp-btn danger" onclick="clearExportList()">✕ Limpiar</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       HELP BUTTON (flotante)
+  ═══════════════════════════════════════════════════════ -->
+  <button id="helpBtn" onclick="openGlossary()" title="Abrir glosario de ayuda">?</button>
+
   <nav class="nav">
     <div class="container nav-inner">
       <div class="brand">
@@ -366,7 +458,7 @@
   ═══════════════════════════════════════════════════════ -->
   <section id="monitor" class="umap-section">
 
-    <!-- Toolbar: filters + view toggle -->
+    <!-- Toolbar: filters + role search + view toggle -->
     <div class="umap-toolbar">
       <button class="chip active" data-filter="all">🌐 Todo</button>
       <button class="chip" data-filter="jobs">💼 Empleo</button>
@@ -375,6 +467,19 @@
       <button class="chip" data-filter="training">🎓 Formación</button>
       <button class="chip" data-filter="fast">⚡ Entrada rápida</button>
       <button class="chip" onclick="jumpRegion('World')">🗺️ Mundo</button>
+
+      <!-- #3 ROLE SEARCH -->
+      <div id="roleSearchWrap">
+        <span class="search-icon">🔍</span>
+        <input
+          id="roleSearchInput"
+          type="text"
+          placeholder="Buscar rol: SOC, GRC, Cloud…"
+          autocomplete="off"
+        />
+        <div id="roleSearchResults"></div>
+      </div>
+
       <div style="margin-left:auto">
         <div class="view-toggle">
           <button class="vt-btn active" id="btn2d" onclick="switchView('2d')">🗺️ 2D</button>
@@ -383,7 +488,7 @@
       </div>
     </div>
 
-    <!-- Legend -->
+    <!-- Legend + Tier guide -->
     <div class="umap-legend">
       <div class="ul-item"><span class="ul-dot" style="background:#16a34a"></span>Muy alta (90+)</div>
       <div class="ul-item"><span class="ul-dot" style="background:#4ade80"></span>Alta (75–89)</div>
@@ -391,6 +496,10 @@
       <div class="ul-item"><span class="ul-dot" style="background:#0ea5e9"></span>Emergente (45–59)</div>
       <div class="ul-item"><span class="ul-dot" style="background:#6366f1"></span>Baja (25–44)</div>
       <div class="ul-item"><span class="ul-dot" style="background:#1e3a5f"></span>Sin datos</div>
+      <div class="ul-item" style="margin-left:.5rem;padding-left:.8rem;border-left:1px solid #1e3a5f">🟢 T1</div>
+      <div class="ul-item">🔵 T2</div>
+      <div class="ul-item">🟡 T3</div>
+      <div class="ul-item">🔴 T4</div>
       <!-- Globe controls (visible only in 3D mode) -->
       <div class="globe-controls-overlay" id="globeCtrlOverlay" style="margin-left:auto">
         <button class="gc-btn active" id="btnAutoRotate" onclick="toggleAutoRotate()">⟳ Auto-rotar</button>
@@ -417,6 +526,9 @@
 
       <!-- UNIFIED INFO PANEL -->
       <div class="umap-panel" id="umapPanel">
+        <!-- #4 Mobile handle -->
+        <div class="mobile-panel-handle" id="mobilePanelHandle"></div>
+
         <div>
           <div class="up-section-title">Panel de país</div>
           <div class="up-country-name" id="upCountryName">Selecciona un país</div>
@@ -649,10 +761,11 @@
   <script src="app.js"></script>
   <script src="globe3d.js"></script>
   <script src="colombia-map.js"></script>
+  <script src="junior-features.js"></script>
   <script>
   /* ── VIEW TOGGLE 2D / 3D ─────────────────────── */
   let currentView = '2d';
-  let globeStarted = false;   // ← NEW: lazy-init guard
+  let globeStarted = false;
 
   function switchView(v) {
     currentView = v;
@@ -662,7 +775,6 @@
     const ctrl   = document.getElementById('globeCtrlOverlay');
     const btn2d  = document.getElementById('btn2d');
     const btn3d  = document.getElementById('btn3d');
-
     if (v === '2d') {
       map2d.style.display  = 'block';
       canvas.style.display = 'none';
@@ -672,25 +784,17 @@
       btn3d.classList.remove('active');
       if (window._leafletMap) window._leafletMap.invalidateSize();
     } else {
-      /* ── Show canvas FIRST so clientWidth > 0 ── */
       map2d.style.display  = 'none';
       canvas.style.display = 'block';
       if (badge) badge.style.display = 'block';
       if (ctrl)  ctrl.classList.add('visible');
       btn3d.classList.add('active');
       btn2d.classList.remove('active');
-
-      /* ── Init globe on first open, resize on subsequent ── */
       if (!globeStarted) {
         globeStarted = true;
-        // Small rAF so the browser paints canvas dimensions before Three.js reads them
-        requestAnimationFrame(() => {
-          if (typeof window.initGlobe === 'function') window.initGlobe();
-        });
+        requestAnimationFrame(() => { if (typeof window.initGlobe === 'function') window.initGlobe(); });
       } else {
-        requestAnimationFrame(() => {
-          if (typeof window.resizeGlobe === 'function') window.resizeGlobe();
-        });
+        requestAnimationFrame(() => { if (typeof window.resizeGlobe === 'function') window.resizeGlobe(); });
       }
     }
   }
@@ -702,15 +806,10 @@
     const btn = document.getElementById('btnColombiaToggle');
     const isOpen = sub.classList.contains('open');
     if (isOpen) {
-      sub.classList.remove('open');
-      btn.classList.remove('active');
+      sub.classList.remove('open'); btn.classList.remove('active');
     } else {
-      sub.classList.add('open');
-      btn.classList.add('active');
-      if (!colInited) {
-        colInited = true;
-        if (typeof initColombiaMap === 'function') initColombiaMap();
-      }
+      sub.classList.add('open'); btn.classList.add('active');
+      if (!colInited) { colInited = true; if (typeof initColombiaMap === 'function') initColombiaMap(); }
       setTimeout(() => sub.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
     }
   }
@@ -718,12 +817,8 @@
     const sub = document.getElementById('colombiaSub');
     const btn = document.getElementById('btnColombiaToggle');
     if (!sub.classList.contains('open')) {
-      sub.classList.add('open');
-      btn.classList.add('active');
-      if (!colInited) {
-        colInited = true;
-        if (typeof initColombiaMap === 'function') initColombiaMap();
-      }
+      sub.classList.add('open'); btn.classList.add('active');
+      if (!colInited) { colInited = true; if (typeof initColombiaMap === 'function') initColombiaMap(); }
     }
   }
   window.openColombia = openColombia;
@@ -740,91 +835,4 @@
     const col = getHC(d.intensity);
     document.getElementById('upCountryName').textContent = d.name + (d.fastEntry ? ' ⚡' : '');
     document.getElementById('upRegion').textContent = d.region + (d.contractType ? ' · ' + d.contractType : '');
-    const iw = document.getElementById('upIntensityWrap');
-    iw.style.display = 'block';
-    document.getElementById('upIntensityVal').textContent = d.intensity;
-    const fill = document.getElementById('upIntensityFill');
-    fill.style.width = d.intensity + '%';
-    fill.style.background = col;
-    document.getElementById('upKpiGrid').style.display = 'grid';
-    document.getElementById('upJobs').textContent      = d.jobs     ?? '—';
-    document.getElementById('upFreelance').textContent = d.freelance ?? '—';
-    document.getElementById('upContract').textContent  = d.contract  ?? '—';
-    document.getElementById('upSalary').textContent    = d.salary    ?? '—';
-    const rw = document.getElementById('upRolesWrap');
-    const rl = document.getElementById('upRoleList');
-    if (d.topRoles && d.topRoles.length) {
-      rw.style.display = 'block';
-      rl.innerHTML = d.topRoles.map(r => `
-        <div class="up-role">
-          <div class="up-role-top">
-            <span class="up-role-name">${r.role}</span>
-            <span style="font-size:.7rem;font-weight:700;color:${getHC(r.demand)}">${r.demand}</span>
-          </div>
-          <div class="up-role-track"><div class="up-role-fill" style="width:${r.demand}%;background:${getHC(r.demand)}"></div></div>
-          <span class="up-role-note">${r.note||''}</span>
-        </div>`).join('');
-    } else { rw.style.display = 'none'; }
-    const cp = document.getElementById('cityPanel');
-    const cl = document.getElementById('cityList');
-    if (d.cities && d.cities.length) {
-      cp.style.display = 'block';
-      cl.innerHTML = d.cities.map(c => `
-        <div class="city-row">
-          <span class="city-dot" style="background:${getHC(c.score)}"></span>
-          <span class="city-name">${c.name}</span>
-          <span class="city-score" style="color:${getHC(c.score)}">${c.score}</span>
-        </div>`).join('');
-    } else { cp.style.display = 'none'; }
-    document.getElementById('upTags').innerHTML = (d.signals||[]).map(s=>`<span class="up-tag">${s}</span>`).join('');
-    document.getElementById('upNote').textContent = d.note || '';
-  }
-  window.updateCountryPanel = showCountryPanel;
-
-  /* ── CARDS + FILTER ─────────────────────────── */
-  function renderCards(filter){
-    if(!window.dataset)return;
-    const wrap=document.getElementById('ribCountries');
-    wrap.innerHTML='';
-    const entries=Object.entries(window.dataset)
-      .filter(([,d])=>filter==='all'||d.region===filter||
-        (filter==='Asia'&&['Asia','Asia Oriental','Asia Meridional','Asia Occidental','Asia Central','Sudeste Asiatico'].some(r=>d.region===r))||
-        (filter==='Middle East'&&d.region==='Middle East')||
-        (filter==='Africa'&&['África Austral','África Oriental','África Central','África Septentrional','África Subsahariana','África Occidental','África del Norte'].some(r=>d.region===r))||
-        (filter==='Oceania'&&['Pacífico','Oceanía'].some(r=>d.region===r)))
-      .sort((a,b)=>b[1].intensity-a[1].intensity);
-    if(!entries.length){wrap.innerHTML='<p style="color:#64748b;font-size:.8rem">Sin países en esta región.</p>';return;}
-    entries.forEach(([code,d])=>{
-      const maxVal=Math.max(d.jobs,d.freelance,d.contract||0,1);
-      const col=getHC(d.intensity);
-      const card=document.createElement('div');
-      card.className='country-card';
-      card.setAttribute('data-region',d.region);
-      card.onclick=()=>{showCountryPanel(code);window.scrollTo({top:document.getElementById('monitor').offsetTop-60,behavior:'smooth'});}
-      card.innerHTML=`
-        <div class="cc-name">${d.name}${d.fastEntry?' <span style="color:#f59e0b;font-size:.7rem">⚡</span>':''}</div>
-        <div class="cc-int" style="color:${col}">${d.region} · <strong style="color:${col}">${d.intensity}/100</strong></div>
-        <div class="cc-bars">
-          <div class="cc-bar"><span class="cc-bar-lbl">Empleos</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.jobs/maxVal*100}%;background:#4ade80"></div></div><span class="cc-bar-val">${d.jobs}</span></div>
-          <div class="cc-bar"><span class="cc-bar-lbl">Freelance</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${d.freelance/maxVal*100}%;background:#f59e0b"></div></div><span class="cc-bar-val">${d.freelance}</span></div>
-          <div class="cc-bar"><span class="cc-bar-lbl">Contratos</span><div class="cc-bar-track"><div class="cc-bar-fill" style="width:${(d.contract||0)/maxVal*100}%;background:#0ea5e9"></div></div><span class="cc-bar-val">${d.contract||0}</span></div>
-        </div>
-        <div class="cc-footer">
-          <span class="cc-salary">${d.salary||''}</span>
-          <span class="cc-pill" style="background:rgba(${d.intensity>=75?'74,222,128':d.intensity>=60?'245,158,11':'14,165,233'},.15);color:${col}">${d.intensity}</span>
-        </div>`;
-      wrap.appendChild(card);
-    });
-  }
-  function filterCards(region,btn){
-    document.querySelectorAll('.rib-tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderCards(region);
-  }
-
-  document.addEventListener('DOMContentLoaded',()=>{
-    setTimeout(()=>renderCards('all'),1400);
-  });
-  </script>
-</body>
-</html>
+    const iw = document.getElementById('upInten
