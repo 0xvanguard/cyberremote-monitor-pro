@@ -1,4 +1,4 @@
-name: CI — CyberRemote Monitor Pro
+name: CI - CyberRemote Monitor Pro
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  # ─── Backend ──────────────────────────────────────────────────────────
+  # --- Backend -----------------------------------------------------------
   backend:
     name: "Backend: Lint + Pruebas"
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️  backend/ o requirements.txt no encontrado — skip"
+            echo "backend/ o requirements.txt no encontrado - skip"
           fi
 
       - name: Set up Python 3.12
@@ -42,7 +42,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install ruff mypy pytest pytest-asyncio httpx
-          pip install fastapi uvicorn pydantic pydantic-settings python-dotenv loguru tenacity httpx
+          pip install fastapi uvicorn pydantic pydantic-settings python-dotenv loguru tenacity
 
       - name: Lint (ruff)
         if: steps.backend_check.outputs.exists == 'true'
@@ -58,16 +58,16 @@ jobs:
           if [ -d tests ] && [ "$(ls -A tests 2>/dev/null)" ]; then
             pytest tests/ -v --tb=short
           else
-            echo "⚠️  Sin tests aún — skip"
+            echo "Sin tests aun - skip"
           fi
 
-      - name: Skip (backend no encontrado)
+      - name: Skip backend
         if: steps.backend_check.outputs.exists != 'true'
-        run: echo "ℹ️  Job omitido: no existe backend/requirements.txt"
+        run: echo "Job omitido - no existe backend/requirements.txt"
 
-  # ─── Frontend ─────────────────────────────────────────────────────────
+  # --- Frontend ----------------------------------------------------------
   frontend:
-    name: "Frontend: Análisis estático de código + Verificación de tipos + Compilación"
+    name: "Frontend: Analisis estatico + Tipos + Build"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -86,27 +86,23 @@ jobs:
         working-directory: .
         run: |
           if [ -f frontend/package.json ] && [ -f frontend/package-lock.json ]; then
-            echo "exists=true"  >> $GITHUB_OUTPUT
+            echo "exists=true" >> $GITHUB_OUTPUT
             echo "has_lock=true" >> $GITHUB_OUTPUT
           elif [ -f frontend/package.json ]; then
-            echo "exists=true"   >> $GITHUB_OUTPUT
+            echo "exists=true" >> $GITHUB_OUTPUT
             echo "has_lock=false" >> $GITHUB_OUTPUT
           else
-            echo "exists=false"  >> $GITHUB_OUTPUT
+            echo "exists=false" >> $GITHUB_OUTPUT
             echo "has_lock=false" >> $GITHUB_OUTPUT
-            echo "⚠️  frontend/package.json no encontrado — skip"
+            echo "frontend/package.json no encontrado - skip"
           fi
 
       - name: Instalar dependencias (npm ci)
-        if: |
-          steps.frontend_check.outputs.exists == 'true' &&
-          steps.frontend_check.outputs.has_lock == 'true'
+        if: steps.frontend_check.outputs.exists == 'true' && steps.frontend_check.outputs.has_lock == 'true'
         run: npm ci
 
       - name: Instalar dependencias (npm install)
-        if: |
-          steps.frontend_check.outputs.exists == 'true' &&
-          steps.frontend_check.outputs.has_lock != 'true'
+        if: steps.frontend_check.outputs.exists == 'true' && steps.frontend_check.outputs.has_lock != 'true'
         run: npm install
 
       - name: Lint (ESLint)
@@ -121,20 +117,20 @@ jobs:
         if: steps.frontend_check.outputs.exists == 'true'
         run: npm run build || true
 
-      - name: Skip (frontend no encontrado)
+      - name: Skip frontend
         if: steps.frontend_check.outputs.exists != 'true'
-        run: echo "ℹ️  Job omitido: no existe frontend/package.json"
+        run: echo "Job omitido - no existe frontend/package.json"
 
-  # ─── Security Scan ─────────────────────────────────────────────────
+  # --- Security Scan -----------------------------------------------------
   security:
-    name: Security — Trivy Container Scan
+    name: Security - Trivy Container Scan
     runs-on: ubuntu-latest
     needs: [backend]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verificar que existe Dockerfile en backend/
+      - name: Verificar que existe Dockerfile
         id: docker_check
         working-directory: .
         run: |
@@ -142,7 +138,7 @@ jobs:
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️  backend/Dockerfile no encontrado — skip Trivy"
+            echo "backend/Dockerfile no encontrado - skip Trivy"
           fi
 
       - name: Build backend Docker image
@@ -158,6 +154,6 @@ jobs:
           exit-code: "0"
           severity: "CRITICAL,HIGH"
 
-      - name: Skip (Dockerfile no encontrado)
+      - name: Skip security
         if: steps.docker_check.outputs.exists != 'true'
-        run: echo "ℹ️  Job omitido: no existe backend/Dockerfile"
+        run: echo "Job omitido - no existe backend/Dockerfile"
