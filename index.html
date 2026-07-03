@@ -351,7 +351,7 @@
     <div class="gl-section">
       <div class="gl-section-title">🔑 Roles principales</div>
       <div class="gl-item"><div class="gl-term">SOC Analyst</div><div class="gl-def">Security Operations Center — monitoras alertas de seguridad en tiempo real. El rol más accesible para juniors. Demanda 24/7.</div></div>
-      <div class="gl-item"><div class="gl-term">GRC</div><div class="gl-def">Governance, Risk & Compliance — gestionas marcos normativos (ISO 27001, NIST). Perfil más analítico, ideal si prefieres evitar el lado técnico profundo.</div></div>
+      <div class="gl-item"><div class="gl-term">GRC</div><div class="gl-def">Governance, Risk &amp; Compliance — gestionas marcos normativos (ISO 27001, NIST). Perfil más analítico, ideal si prefieres evitar el lado técnico profundo.</div></div>
       <div class="gl-item"><div class="gl-term">Pentester</div><div class="gl-def">Ethical Hacker — simulas ataques para encontrar vulnerabilidades. Requiere práctica en labs (HackTheBox, TryHackMe). Mercado competitivo pero bien pagado.</div></div>
       <div class="gl-item"><div class="gl-term">Cloud Security</div><div class="gl-def">Proteges infraestructura en AWS, Azure o GCP. Uno de los perfiles con mayor crecimiento 2024–2026.</div></div>
       <div class="gl-item"><div class="gl-term">AppSec</div><div class="gl-def">Application Security — revisas código y APIs en busca de vulnerabilidades. Combina desarrollo + seguridad (DevSecOps).</div></div>
@@ -480,6 +480,14 @@
         <div id="roleSearchResults"></div>
       </div>
 
+      <!-- ══ REMOTIVE LIVE BADGE ══ -->
+      <span id="remotiveBadge" style="
+        font-size:.68rem; font-weight:700; color:#64748b;
+        background:#030d1a; border:1px solid #1e3a5f;
+        border-radius:6px; padding:3px 10px; letter-spacing:.5px;
+        white-space:nowrap;
+      ">⟳ Cargando empleos...</span>
+
       <div style="margin-left:auto">
         <div class="view-toggle">
           <button class="vt-btn active" id="btn2d" onclick="switchView('2d')">🗺️ 2D</button>
@@ -558,6 +566,16 @@
         </div>
         <div class="up-tags" id="upTags"></div>
         <div class="up-note" id="upNote"></div>
+
+        <!-- ══ REMOTIVE LIVE JOBS PANEL ══ -->
+        <div id="remotivePanelWrap" style="display:none;border-top:1px solid #1e3a5f;padding-top:.8rem">
+          <div class="up-section-title" style="color:#00ff88;display:flex;align-items:center;gap:.4rem">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00ff88;animation:coPing 1.5s infinite"></span>
+            Empleos LIVE — Remotive
+          </div>
+          <div id="remotiveJobsList"></div>
+        </div>
+
         <!-- Ranking -->
         <div style="border-top:1px solid #1e3a5f;padding-top:.8rem">
           <div class="up-section-title">🏆 Top mercados</div>
@@ -762,6 +780,7 @@
   <script src="globe3d.js"></script>
   <script src="colombia-map.js"></script>
   <script src="junior-features.js"></script>
+  <script src="remotive-feed.js"></script>
   <script>
   /* ── VIEW TOGGLE 2D / 3D ─────────────────────── */
   let currentView = '2d';
@@ -835,4 +854,75 @@
     const col = getHC(d.intensity);
     document.getElementById('upCountryName').textContent = d.name + (d.fastEntry ? ' ⚡' : '');
     document.getElementById('upRegion').textContent = d.region + (d.contractType ? ' · ' + d.contractType : '');
-    const iw = document.getElementById('upInten
+    const iw = document.getElementById('upIntensityWrap');
+    if (iw) {
+      iw.style.display = 'block';
+      document.getElementById('upIntensityVal').textContent = d.intensity;
+      const fill = document.getElementById('upIntensityFill');
+      if (fill) { fill.style.width = d.intensity + '%'; fill.style.background = col; }
+    }
+    const kg = document.getElementById('upKpiGrid');
+    if (kg) {
+      kg.style.display = 'grid';
+      document.getElementById('upJobs').textContent     = d.jobs     || 0;
+      document.getElementById('upFreelance').textContent= d.freelance|| 0;
+      document.getElementById('upContract').textContent = d.contract || 0;
+      document.getElementById('upSalary').textContent   = d.avgSalary|| '—';
+    }
+    const rw = document.getElementById('upRolesWrap');
+    const rl = document.getElementById('upRoleList');
+    if (rw && rl && d.topRoles && d.topRoles.length) {
+      rw.style.display = 'block';
+      rl.innerHTML = d.topRoles.map(r => `
+        <div class="up-role">
+          <div class="up-role-top">
+            <span class="up-role-name">${r.role}</span>
+            <span style="font-size:.7rem;color:${getHC(r.demand)}">${r.demand}</span>
+          </div>
+          <div class="up-role-track"><div class="up-role-fill" style="width:${r.demand}%;background:${getHC(r.demand)}"></div></div>
+          ${r.note ? `<div class="up-role-note">${r.note}</div>` : ''}
+        </div>`).join('');
+    } else if (rw) { rw.style.display = 'none'; }
+    const tags = document.getElementById('upTags');
+    if (tags) tags.innerHTML = (d.tags||[]).map(t=>`<span class="up-tag">${t}</span>`).join('');
+    const note = document.getElementById('upNote');
+    if (note) note.textContent = d.note || '';
+    // Cities
+    const cp = document.getElementById('cityPanel');
+    const cl = document.getElementById('cityList');
+    if (cp && cl && d.cities && d.cities.length) {
+      cp.style.display = 'block';
+      cl.innerHTML = d.cities.map(c => `
+        <div class="city-row">
+          <span class="city-dot" style="background:${getHC(c.score)}"></span>
+          <span class="city-name">${c.name}</span>
+          <span class="city-score" style="color:${getHC(c.score)}">${c.score}</span>
+        </div>`).join('');
+    } else if (cp) { cp.style.display = 'none'; }
+
+    /* ── REMOTIVE LIVE PANEL ── */
+    const rpw = document.getElementById('remotivePanelWrap');
+    if (rpw) rpw.style.display = 'block';
+    if (window.renderRemotivePanel) window.renderRemotivePanel(code);
+  }
+  window.updateCountryPanel = showCountryPanel;
+
+  /* ── INIT REMOTIVE AFTER APP LOADS ──────────── */
+  document.addEventListener('appReady', () => {
+    if (window.initRemotiveFeed && window.dataset) {
+      window.initRemotiveFeed(window.dataset).then(() => {
+        if (typeof refreshAll === 'function') refreshAll();
+      });
+    }
+  });
+  // Fallback: si app.js no emite 'appReady', intentar a los 3s
+  setTimeout(() => {
+    if (window.initRemotiveFeed && window.dataset && !window.remotiveJobs) {
+      window.initRemotiveFeed(window.dataset).then(() => {
+        if (typeof refreshAll === 'function') refreshAll();
+      });
+    }
+  }, 3000);
+  </script>
+</body>
+</html>
