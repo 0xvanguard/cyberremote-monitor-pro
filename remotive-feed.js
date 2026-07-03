@@ -1,366 +1,367 @@
 /**
- * remotive-feed.js
- * Integración en tiempo real con la API pública de Remotive.com
- * Enriquece el dataset global con empleos REALES de ciberseguridad.
- * Sin API key requerida. CORS-friendly desde el navegador.
+ * remotive-feed.js  v2.0
+ * CyberRemote Monitor Pro — Remotive Live Feed
+ *
+ * Exports (window):
+ *   initRemotiveFeed(dataset)   → fetch + enrich + update badge
+ *   renderRemotivePanel(code)   → render job cards in sidebar
+ *   remotiveJobs                → raw filtered jobs array
+ *
+ * API: https://remotive.com/api/remote-jobs  (public, no key)
+ * CORS proxy: allorigins.win
  */
 
-// ─── Configuración ────────────────────────────────────────────────────────────
-const REMOTIVE_BASE = 'https://remotive.com/api/remote-jobs';
+(function () {
+  'use strict';
 
-const CYBER_CATEGORIES = [
-  'software-dev',       // incluye security engineers
-  'devops-sysadmin',    // DevSecOps
-];
+  /* ── CONFIG ─────────────────────────────────────────────────────── */
+  const REMOTIVE_API = 'https://remotive.com/api/remote-jobs';
+  const PROXY        = 'https://api.allorigins.win/get?url=';
 
-const CYBER_KEYWORDS = [
-  'security', 'cybersecurity', 'pentest', 'penetration',
-  'soc analyst', 'devsecops', 'appsec', 'infosec',
-  'oscp', 'cloud security', 'siem', 'threat', 'red team',
-  'blue team', 'vulnerability', 'malware', 'forensic',
-  'compliance', 'iam', 'zero trust', 'sast', 'dast'
-];
+  const CATEGORIES = ['software-dev', 'devops-sysadmin', 'product'];
 
-// Mapa de país (nombre en inglés) → código ISO2 que usa tu dataset
-const COUNTRY_TO_CODE = {
-  'United States':        'US',
-  'USA':                  'US',
-  'United Kingdom':       'GB',
-  'UK':                   'GB',
-  'Germany':              'DE',
-  'Canada':               'CA',
-  'Australia':            'AU',
-  'Netherlands':          'NL',
-  'France':               'FR',
-  'Spain':                'ES',
-  'Portugal':             'PT',
-  'Brazil':               'BR',
-  'Colombia':             'CO',
-  'Argentina':            'AR',
-  'Mexico':               'MX',
-  'India':                'IN',
-  'Singapore':            'SG',
-  'Poland':               'PL',
-  'Romania':              'RO',
-  'Ukraine':              'UA',
-  'Israel':               'IL',
-  'Ireland':              'IE',
-  'Sweden':               'SE',
-  'Norway':               'NO',
-  'Denmark':              'DK',
-  'Switzerland':          'CH',
-  'Italy':                'IT',
-  'Belgium':              'BE',
-  'Czech Republic':       'CZ',
-  'South Africa':         'ZA',
-  'Nigeria':              'NG',
-  'Kenya':                'KE',
-  'Philippines':          'PH',
-  'Japan':                'JP',
-  'South Korea':          'KR',
-  'Taiwan':               'TW',
-  'New Zealand':          'NZ',
-  'Turkey':               'TR',
-  'UAE':                  'AE',
-  'Saudi Arabia':         'SA',
-  'Egypt':                'EG',
-  'Pakistan':             'PK',
-  'Bangladesh':           'BD',
-  'Sri Lanka':            'LK',
-  'Worldwide':            null,  // empleos 100% remotos globales
-};
+  const CYBER_KEYWORDS = [
+    'security', 'cybersecurity', 'cyber security', 'infosec',
+    'information security', 'soc analyst', 'soc engineer',
+    'security analyst', 'security engineer', 'security architect',
+    'penetration', 'pentest', 'ethical hack',
+    'cloud security', 'appsec', 'application security',
+    'grc', 'compliance analyst', 'risk analyst',
+    'vulnerability', 'threat intel', 'threat hunting',
+    'incident response', 'devsecops', 'siem', 'ids', 'ips',
+    'firewall', 'network security', 'zero trust',
+    'iam', 'identity', 'access management',
+    'red team', 'blue team', 'purple team',
+    'malware', 'forensics', 'digital forensics', 'sast', 'dast'
+  ];
 
-// ─── Utilidades ───────────────────────────────────────────────────────────────
+  // Lowercase partial-match → ISO-2
+  const LOC_MAP = {
+    'united states': 'US', 'usa': 'US', 'u.s.': 'US', 'u.s': 'US',
+    'canada': 'CA',
+    'united kingdom': 'GB', 'uk': 'GB', 'england': 'GB', 'great britain': 'GB',
+    'germany': 'DE', 'deutschland': 'DE',
+    'france': 'FR',
+    'spain': 'ES', 'españa': 'ES',
+    'netherlands': 'NL', 'the netherlands': 'NL',
+    'portugal': 'PT',
+    'italy': 'IT',
+    'switzerland': 'CH',
+    'sweden': 'SE',
+    'norway': 'NO',
+    'denmark': 'DK',
+    'finland': 'FI',
+    'poland': 'PL',
+    'czech republic': 'CZ', 'czechia': 'CZ',
+    'romania': 'RO',
+    'ukraine': 'UA',
+    'ireland': 'IE',
+    'belgium': 'BE',
+    'austria': 'AT',
+    'israel': 'IL',
+    'turkey': 'TR', 'türkiye': 'TR',
+    'egypt': 'EG',
+    'morocco': 'MA',
+    'south africa': 'ZA',
+    'nigeria': 'NG',
+    'kenya': 'KE',
+    'india': 'IN',
+    'pakistan': 'PK',
+    'australia': 'AU',
+    'new zealand': 'NZ',
+    'singapore': 'SG',
+    'japan': 'JP',
+    'south korea': 'KR', 'korea': 'KR',
+    'philippines': 'PH',
+    'malaysia': 'MY',
+    'indonesia': 'ID',
+    'thailand': 'TH',
+    'vietnam': 'VN',
+    'brazil': 'BR', 'brasil': 'BR',
+    'colombia': 'CO',
+    'argentina': 'AR',
+    'mexico': 'MX', 'méxico': 'MX',
+    'chile': 'CL',
+    'peru': 'PE', 'perú': 'PE',
+    'uae': 'AE', 'united arab emirates': 'AE', 'dubai': 'AE',
+    'saudi arabia': 'SA'
+  };
 
-function isCyberJob(job) {
-  const text = `${job.title} ${job.tags?.join(' ') || ''} ${job.description?.slice(0, 300) || ''}`.toLowerCase();
-  return CYBER_KEYWORDS.some(kw => text.includes(kw));
-}
+  const WORLDWIDE_TOKENS = ['worldwide', 'anywhere', 'global', 'international', 'all countries', 'remote'];
 
-function extractCountryCode(job) {
-  // candidate_required_location puede ser "Worldwide", "USA", "UK, Germany", etc.
-  const loc = job.candidate_required_location || '';
+  /* ── STATE ──────────────────────────────────────────────────────── */
+  let _jobs      = [];
+  let _byCountry = {};
+  let _worldwide = [];
+  let _loaded    = false;
 
-  for (const [name, code] of Object.entries(COUNTRY_TO_CODE)) {
-    if (loc.includes(name)) return code;
+  /* ── HELPERS ────────────────────────────────────────────────────── */
+
+  function isCyberJob(job) {
+    const hay = [
+      job.title || '',
+      (job.tags  || []).join(' '),
+      (job.description || '').slice(0, 400)
+    ].join(' ').toLowerCase();
+    return CYBER_KEYWORDS.some(kw => hay.includes(kw));
   }
-  // Fallback: si dice "Worldwide" o está vacío → null (global)
-  if (!loc || loc.toLowerCase().includes('worldwide') || loc.toLowerCase().includes('anywhere')) return null;
-  return null;
-}
 
-function formatSalary(job) {
-  if (job.salary) return job.salary;
-  return 'Negotiable';
-}
+  function resolveCode(locationStr) {
+    if (!locationStr) return 'WORLDWIDE';
+    const l = locationStr.toLowerCase();
+    for (const [key, code] of Object.entries(LOC_MAP)) {
+      if (l.includes(key)) return code;
+    }
+    if (WORLDWIDE_TOKENS.some(w => l.includes(w))) return 'WORLDWIDE';
+    return 'WORLDWIDE'; // default: show as global
+  }
 
-function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  if (days < 7)  return `${days}d ago`;
-  return `${Math.floor(days / 7)}w ago`;
-}
+  function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    const d = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+    if (d === 0) return 'hoy';
+    if (d === 1) return 'ayer';
+    if (d < 7)  return `hace ${d}d`;
+    if (d < 30) return `hace ${Math.floor(d / 7)}sem`;
+    return `hace ${Math.floor(d / 30)}m`;
+  }
 
-// ─── Fetcher principal ────────────────────────────────────────────────────────
+  function stripHtml(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 130);
+  }
 
-/**
- * Descarga empleos de Remotive por categoría y filtra los de ciberseguridad.
- * @returns {Promise<Array>} Lista de empleos cyber con metadatos normalizados
- */
-async function fetchCyberJobsFromRemotive() {
-  const allJobs = [];
+  function levelBadge(title) {
+    const t = (title || '').toLowerCase();
+    if (/senior|lead|principal|staff|head/.test(t)) return { label: 'Senior', color: '#f59e0b' };
+    if (/junior|jr\b|entry|associate|trainee|intern/.test(t)) return { label: 'Junior ⚡', color: '#4ade80' };
+    return { label: 'Mid', color: '#0ea5e9' };
+  }
 
-  for (const category of CYBER_CATEGORIES) {
+  /* ── FETCH (with CORS proxy) ────────────────────────────────────── */
+
+  async function fetchCategory(cat) {
     try {
-      const url = `${REMOTIVE_BASE}?category=${category}&limit=100`;
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      const json = await res.json();
-      const jobs = json.jobs || [];
-      allJobs.push(...jobs);
-    } catch (err) {
-      console.warn(`[Remotive] Error fetching category ${category}:`, err.message);
+      const apiUrl = `${REMOTIVE_API}?category=${cat}&limit=100`;
+      const proxyUrl = PROXY + encodeURIComponent(apiUrl);
+      const res = await fetch(proxyUrl, { cache: 'default' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const wrapper = await res.json();
+      const data = JSON.parse(wrapper.contents);
+      return data.jobs || [];
+    } catch (e) {
+      console.warn(`[Remotive] fetch "${cat}" failed — trying direct:`, e.message);
+      // Fallback: direct request (works if server sets CORS headers)
+      try {
+        const res2 = await fetch(`${REMOTIVE_API}?category=${cat}&limit=100`, { cache: 'default' });
+        if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+        const data2 = await res2.json();
+        return data2.jobs || [];
+      } catch (e2) {
+        console.error(`[Remotive] category "${cat}" completely failed:`, e2.message);
+        return [];
+      }
     }
   }
 
-  // Deduplicar por ID y filtrar solo empleos cyber
-  const seen = new Set();
-  return allJobs
-    .filter(j => {
-      if (seen.has(j.id)) return false;
-      seen.add(j.id);
-      return isCyberJob(j);
-    })
-    .map(j => ({
-      id:          j.id,
-      title:       j.title,
-      company:     j.company_name,
-      url:         j.url,
-      countryCode: extractCountryCode(j),
-      location:    j.candidate_required_location || 'Worldwide',
-      salary:      formatSalary(j),
-      tags:        j.tags || [],
-      postedAt:    timeAgo(j.publication_date),
-      rawDate:     j.publication_date,
-      logo:        j.company_logo,
-      isRemote:    true,
-    }));
-}
+  /* ── STYLES (injected once) ─────────────────────────────────────── */
 
-// ─── Enriquecedor de dataset ──────────────────────────────────────────────────
-
-/**
- * Toma los empleos reales de Remotive e inyecta los conteos
- * en el dataset global que usa app.js.
- * @param {Object} dataset  — window.dataset de app.js
- * @param {Array}  cyberJobs — resultado de fetchCyberJobsFromRemotive()
- */
-function enrichDatasetWithRemotive(dataset, cyberJobs) {
-  // Conteo por país
-  const countByCode = {};
-  const jobsByCode  = {};
-
-  cyberJobs.forEach(job => {
-    const code = job.countryCode;
-    if (!code) return; // empleos "Worldwide" se muestran en feed global
-
-    countByCode[code] = (countByCode[code] || 0) + 1;
-    if (!jobsByCode[code]) jobsByCode[code] = [];
-    jobsByCode[code].push(job);
-  });
-
-  // Inyectar en dataset
-  Object.entries(countByCode).forEach(([code, count]) => {
-    if (dataset[code]) {
-      // Enriquecer entrada existente
-      dataset[code].liveJobs     = count;
-      dataset[code].liveJobsList = jobsByCode[code];
-      // Recalcular intensidad combinando datos estáticos + live
-      const staticJobs = dataset[code].jobs || 0;
-      const combined   = staticJobs + count;
-      dataset[code].intensity = Math.min(99, Math.round(combined * 1.8));
-      // Agregar señales al feed
-      const topJob = jobsByCode[code][0];
-      dataset[code].signals = [
-        `🔴 LIVE: "${topJob.title}" @ ${topJob.company} (${topJob.postedAt})`,
-        ...(dataset[code].signals || []).slice(0, 3)
-      ];
-    }
-  });
-
-  // Guardar referencia global para el panel lateral
-  window.remotiveJobs   = cyberJobs;
-  window.remotiveByCode = jobsByCode;
-
-  console.log(`[Remotive] ✅ ${cyberJobs.length} cyber jobs cargados — ${Object.keys(countByCode).length} países activos`);
-  return dataset;
-}
-
-// ─── Panel de empleos en sidebar ─────────────────────────────────────────────
-
-/**
- * Renderiza la lista de empleos reales de Remotive para un país dado.
- * Llama esto desde updateCountryPanel() en index.html.
- * @param {string} countryCode — ISO2
- */
-function renderRemotivePanel(countryCode) {
-  const container = document.getElementById('remotiveJobsList');
-  if (!container) return;
-
-  const jobs = (window.remotiveByCode || {})[countryCode] || [];
-
-  if (jobs.length === 0) {
-    container.innerHTML = `
-      <div style="color:#475569;font-size:.78rem;text-align:center;padding:1rem 0">
-        No hay empleos live en este país.<br>
-        <a href="https://remotive.com/remote-jobs/security" target="_blank"
-           style="color:#38bdf8">Ver todos en Remotive →</a>
-      </div>`;
-    return;
+  function injectStyles() {
+    if (document.getElementById('remotive-feed-css')) return;
+    const s = document.createElement('style');
+    s.id = 'remotive-feed-css';
+    s.textContent = `
+      .rjc {
+        display:block; text-decoration:none; color:inherit;
+        background:#0d1b2a; border:1px solid #1e3a5f; border-radius:9px;
+        padding:.6rem .75rem; margin-bottom:.45rem;
+        transition:border-color .18s,background .18s;
+      }
+      .rjc:hover { border-color:#0ea5e9; background:#0d2235; }
+      .rjc-top { display:flex; align-items:center; gap:.5rem; margin-bottom:.3rem; }
+      .rjc-logo {
+        width:26px; height:26px; border-radius:5px;
+        object-fit:contain; background:#030d1a; flex-shrink:0;
+      }
+      .rjc-logo-ph {
+        width:26px; height:26px; border-radius:5px;
+        background:#030d1a; display:flex; align-items:center;
+        justify-content:center; font-size:13px; flex-shrink:0;
+      }
+      .rjc-body { flex:1; min-width:0; }
+      .rjc-title {
+        font-size:.74rem; font-weight:700; color:#dbe7ff;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        line-height:1.2;
+      }
+      .rjc-company { font-size:.64rem; color:#475569; }
+      .rjc-lvl {
+        font-size:.58rem; font-weight:800; border-radius:999px;
+        padding:1px 7px; border:1px solid; flex-shrink:0; white-space:nowrap;
+      }
+      .rjc-meta {
+        font-size:.64rem; color:#334155;
+        display:flex; flex-wrap:wrap; gap:.3rem; margin-bottom:.3rem;
+      }
+      .rjc-snippet {
+        font-size:.63rem; color:#334155; line-height:1.4;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        margin-bottom:.3rem;
+      }
+      .rjc-tags { display:flex; flex-wrap:wrap; gap:.25rem; }
+      .rjc-tag {
+        font-size:.58rem; background:#030d1a; border:1px solid #1e3a5f;
+        color:#475569; padding:1px 6px; border-radius:999px;
+      }
+      .rjc-footer {
+        display:block; text-align:center; font-size:.65rem;
+        color:#1e3a5f; padding:.35rem 0;
+        transition:color .2s; text-decoration:none;
+      }
+      .rjc-footer:hover { color:#0ea5e9; }
+      .rjc-empty { font-size:.72rem; color:#334155; text-align:center; padding:.8rem 0; }
+    `;
+    document.head.appendChild(s);
   }
 
-  container.innerHTML = jobs.slice(0, 6).map(job => `
-    <a href="${job.url}" target="_blank" rel="noopener" class="remotive-job-card">
-      <div class="rjc-header">
-        ${job.logo
-          ? `<img src="${job.logo}" class="rjc-logo" alt="${job.company}" onerror="this.style.display='none'">`
-          : `<div class="rjc-logo-placeholder">🔐</div>`
+  /* ── MAIN INIT ──────────────────────────────────────────────────── */
+
+  async function initRemotiveFeed(dataset) {
+    injectStyles();
+    const badge = document.getElementById('remotiveBadge');
+    if (badge) {
+      badge.innerHTML = '&#x27F3; Cargando empleos...';
+      badge.style.color = '#64748b';
+      badge.style.borderColor = '#1e3a5f';
+    }
+
+    try {
+      // Parallel fetch all categories
+      const results = await Promise.all(CATEGORIES.map(fetchCategory));
+      const all = results.flat();
+
+      // Deduplicate
+      const seen = new Set();
+      const unique = all.filter(j => { if (seen.has(j.id)) return false; seen.add(j.id); return true; });
+
+      // Filter cyber-only
+      _jobs = unique.filter(isCyberJob);
+      window.remotiveJobs = _jobs;
+
+      // Group by country
+      _byCountry = {};
+      _worldwide = [];
+      _jobs.forEach(job => {
+        const code = resolveCode(job.candidate_required_location);
+        if (code === 'WORLDWIDE') {
+          _worldwide.push(job);
+        } else {
+          (_byCountry[code] = _byCountry[code] || []).push(job);
         }
-        <div class="rjc-info">
-          <div class="rjc-title">${job.title}</div>
-          <div class="rjc-company">${job.company}</div>
-        </div>
-        <span class="rjc-badge">LIVE</span>
-      </div>
-      <div class="rjc-meta">
-        <span>💰 ${job.salary}</span>
-        <span>📍 ${job.location}</span>
-        <span>🕐 ${job.postedAt}</span>
-      </div>
-      ${job.tags.slice(0,4).map(t => `<span class="rjc-tag">${t}</span>`).join('')}
-    </a>
-  `).join('');
-}
+      });
 
-window.renderRemotivePanel = renderRemotivePanel;
+      // Enrich dataset: boost intensity + inject live signals
+      Object.entries(_byCountry).forEach(([code, jobs]) => {
+        if (!dataset || !dataset[code]) return;
+        const d = dataset[code];
+        d.liveJobs     = jobs.length;
+        d.liveJobsList = jobs;
+        // Soft-boost intensity (capped at 99)
+        d.intensity = Math.min(99, d.intensity + Math.round(jobs.length * 0.5));
+        // Prepend live signal to feed
+        const top = jobs[0];
+        d.signals = [
+          `🔴 LIVE "${top.title}" @ ${top.company_name} (${timeAgo(top.publication_date)})`,
+          ...(d.signals || []).slice(0, 3)
+        ];
+      });
 
-// ─── CSS dinámico ─────────────────────────────────────────────────────────────
+      _loaded = true;
+      window.remotiveByCode = _byCountry;
 
-function injectRemotiveStyles() {
-  if (document.getElementById('remotive-styles')) return;
-  const style = document.createElement('style');
-  style.id = 'remotive-styles';
-  style.textContent = `
-    .remotive-job-card {
-      display: block;
-      background: #0d1f33;
-      border: 1px solid #1e3a5f;
-      border-radius: 8px;
-      padding: .65rem .75rem;
-      margin-bottom: .5rem;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color .2s, background .2s;
-    }
-    .remotive-job-card:hover {
-      border-color: #38bdf8;
-      background: #0f2540;
-    }
-    .rjc-header {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      margin-bottom: .4rem;
-    }
-    .rjc-logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      object-fit: contain;
-      background: #1e3a5f;
-    }
-    .rjc-logo-placeholder {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      background: #1e3a5f;
-      border-radius: 4px;
-    }
-    .rjc-info { flex: 1; min-width: 0; }
-    .rjc-title {
-      font-size: .78rem;
-      font-weight: 700;
-      color: #dbe7ff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .rjc-company {
-      font-size: .68rem;
-      color: #64748b;
-    }
-    .rjc-badge {
-      font-size: .6rem;
-      font-weight: 800;
-      color: #00ff88;
-      background: #00ff8815;
-      border: 1px solid #00ff8840;
-      border-radius: 4px;
-      padding: 1px 5px;
-      letter-spacing: 1px;
-      flex-shrink: 0;
-    }
-    .rjc-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .35rem;
-      font-size: .67rem;
-      color: #64748b;
-      margin-bottom: .35rem;
-    }
-    .rjc-tag {
-      font-size: .62rem;
-      background: #1e3a5f;
-      color: #93c5fd;
-      border-radius: 3px;
-      padding: 1px 5px;
-      display: inline-block;
-      margin: 1px;
-    }
-  `;
-  document.head.appendChild(style);
-}
+      // Update badge
+      if (badge) {
+        if (_jobs.length > 0) {
+          badge.innerHTML = `
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;
+              background:#00ff88;margin-right:4px;vertical-align:middle;
+              box-shadow:0 0 6px #00ff8888"></span>${_jobs.length} empleos LIVE`;
+          badge.style.color = '#00ff88';
+          badge.style.borderColor = '#00ff8830';
+        } else {
+          badge.textContent = '⚠ 0 resultados';
+          badge.style.color = '#f59e0b';
+        }
+      }
 
-// ─── Inicialización pública ───────────────────────────────────────────────────
-
-/**
- * Punto de entrada. Llamar después de que dataset esté cargado.
- * @param {Object} dataset — window.dataset
- * @returns {Promise<Array>} cyberJobs
- */
-async function initRemotiveFeed(dataset) {
-  injectRemotiveStyles();
-
-  // Indicador de carga en UI
-  const badge = document.getElementById('remotiveBadge');
-  if (badge) badge.textContent = '⟳ Cargando...';
-
-  const jobs = await fetchCyberJobsFromRemotive();
-  enrichDatasetWithRemotive(dataset, jobs);
-
-  // Actualizar badge con conteo real
-  if (badge) {
-    badge.textContent = `🔴 LIVE: ${jobs.length} empleos`;
-    badge.style.color = '#00ff88';
+      console.log(`[Remotive] ✅ ${_jobs.length} cyber jobs | ${Object.keys(_byCountry).length} países | ${_worldwide.length} worldwide`);
+    } catch (err) {
+      console.error('[Remotive] initRemotiveFeed error:', err);
+      if (badge) { badge.textContent = '⚠ Error API'; badge.style.color = '#f87171'; }
+    }
   }
 
-  return jobs;
-}
+  /* ── RENDER PANEL ───────────────────────────────────────────────── */
 
-window.initRemotiveFeed = initRemotiveFeed;
-window.renderRemotivePanel = renderRemotivePanel;
+  function renderRemotivePanel(countryCode) {
+    const container = document.getElementById('remotiveJobsList');
+    const wrap      = document.getElementById('remotivePanelWrap');
+    if (!container) return;
+    if (wrap) wrap.style.display = 'block';
+
+    if (!_loaded) {
+      container.innerHTML = '<div class="rjc-empty">⟳ Cargando empleos en tiempo real…</div>';
+      return;
+    }
+
+    // Country jobs + worldwide, newest first, max 7
+    const pool = [
+      ...(_byCountry[countryCode] || []),
+      ..._worldwide
+    ]
+      .sort((a, b) => new Date(b.publication_date) - new Date(a.publication_date))
+      .slice(0, 7);
+
+    if (pool.length === 0) {
+      container.innerHTML = `<div class="rjc-empty">Sin vacantes activas en Remotive para este país.</div>`;
+      container.innerHTML += `<a href="https://remotive.com/remote-jobs/security" target="_blank" rel="noreferrer" class="rjc-footer">Ver todos en Remotive ↗</a>`;
+      return;
+    }
+
+    container.innerHTML = pool.map(job => {
+      const lvl     = levelBadge(job.title);
+      const snippet = stripHtml(job.description);
+      const ago     = timeAgo(job.publication_date);
+      const logo    = job.company_logo
+        ? `<img src="${job.company_logo}" class="rjc-logo" alt="" onerror="this.style.display='none'">`
+        : `<div class="rjc-logo-ph">🔐</div>`;
+      const tags = (job.tags || []).slice(0, 4).map(t => `<span class="rjc-tag">${t}</span>`).join('');
+
+      return `<a href="${job.url}" target="_blank" rel="noreferrer" class="rjc">
+        <div class="rjc-top">
+          ${logo}
+          <div class="rjc-body">
+            <div class="rjc-title">${job.title || '—'}</div>
+            <div class="rjc-company">${job.company_name || '—'}</div>
+          </div>
+          <span class="rjc-lvl" style="color:${lvl.color};border-color:${lvl.color}40;background:${lvl.color}14">${lvl.label}</span>
+        </div>
+        <div class="rjc-meta">
+          <span>📍 ${(job.candidate_required_location || 'Remoto').slice(0, 30)}</span>
+          <span>🕐 ${ago}</span>
+          ${job.salary ? `<span>💰 ${job.salary}</span>` : ''}
+        </div>
+        ${snippet ? `<div class="rjc-snippet">${snippet}</div>` : ''}
+        <div class="rjc-tags">${tags}</div>
+      </a>`;
+    }).join('');
+
+    container.innerHTML += `<a href="https://remotive.com/remote-jobs/security" target="_blank" rel="noreferrer" class="rjc-footer">Ver más en Remotive ↗</a>`;
+  }
+
+  /* ── EXPORT ─────────────────────────────────────────────────────── */
+  window.initRemotiveFeed    = initRemotiveFeed;
+  window.renderRemotivePanel = renderRemotivePanel;
+
+})();
