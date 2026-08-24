@@ -4,6 +4,8 @@
 > El WorldMonitor de empleos remotos junior/semi-junior en ciberseguridad — a escala gubernamental y estratégica.
 
 [![Live Demo](https://img.shields.io/badge/Live-GitHub%20Pages-blueviolet?style=flat-square)](https://0xvanguard.github.io/cyberremote-monitor-pro/)
+[![CI](https://img.shields.io/github/actions/workflow/status/0xvanguard/cyberremote-monitor-pro/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/0xvanguard/cyberremote-monitor-pro/actions)
+![Tests](https://img.shields.io/badge/tests-21%20passed-brightgreen?style=flat-square)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 [![Stack](https://img.shields.io/badge/stack-React%20%7C%20FastAPI%20%7C%20PostgreSQL%20%7C%20Globe.gl-informational?style=flat-square)](docs/ARCHITECTURE.md)
