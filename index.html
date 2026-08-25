@@ -899,16 +899,20 @@
     if (tags) tags.innerHTML = (d.tags||[]).map(t=>`<span class="up-tag">${t}</span>`).join('');
     const note = document.getElementById('upNote');
     if (note) note.textContent = d.note || '';
-    // Cities
+    // Cities — con zoom rápido (gaceteo + ciudades del dataset)
     const cp = document.getElementById('cityPanel');
     const cl = document.getElementById('cityList');
-    if (cp && cl && d.cities && d.cities.length) {
+    const cities = (typeof window.getCitiesForCountry === 'function')
+      ? window.getCitiesForCountry(code)
+      : (d.cities || []);
+    if (cp && cl && cities.length) {
       cp.style.display = 'block';
-      cl.innerHTML = d.cities.map(c => `
-        <div class="city-row">
+      cl.innerHTML = cities.map(c => `
+        <div class="city-row" onclick="zoomToCity('${String(c.name).replace(/'/g, "\\'")}','${code}')" title="Zoom a ${c.name}">
           <span class="city-dot" style="background:${getHC(c.score)}"></span>
           <span class="city-name">${c.name}</span>
           <span class="city-score" style="color:${getHC(c.score)}">${c.score}</span>
+          <span class="city-zoom">🎯</span>
         </div>`).join('');
     } else if (cp) { cp.style.display = 'none'; }
 

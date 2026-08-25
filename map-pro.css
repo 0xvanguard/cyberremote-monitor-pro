@@ -104,6 +104,22 @@
 .leaflet-tooltip-bottom:before { border-bottom-color: #1e3a5f !important; }
 .leaflet-tooltip-left:before   { border-left-color: #1e3a5f !important; }
 
+/* Botón de zoom rápido en filas de ciudad del panel */
+.city-row .city-zoom {
+  font-size: .68rem;
+  opacity: 0;
+  transition: opacity .15s, transform .15s;
+  flex-shrink: 0;
+  transform: scale(.85);
+}
+.city-row:hover .city-zoom {
+  opacity: .95;
+  transform: scale(1.1);
+}
+.city-row:active {
+  background: rgba(14, 165, 233, 0.18);
+}
+
 /* ── Buscador global país / ciudad ── */
 .map-search {
   position: absolute;

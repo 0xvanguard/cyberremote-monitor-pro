@@ -279,6 +279,52 @@ function focusMapItem(i) {
 window.focusMapItem = focusMapItem;
 window.buildSearchIndex = buildSearchIndex;
 
+/* ─── Ciudades del país seleccionado + zoom rápido ─── */
+
+function getCitiesForCountry(code) {
+  const country = dataset[code];
+  if (!country) return [];
+  // Ciudades dinámicas del dataset (si traen latlng propia) + gaceteo estático
+  const dyn = (country.cities || []).map(c => ({
+    name: c.name,
+    score: (c.score != null) ? c.score : country.intensity,
+    ll: c.latlng || null
+  }));
+  const gaz = CITY_COORDS
+    .filter(c => c.cc === code)
+    .map(c => ({ name: c.n, score: country.intensity, ll: c.ll }));
+  const seen = new Set();
+  const merged = [];
+  for (const c of [...dyn, ...gaz]) {
+    const key = normStr(c.name);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(c);
+  }
+  return merged.sort((a, b) => b.score - a.score);
+}
+
+function zoomToCity(name, code) {
+  const country = dataset[code];
+  if (!country || !map) return;
+  // Resolver coordenadas: gaceteo → ciudad dinámica → centro del país
+  const norm = normStr(name);
+  const fromGaz = CITY_COORDS.find(c =>
+    c.cc === code && (normStr(c.n) === norm || (c.alt || []).some(a => normStr(a) === norm))
+  );
+  const fromDyn = (country.cities || []).find(c => normStr(c.name) === norm);
+  const ll = (fromGaz && fromGaz.ll) || (fromDyn && fromDyn.latlng) || country.latlng;
+  if (!ll) return;
+  if (isGlobeMode() && typeof window.focusGlobeOn === 'function') {
+    window.focusGlobeOn(ll, code);
+  } else {
+    map.flyTo(ll, 6, { duration: 1.15 });
+    highlightCountry2D(code);
+  }
+}
+window.getCitiesForCountry = getCitiesForCountry;
+window.zoomToCity = zoomToCity;
+
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('mapSearchInput');
   const clearBtn = document.getElementById('mapSearchClear');
