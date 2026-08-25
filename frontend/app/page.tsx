@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { SignalFeed } from '@/components/SignalFeed/SignalFeed'
 import { CountryPanel } from '@/components/CountryPanel/CountryPanel'
 import { KPIGrid } from '@/components/Dashboard/KPIGrid'
 import { RankingList } from '@/components/Dashboard/RankingList'
 
-// Globe3D y Map2D se cargan dinámicamente porque necesitan window
+// Componentes dinámicos (necesitan window)
 const Globe3D = dynamic(
   () => import('@/components/Globe3D/Globe3D').then(mod => mod.Globe3D),
   { ssr: false }
@@ -18,9 +18,22 @@ const Map2D = dynamic(
   { ssr: false }
 )
 
+const ColombiaDashboard = dynamic(
+  () => import('@/components/ColombiaDashboard/ColombiaDashboard').then(mod => mod.ColombiaDashboard),
+  { ssr: false }
+)
+
 export default function Home() {
   const [selectedCountry, setSelectedCountry] = useState<string>('US')
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('3d')
+  const [showColombia, setShowColombia] = useState(false)
+
+  // Abrir Colombia Dashboard cuando se selecciona CO
+  useEffect(() => {
+    if (selectedCountry === 'CO') {
+      setShowColombia(true)
+    }
+  }, [selectedCountry])
 
   return (
     <main className="min-h-screen bg-cyber-darker">
@@ -117,6 +130,14 @@ export default function Home() {
           </div>
         </aside>
       </div>
+
+      {/* Colombia Dashboard - Full screen overlay */}
+      {showColombia && (
+        <ColombiaDashboard onClose={() => {
+          setShowColombia(false)
+          setSelectedCountry('US')
+        }} />
+      )}
     </main>
   )
 }
