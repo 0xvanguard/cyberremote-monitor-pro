@@ -417,6 +417,53 @@
     applyFilters();
   };
 
+  // ─ Vuelo de cámara hacia un punto (integración con el buscador) ──
+  let tweenId = null;
+  window.focusGlobeOn = function (ll, code) {
+    if (!ll || !camera || !renderer) return;
+    const [lat, lng] = ll;
+    autoRotate = false; setAutoRotateBtn(false); velX = velY = 0;
+    if (tweenId) cancelAnimationFrame(tweenId);
+
+    const TAU = Math.PI * 2;
+    const targetPhi  = Math.max(0.15, Math.min(Math.PI - 0.15, (90 - lat) * Math.PI / 180));
+    const thetaRaw   = Math.PI - (lng + 180) * Math.PI / 180;   // inverso exacto de latLngToVec3
+    const t0 = ((sph.theta % TAU) + TAU) % TAU;
+    const t1 = ((thetaRaw   % TAU) + TAU) % TAU;
+    let dT = t1 - t0;
+    if (dT >  Math.PI) dT -= TAU;   // camino corto alrededor del globo
+    if (dT < -Math.PI) dT += TAU;
+
+    const sTheta = sph.theta, sPhi = sph.phi, sDist = camDist;
+    const eDist  = Math.min(sDist, 2.3);
+    const dur = 950, tStart = performance.now();
+    const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+
+    (function step(now) {
+      const p = Math.min(1, (now - tStart) / dur), e = ease(p);
+      sph.theta = sTheta + dT * e;
+      sph.phi   = sPhi + (targetPhi - sPhi) * e;
+      camDist   = sDist + (eDist - sDist) * e;
+      updateCamera();
+      if (p < 1) {
+        tweenId = requestAnimationFrame(step);
+      } else {
+        tweenId = null;
+        // Destello del dot del país seleccionado
+        const entry = dots.find(d => d.code === code);
+        if (entry) {
+          const mat = entry.mesh.material;
+          mat.emissiveIntensity = 2.5;
+          entry.mesh.scale.setScalar(1.7);
+          setTimeout(() => { mat.emissiveIntensity = .7; entry.mesh.scale.setScalar(1); }, 650);
+        }
+      }
+    })(performance.now());
+
+    if (typeof window.updateCountryPanel === 'function' && code && window.dataset[code])
+      window.updateCountryPanel(code);
+  };
+
   // ─ Init ─────────────────────────────────────────
   window.initGlobe = function () {
     if (globeInited) return;

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="junior-features.css" />
+  <link rel="stylesheet" href="map-pro.css" />
   <style>
     /* ─── UNIFIED MAP SHELL ─────────────────────────────── */
     .umap-section { background:#020817; padding:0; position:relative; }
@@ -523,6 +524,17 @@
         <div id="map2d"></div>
         <!-- 3D GLOBE -->
         <canvas id="globeCanvas"></canvas>
+
+        <!-- ══ BUSCADOR GLOBAL PAÍS / CIUDAD (visible en 2D y 3D) ══ -->
+        <div class="map-search" id="mapSearch">
+          <div class="map-search-box">
+            <span class="map-search-ico">🔎</span>
+            <input id="mapSearchInput" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="Buscar país o ciudad…  ej: Colombia, Bogotá, Madrid" />
+            <button class="map-search-clear" id="mapSearchClear" title="Limpiar">✕</button>
+          </div>
+          <div id="mapSearchResults"></div>
+        </div>
         <!-- scan badge -->
         <div style="position:absolute;top:10px;left:10px;z-index:500;pointer-events:none;display:none" id="globeBadge">
           <div style="background:rgba(2,8,23,.78);border:1px solid #1e3a5f;border-radius:10px;padding:.55rem 1rem;backdrop-filter:blur(8px)">

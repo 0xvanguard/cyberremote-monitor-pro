@@ -92,6 +92,231 @@ const nameToCode = {
   'Liberia':'LR','Ivory Coast':'CI',"Côte d'Ivoire":'CI',"Cote d'Ivoire":'CI'
 };
 
+/* ──────────────────────────────────────────────────────────────
+   BUSCADOR GLOBAL PAÍS / CIUDAD — funciona en mapa 2D y globo 3D
+────────────────────────────────────────────────────────────── */
+const CITY_COORDS = [
+  // Américas
+  { n:'New York', alt:['Nueva York'], cc:'US', ll:[40.71,-74.01] },
+  { n:'Washington D.C.', alt:['Washington'], cc:'US', ll:[38.9,-77.04] },
+  { n:'Austin', cc:'US', ll:[30.27,-97.74] },
+  { n:'San Francisco', alt:['SF Bay Area'], cc:'US', ll:[37.77,-122.42] },
+  { n:'Toronto', cc:'CA', ll:[43.65,-79.38] },
+  { n:'Vancouver', cc:'CA', ll:[49.28,-123.12] },
+  { n:'Ciudad de México', alt:['CDMX','Mexico City'], cc:'MX', ll:[19.43,-99.13] },
+  { n:'Guadalajara', cc:'MX', ll:[20.66,-103.35] },
+  { n:'Monterrey', cc:'MX', ll:[25.69,-100.32] },
+  { n:'Bogotá', alt:['Bogota'], cc:'CO', ll:[4.61,-74.08] },
+  { n:'Medellín', alt:['Medellin'], cc:'CO', ll:[6.24,-75.58] },
+  { n:'Cali', cc:'CO', ll:[3.45,-76.53] },
+  { n:'São Paulo', alt:['Sao Paulo'], cc:'BR', ll:[-23.55,-46.63] },
+  { n:'Rio de Janeiro', alt:['Río de Janeiro'], cc:'BR', ll:[-22.91,-43.17] },
+  { n:'Buenos Aires', cc:'AR', ll:[-34.60,-58.38] },
+  { n:'Santiago', cc:'CL', ll:[-33.45,-70.67] },
+  { n:'Lima', cc:'PE', ll:[-12.05,-77.04] },
+  { n:'Quito', cc:'EC', ll:[-0.18,-78.47] },
+  { n:'Montevideo', cc:'UY', ll:[-34.90,-56.16] },
+  { n:'San José', alt:['San Jose CR'], cc:'CR', ll:[9.93,-84.08] },
+  { n:'Panamá', alt:['Panama City'], cc:'PA', ll:[8.98,-79.52] },
+  // Europa
+  { n:'London', alt:['Londres'], cc:'GB', ll:[51.51,-0.13] },
+  { n:'Madrid', cc:'ES', ll:[40.42,-3.70] },
+  { n:'Barcelona', cc:'ES', ll:[41.39,2.17] },
+  { n:'Lisboa', alt:['Lisbon'], cc:'PT', ll:[38.72,-9.14] },
+  { n:'Paris', alt:['París'], cc:'FR', ll:[48.86,2.35] },
+  { n:'Berlin', alt:['Berlín'], cc:'DE', ll:[52.52,13.41] },
+  { n:'Munich', alt:['Múnich','München'], cc:'DE', ll:[48.14,11.58] },
+  { n:'Amsterdam', alt:['Ámsterdam'], cc:'NL', ll:[52.37,4.90] },
+  { n:'Brussels', alt:['Bruselas','Bruxelles'], cc:'BE', ll:[50.85,4.35] },
+  { n:'Dublin', alt:['Dublín'], cc:'IE', ll:[53.35,-6.26] },
+  { n:'Warsaw', alt:['Varsovia'], cc:'PL', ll:[52.23,21.01] },
+  { n:'Prague', alt:['Praga'], cc:'CZ', ll:[50.08,14.44] },
+  { n:'Bucharest', alt:['Bucarest'], cc:'RO', ll:[44.43,26.10] },
+  { n:'Stockholm', alt:['Estocolmo'], cc:'SE', ll:[59.33,18.06] },
+  { n:'Oslo', cc:'NO', ll:[59.91,10.75] },
+  { n:'Zurich', alt:['Zúrich'], cc:'CH', ll:[47.37,8.54] },
+  { n:'Milan', alt:['Milán'], cc:'IT', ll:[45.46,9.19] },
+  { n:'Rome', alt:['Roma'], cc:'IT', ll:[41.90,12.50] },
+  { n:'Kyiv', alt:['Kiev'], cc:'UA', ll:[50.45,30.52] },
+  // Medio Oriente
+  { n:'Dubai', alt:['Dubái'], cc:'AE', ll:[25.20,55.27] },
+  { n:'Riyadh', alt:['Riad'], cc:'SA', ll:[24.71,46.68] },
+  { n:'Tel Aviv', cc:'IL', ll:[32.09,34.78] },
+  { n:'Istanbul', alt:['Estambul'], cc:'TR', ll:[41.01,28.98] },
+  // Asia-Pacífico
+  { n:'Singapore', alt:['Singapur'], cc:'SG', ll:[1.35,103.82] },
+  { n:'Tokyo', alt:['Tokio'], cc:'JP', ll:[35.68,139.69] },
+  { n:'Seoul', alt:['Seúl'], cc:'KR', ll:[37.57,126.98] },
+  { n:'Bangalore', cc:'IN', ll:[12.97,77.59] },
+  { n:'Mumbai', alt:['Bombay'], cc:'IN', ll:[19.08,72.88] },
+  { n:'New Delhi', alt:['Nueva Delhi'], cc:'IN', ll:[28.61,77.21] },
+  { n:'Sydney', alt:['Sídney'], cc:'AU', ll:[-33.87,151.21] },
+  { n:'Melbourne', cc:'AU', ll:[-37.81,144.96] },
+  { n:'Auckland', cc:'NZ', ll:[-36.85,174.76] },
+  { n:'Jakarta', alt:['Yakarta'], cc:'ID', ll:[-6.21,106.85] },
+  { n:'Bangkok', cc:'TH', ll:[13.76,100.50] },
+  // África
+  { n:'Cairo', alt:['El Cairo'], cc:'EG', ll:[30.04,31.24] },
+  { n:'Casablanca', cc:'MA', ll:[33.57,-7.59] },
+  { n:'Johannesburg', alt:['Johannesburgo'], cc:'ZA', ll:[-26.20,28.03] },
+  { n:'Nairobi', cc:'KE', ll:[-1.29,36.82] },
+  { n:'Lagos', cc:'NG', ll:[6.52,3.38] }
+];
+
+function normStr(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function escHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let searchIndex = [];
+
+function buildSearchIndex() {
+  searchIndex = [];
+  Object.entries(dataset).forEach(([code, d]) => {
+    searchIndex.push({
+      type: 'country', label: d.name, code,
+      ll: d.latlng, intensity: d.intensity, region: d.region,
+      hay: normStr(d.name + ' ' + code)
+    });
+  });
+  CITY_COORDS.forEach(c => {
+    const country = dataset[c.cc];
+    if (!country) return;
+    const names = [c.n].concat(c.alt || []);
+    searchIndex.push({
+      type: 'city', label: c.n, code: c.cc, ll: c.ll,
+      intensity: country.intensity, region: country.name,
+      hay: normStr(names.join(' ') + ' ' + country.name)
+    });
+  });
+}
+
+let msResults = [];
+let msActive = -1;
+
+function searchItems(q) {
+  const nq = normStr(q.trim());
+  if (!nq) return [];
+  const scored = [];
+  for (const item of searchIndex) {
+    let score = -1;
+    if (item.hay.startsWith(nq)) score = item.type === 'country' ? 100 : 90;
+    else if (item.hay.includes(' ' + nq)) score = item.type === 'country' ? 80 : 70;
+    else if (item.hay.includes(nq)) score = 50;
+    if (score > 0) scored.push({ ...item, score });
+  }
+  return scored.sort((a, b) => b.score - a.score || b.intensity - a.intensity).slice(0, 8);
+}
+
+function renderMapSearch(q) {
+  const wrap   = document.getElementById('mapSearch');
+  const box    = document.getElementById('mapSearchResults');
+  if (!box) return;
+  wrap.classList.toggle('has-value', !!q.trim());
+  msResults = searchItems(q);
+  msActive  = -1;
+  if (!q.trim()) { box.style.display = 'none'; return; }
+
+  if (!msResults.length) {
+    box.innerHTML = `<div class="ms-empty">Sin resultados para «${escHtml(q)}»</div>`;
+    box.style.display = 'block';
+    return;
+  }
+  const countries = msResults.filter(r => r.type === 'country');
+  const cities    = msResults.filter(r => r.type === 'city');
+  let html = '';
+  const row = (r, i) => `
+    <div class="ms-item${i === msActive ? ' active' : ''}" data-i="${i}" onmousedown="focusMapItem(${i})">
+      <span class="ms-ico">${r.type === 'country' ? '🏳️' : '📍'}</span>
+      <div class="ms-txt">
+        <div class="ms-name">${escHtml(r.label)}</div>
+        <div class="ms-sub">${r.type === 'country' ? escHtml(r.region || '') : '🏙️ ' + escHtml(r.region)}</div>
+      </div>
+      <span class="ms-score" style="color:${getHeatColor(r.intensity)}">${r.intensity}</span>
+    </div>`;
+  if (countries.length) html += `<div class="ms-group-title">Países</div>` + countries.map(r => row(r, msResults.indexOf(r))).join('');
+  if (cities.length)    html += `<div class="ms-group-title">Ciudades</div>` + cities.map(r => row(r, msResults.indexOf(r))).join('');
+  html += `<div class="ms-hint"><b>↑↓</b> navegar · <b>Enter</b> ir · <b>Esc</b> cerrar</div>`;
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+
+function closeMapSearch() {
+  const box = document.getElementById('mapSearchResults');
+  if (box) box.style.display = 'none';
+}
+
+function isGlobeMode() {
+  return typeof currentView !== 'undefined' && currentView === '3d';
+}
+
+function highlightCountry2D(code) {
+  if (!geoJsonLayer) return;
+  geoJsonLayer.eachLayer(layer => {
+    if (resolveCode(layer.feature) !== code) return;
+    layer.setStyle({ weight: 2.5, color: '#0ea5e9', fillOpacity: 0.95 });
+    setTimeout(() => geoJsonLayer.resetStyle(layer), 1800);
+  });
+}
+
+function focusMapItem(i) {
+  const r = msResults[i];
+  if (!r) return;
+  closeMapSearch();
+  document.getElementById('mapSearchInput').value = '';
+  document.getElementById('mapSearch').classList.remove('has-value');
+
+  if (isGlobeMode() && typeof window.focusGlobeOn === 'function') {
+    window.focusGlobeOn(r.ll, r.code);
+  } else if (map && r.ll) {
+    map.flyTo(r.ll, r.type === 'city' ? 6 : 4.5, { duration: 1.15 });
+    highlightCountry2D(r.code);
+  }
+  if (typeof window.updateCountryPanel === 'function') window.updateCountryPanel(r.code);
+}
+window.focusMapItem = focusMapItem;
+window.buildSearchIndex = buildSearchIndex;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('mapSearchInput');
+  const clearBtn = document.getElementById('mapSearchClear');
+  if (!input) return;
+
+  input.addEventListener('input', () => renderMapSearch(input.value));
+  input.addEventListener('focus', () => { if (input.value.trim()) renderMapSearch(input.value); });
+  input.addEventListener('keydown', e => {
+    const box = document.getElementById('mapSearchResults');
+    const open = box && box.style.display === 'block';
+    if (e.key === 'ArrowDown' && open) {
+      e.preventDefault();
+      msActive = Math.min(msActive + 1, msResults.length - 1);
+      box.querySelectorAll('.ms-item').forEach((el, i) => el.classList.toggle('active', i === msActive));
+    } else if (e.key === 'ArrowUp' && open) {
+      e.preventDefault();
+      msActive = Math.max(msActive - 1, 0);
+      box.querySelectorAll('.ms-item').forEach((el, i) => el.classList.toggle('active', i === msActive));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      focusMapItem(msActive >= 0 ? msActive : 0);
+    } else if (e.key === 'Escape') {
+      closeMapSearch();
+      input.blur();
+    }
+  });
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('mapSearch');
+    if (wrap && !wrap.contains(e.target)) closeMapSearch();
+  });
+  if (clearBtn) clearBtn.addEventListener('click', () => {
+    input.value = '';
+    document.getElementById('mapSearch').classList.remove('has-value');
+    closeMapSearch();
+    input.focus();
+  });
+});
+
 function resolveCode(feature) {
   const props = feature.properties;
   if (props.iso_a2 && props.iso_a2 !== '-99' && props.iso_a2 !== '') return props.iso_a2;
@@ -148,20 +373,39 @@ function onEachFeature(feature, layer) {
   }
 }
 
+function markerGlowIcon(color, radius) {
+  const s = radius * 2;
+  return L.divIcon({
+    className: 'cr-marker',
+    html:
+      `<span class="cr-glow" style="width:${s * 2.7}px;height:${s * 2.7}px;background:${color}"></span>` +
+      `<span class="cr-pulse" style="width:${s * 1.6}px;height:${s * 1.6}px;--c:${color}"></span>` +
+      `<span class="cr-core" style="width:${s}px;height:${s}px;background:${color}"></span>`,
+    iconSize: [s * 2.7, s * 2.7],
+    iconAnchor: [s * 1.35, s * 1.35]
+  });
+}
+
+let selectedMarkerEl = null;
+
 function renderMarkers() {
   if (!markerLayer) return;
   markerLayer.clearLayers();
+  selectedMarkerEl = null;
   Object.entries(dataset).forEach(([code, data]) => {
     if (!shouldShow(data)) return;
     const radius = Math.max(5, Math.min(14, 3 + Math.round(data.intensity / 10)));
-    const m = L.circleMarker(data.latlng, {
-      radius, color: '#dbe7ff', weight: 1.2,
-      fillColor: getHeatColor(data.intensity), fillOpacity: 0.92
-    }).bindTooltip(
-      `<strong>${data.name}</strong>${data.fastEntry ? ' ⚡' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
-      { direction: 'top' }
-    );
-    m.on('click', () => window.updateCountryPanel(code));
+    const m = L.marker(data.latlng, { icon: markerGlowIcon(getHeatColor(data.intensity), radius), keyboard: false })
+      .bindTooltip(
+        `<strong>${data.name}</strong>${data.fastEntry ? ' ⚡' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
+        { direction: 'top', offset: [0, -radius] }
+      );
+    m.on('click', () => {
+      if (selectedMarkerEl) selectedMarkerEl.classList.remove('selected');
+      const el = m.getElement();
+      if (el) { el.classList.add('selected'); selectedMarkerEl = el; }
+      window.updateCountryPanel(code);
+    });
     markerLayer.addLayer(m);
   });
 }
@@ -233,6 +477,51 @@ function renderKpis() {
   set('statCountries',vals.length);
 }
 
+/* ─── Detalle por país — Regional Intelligence Board ─── */
+const RIB_REGION_MAP = {
+  'North America': r => r === 'North America',
+  'Europe':        r => r === 'Europe',
+  'LATAM':         r => r === 'LATAM',
+  'Asia':          r => ['Asia', 'Asia Oriental', 'Asia Meridional', 'Asia Occidental', 'Sudeste Asiatico', 'Asia Central', 'Pacífico'].includes(r),
+  'Middle East':   r => r === 'Middle East',
+  'Africa':        r => ['África Austral', 'África Oriental', 'África Central', 'África Septentrional', 'África Subsahariana', 'África Occidental', 'África del Norte'].includes(r),
+  'Oceania':       r => r === 'Oceania'
+};
+
+function renderRibCards(region) {
+  const el = document.getElementById('ribCountries');
+  if (!el || !Object.keys(dataset).length) return;
+  const match = region === 'all' ? () => true : (RIB_REGION_MAP[region] || (() => false));
+  const items = Object.entries(dataset)
+    .filter(([, d]) => match(d.region))
+    .sort((a, b) => b[1].intensity - a[1].intensity);
+  if (!items.length) {
+    el.innerHTML = '<div class="rc-empty">Sin países en esta región.</div>';
+    return;
+  }
+  el.innerHTML = items.map(([code, d]) => `
+    <div class="rc-card" onclick="updateCountryPanel('${code}');document.querySelector('.umap-section').scrollIntoView({behavior:'smooth'})">
+      <div class="rc-top">
+        <span class="rc-name">${d.name}${d.fastEntry ? ' ⚡' : ''}</span>
+        <span class="rc-score" style="color:${getHeatColor(d.intensity)}">${d.intensity}</span>
+      </div>
+      <div class="rc-sub">${escHtml(d.region || '')} · Tier ${d.tier || '—'}</div>
+      <div class="rc-stats">
+        <span>💼 ${d.jobs || 0}</span>
+        <span>🛠️ ${d.freelance || 0}</span>
+        <span>📋 ${d.contract || 0}</span>
+      </div>
+      <div class="rc-salary">💰 ${escHtml(d.salary || '')}</div>
+    </div>`).join('');
+}
+
+function filterCards(region, btn) {
+  document.querySelectorAll('.rib-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderRibCards(region);
+}
+window.filterCards = filterCards;
+
 function refreshAll() {
   if (geoJsonLayer) geoJsonLayer.setStyle(styleFeature);
   renderMarkers();
@@ -285,18 +574,26 @@ async function init() {
     ]);
     dataset = { ...main, ...extra, ...africaNew, ...worldExp, ...batch3 };
     window.dataset = dataset;
+    buildSearchIndex();
 
     // Init 2D map — attach to #map2d
     map = L.map('map2d', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
+    map.zoomControl.setPosition('bottomright');
     window._leafletMap = map;
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OSM contributors',
       subdomains: 'abcd', maxZoom: 19
     }).addTo(map);
+    // Capa de etiquetas (nombres de países y ciudades) sobre el mapa oscuro
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+      attribution: '', subdomains: 'abcd', maxZoom: 19, opacity: 0.9
+    }).addTo(map);
+    L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
     markerLayer = L.layerGroup().addTo(map);
 
     await loadGeoJson();
     refreshAll();
+    renderRibCards('all');
     window.updateCountryPanel('US');
     setTimeout(() => map.invalidateSize(), 300);
 
