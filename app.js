@@ -370,12 +370,13 @@ function resolveCode(feature) {
 }
 
 function getHeatColor(intensity) {
-  if (intensity >= 90) return '#16a34a';
-  if (intensity >= 75) return '#4ade80';
-  if (intensity >= 60) return '#f59e0b';
-  if (intensity >= 45) return '#0ea5e9';
-  if (intensity >= 25) return '#6366f1';
-  return '#1e3a5f';
+  // Colores más sutiles y suaves
+  if (intensity >= 90) return '#2d6a4f';
+  if (intensity >= 75) return '#40916c';
+  if (intensity >= 60) return '#7f8c5c';
+  if (intensity >= 45) return '#3a7ca5';
+  if (intensity >= 25) return '#5c5c8a';
+  return '#2a2a3e';
 }
 
 function shouldShow(data) {
@@ -393,9 +394,9 @@ function styleFeature(feature) {
   const code = resolveCode(feature);
   const data = dataset[code];
   if (data && shouldShow(data)) {
-    return { fillColor: getHeatColor(data.intensity), weight: 0.8, opacity: 1, color: '#1e3a5f', fillOpacity: 0.78 };
+    return { fillColor: getHeatColor(data.intensity), weight: 0.6, opacity: 0.8, color: '#3a4a5c', fillOpacity: 0.35 };
   }
-  return { fillColor: '#1a2535', weight: 0.5, opacity: 0.6, color: '#253550', fillOpacity: 0.55 };
+  return { fillColor: '#1a2535', weight: 0.3, opacity: 0.4, color: '#253550', fillOpacity: 0.2 };
 }
 
 function onEachFeature(feature, layer) {
@@ -437,25 +438,8 @@ function markerGlowIcon(color, radius) {
 let selectedMarkerEl = null;
 
 function renderMarkers() {
-  if (!markerLayer) return;
-  markerLayer.clearLayers();
-  selectedMarkerEl = null;
-  Object.entries(dataset).forEach(([code, data]) => {
-    if (!shouldShow(data)) return;
-    const radius = Math.max(5, Math.min(14, 3 + Math.round(data.intensity / 10)));
-    const m = L.marker(data.latlng, { icon: markerGlowIcon(getHeatColor(data.intensity), radius), keyboard: false })
-      .bindTooltip(
-        `<strong>${data.name}</strong>${data.fastEntry ? ' ⚡' : ''}<br>Intensidad: ${data.intensity}<br>${getBadges(data)}`,
-        { direction: 'top', offset: [0, -radius] }
-      );
-    m.on('click', () => {
-      if (selectedMarkerEl) selectedMarkerEl.classList.remove('selected');
-      const el = m.getElement();
-      if (el) { el.classList.add('selected'); selectedMarkerEl = el; }
-      window.updateCountryPanel(code);
-    });
-    markerLayer.addLayer(m);
-  });
+  // Marcadores eliminados — solo se muestra el GeoJSON de países
+  if (markerLayer) markerLayer.clearLayers();
 }
 
 function getBadges(data) {
@@ -637,8 +621,8 @@ async function init() {
       worldCopyJump: true,
       preferCanvas: true,         // GeoJSON en canvas — mucho más ligero que SVG
       minZoom: 2,
-      maxZoom: 8
-    }).setView([20, 10], 2);
+      maxZoom: 18                 // Zoom hasta nivel de calle para buscar ciudades
+    }).setView([20, -20], 2);
     map.zoomControl.setPosition('bottomright');
     window._leafletMap = map;
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {

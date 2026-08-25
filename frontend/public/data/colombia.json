@@ -1,0 +1,757 @@
+{
+  "departments": {
+    "ANT": {
+      "name": "Antioquia",
+      "capital": "Medellín",
+      "latlng": [6.2442, -75.5812],
+      "intensity": 82,
+      "jobs": 28,
+      "freelance": 35,
+      "contract": 22,
+      "training": 18,
+      "fastEntry": true,
+      "salary": "$4M–$9M COP/mes",
+      "driver": "Ruta N · Valle del Software · Bancolombia",
+      "topRoles": [
+        {"role": "SOC Analyst", "demand": 88, "note": "Bancolombia, Grupo Sura"},
+        {"role": "DevSecOps Engineer", "demand": 82, "note": "Startups Medellín"},
+        {"role": "Penetration Tester", "demand": 78, "note": "Freelance USD"},
+        {"role": "Cloud Security Engineer", "demand": 75, "note": "AWS hub"},
+        {"role": "GRC / Compliance", "demand": 70, "note": "Holding financiero"}
+      ],
+      "signals": ["SOC Medellín remoto", "DevSecOps Ruta N", "Pentest freelance CO", "Bancolombia cyber"],
+      "platforms": "LinkedIn, Torre.ai, Computrabajo, Workana",
+      "note": "Hub tech de Colombia. Ruta N y Valle del Software generan demanda constante. Bancolombia y Grupo Sura invierten fuerte en ciberseguridad.",
+      "cities": [
+        {"name": "Medellín",   "latlng": [6.2442, -75.5812], "intensity": 82, "jobs": 22, "freelance": 28, "note": "Capital tech de Colombia"},
+        {"name": "Bello",      "latlng": [6.3360, -75.5570], "intensity": 45, "jobs": 3,  "freelance": 5,  "note": "Zona industrial norte"},
+        {"name": "Envigado",   "latlng": [6.1752, -75.5906], "intensity": 55, "jobs": 4,  "freelance": 8,  "note": "Nearshore empresas US"},
+        {"name": "Itagüí",     "latlng": [6.1848, -75.5990], "intensity": 48, "jobs": 3,  "freelance": 6,  "note": "Zona industrial"},
+        {"name": "Sabaneta",   "latlng": [6.1521, -75.6149], "intensity": 50, "jobs": 2,  "freelance": 5,  "note": "Crecimiento tech"}
+      ]
+    },
+    "CUN": {
+      "name": "Cundinamarca",
+      "capital": "Bogotá",
+      "latlng": [4.7110, -74.0721],
+      "intensity": 90,
+      "jobs": 45,
+      "freelance": 52,
+      "contract": 38,
+      "training": 25,
+      "fastEntry": true,
+      "salary": "$5M–$12M COP/mes",
+      "driver": "Capital financiera · Gobierno · Multinacionales",
+      "topRoles": [
+        {"role": "SOC Analyst L1/L2", "demand": 92, "note": "Bancos y gobierno"},
+        {"role": "GRC / Compliance",  "demand": 88, "note": "Ley 1581 + Decreto 338"},
+        {"role": "Cloud Security",    "demand": 85, "note": "AWS / Azure multinationals"},
+        {"role": "Penetration Tester","demand": 82, "note": "Prestación servicios"},
+        {"role": "Incident Responder","demand": 78, "note": "Sector crítico gobierno"},
+        {"role": "DevSecOps Engineer","demand": 75, "note": "Fintechs Bogotá"},
+        {"role": "Threat Intel",      "demand": 70, "note": "MinTIC y defensa"},
+        {"role": "AppSec Engineer",   "demand": 68, "note": "E-commerce"}
+      ],
+      "signals": ["SOC Bogotá remoto", "Pentest prestación CO", "GRC compliance gov", "Cloud AWS Bogotá", "MinTIC cyber"],
+      "platforms": "LinkedIn, Torre.ai, Computrabajo, Elempleo, Workana",
+      "note": "Mayor mercado de ciberseguridad de Colombia. Concentra 60% de todas las vacantes. Gobierno, banca y multinacionales.",
+      "cities": [
+        {"name": "Bogotá",      "latlng": [4.7110, -74.0721], "intensity": 90, "jobs": 40, "freelance": 46, "note": "Capital y mayor mercado CO"},
+        {"name": "Soacha",      "latlng": [4.5793, -74.2170], "intensity": 38, "jobs": 2,  "freelance": 4,  "note": "Crecimiento suburbano"},
+        {"name": "Chía",        "latlng": [4.8611, -74.0632], "intensity": 42, "jobs": 2,  "freelance": 4,  "note": "Empresas suburbanas"},
+        {"name": "Zipaquirá",   "latlng": [5.0233, -74.0055], "intensity": 30, "jobs": 1,  "freelance": 2,  "note": "Industrial"},
+        {"name": "Facatativá",  "latlng": [4.8138, -74.3548], "intensity": 28, "jobs": 1,  "freelance": 2,  "note": "Industrial"}
+      ]
+    },
+    "VAC": {
+      "name": "Valle del Cauca",
+      "capital": "Cali",
+      "latlng": [3.4516, -76.5320],
+      "intensity": 72,
+      "jobs": 18,
+      "freelance": 25,
+      "contract": 15,
+      "training": 12,
+      "fastEntry": true,
+      "salary": "$3.5M–$8M COP/mes",
+      "driver": "Cali · Ingenio azucarero · Sector logístico",
+      "topRoles": [
+        {"role": "SOC Analyst",         "demand": 78, "note": "Banca y sector público"},
+        {"role": "GRC / Compliance",    "demand": 74, "note": "Sector financiero"},
+        {"role": "Penetration Tester",  "demand": 70, "note": "Freelance"},
+        {"role": "Cloud Security",      "demand": 65, "note": "AWS empresas logísticas"},
+        {"role": "DevSecOps Engineer",  "demand": 60, "note": "Startups Cali"}
+      ],
+      "signals": ["SOC Cali", "Pentest freelance VAC", "GRC banca Cali", "Cloud security"],
+      "platforms": "LinkedIn, Computrabajo, Torre.ai",
+      "note": "Tercer mercado de CO. Cali Tech impulsa el ecosistema. Empresas logísticas y agroindustriales invierten en seguridad OT.",
+      "cities": [
+        {"name": "Cali",          "latlng": [3.4516, -76.5320], "intensity": 72, "jobs": 15, "freelance": 20, "note": "Hub tech del suroccidente"},
+        {"name": "Palmira",       "latlng": [3.5394, -76.3038], "intensity": 40, "jobs": 2,  "freelance": 3,  "note": "Agroindustrial"},
+        {"name": "Buenaventura",  "latlng": [3.8801, -77.0312], "intensity": 30, "jobs": 1,  "freelance": 2,  "note": "Puerto marítimo"},
+        {"name": "Tuluá",         "latlng": [4.0874, -76.1984], "intensity": 32, "jobs": 1,  "freelance": 3,  "note": "Comercio regional"}
+      ]
+    },
+    "ATL": {
+      "name": "Atlántico",
+      "capital": "Barranquilla",
+      "latlng": [10.9685, -74.7813],
+      "intensity": 65,
+      "jobs": 12,
+      "freelance": 18,
+      "contract": 10,
+      "training": 8,
+      "fastEntry": true,
+      "salary": "$3M–$7M COP/mes",
+      "driver": "Barranquilla · Zona Franca · Puerto Caribe",
+      "topRoles": [
+        {"role": "SOC Analyst",        "demand": 72, "note": "Empresas portuarias"},
+        {"role": "GRC / Compliance",   "demand": 68, "note": "Zona franca"},
+        {"role": "Cloud Security",     "demand": 62, "note": "AWS región Caribe"},
+        {"role": "Penetration Tester", "demand": 58, "note": "Freelance remoto"}
+      ],
+      "signals": ["SOC Barranquilla", "Freelance cyber Caribe", "GRC Zona Franca"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Hub comercial del Caribe colombiano. Zona Franca y empresas exportadoras invierten en ciberseguridad.",
+      "cities": [
+        {"name": "Barranquilla", "latlng": [10.9685, -74.7813], "intensity": 65, "jobs": 10, "freelance": 15, "note": "Puerto y comercio Caribe"},
+        {"name": "Soledad",      "latlng": [10.9175, -74.7670], "intensity": 35, "jobs": 2,  "freelance": 3,  "note": "Zona industrial"}
+      ]
+    },
+    "BOL": {
+      "name": "Bolívar",
+      "capital": "Cartagena",
+      "latlng": [10.3910, -75.4794],
+      "intensity": 55,
+      "jobs": 8,
+      "freelance": 12,
+      "contract": 7,
+      "training": 6,
+      "fastEntry": true,
+      "salary": "$2.5M–$6M COP/mes",
+      "driver": "Turismo tech · Petroquímica · Puerto",
+      "topRoles": [
+        {"role": "SOC Analyst",        "demand": 60, "note": "Sector portuario"},
+        {"role": "GRC / Compliance",   "demand": 55, "note": "Turismo y hotelería"},
+        {"role": "Penetration Tester", "demand": 50, "note": "Freelance"}
+      ],
+      "signals": ["SOC Cartagena", "Cyber freelance Caribe", "GRC turismo"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Cartagena combina turismo y petroquímica. Sector hotelero invierte en ciberseguridad. Mercado emergente.",
+      "cities": [
+        {"name": "Cartagena", "latlng": [10.3910, -75.4794], "intensity": 55, "jobs": 7, "freelance": 10, "note": "Puerto y turismo"},
+        {"name": "Magangué",  "latlng": [9.2343, -74.7543],  "intensity": 22, "jobs": 1, "freelance": 2,  "note": "Comercio fluvial"}
+      ]
+    },
+    "SAN": {
+      "name": "Santander",
+      "capital": "Bucaramanga",
+      "latlng": [7.1193, -73.1227],
+      "intensity": 60,
+      "jobs": 10,
+      "freelance": 14,
+      "contract": 8,
+      "training": 7,
+      "fastEntry": true,
+      "salary": "$3M–$6.5M COP/mes",
+      "driver": "Bucaramanga · UIS · Industria petrolera",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 65, "note": "Banca y sector público"},
+        {"role": "OT/ICS Security",   "demand": 62, "note": "Industria petrolera"},
+        {"role": "GRC / Compliance",  "demand": 58, "note": "Regulación sectorial"},
+        {"role": "Penetration Tester","demand": 55, "note": "Freelance"}
+      ],
+      "signals": ["SOC Bucaramanga", "OT security petrolero", "Freelance cyber SAN"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Universidad Industrial de Santander forma talento cyber. Industria petrolera impulsa OT security.",
+      "cities": [
+        {"name": "Bucaramanga",  "latlng": [7.1193, -73.1227], "intensity": 60, "jobs": 8,  "freelance": 12, "note": "Ciudad bonita · hub UIS"},
+        {"name": "Floridablanca","latlng": [7.0647, -73.0863], "intensity": 38, "jobs": 2,  "freelance": 4,  "note": "Zona residencial industrial"},
+        {"name": "Girón",        "latlng": [7.0697, -73.1702], "intensity": 30, "jobs": 1,  "freelance": 2,  "note": "Zona industrial"}
+      ]
+    },
+    "NSA": {
+      "name": "Norte de Santander",
+      "capital": "Cúcuta",
+      "latlng": [7.8939, -72.5078],
+      "intensity": 42,
+      "jobs": 5,
+      "freelance": 10,
+      "contract": 4,
+      "training": 5,
+      "fastEntry": true,
+      "salary": "$2M–$4.5M COP/mes",
+      "driver": "Frontera Venezuela · Comercio binacional",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 45, "note": "Sector público"},
+        {"role": "GRC / Compliance",  "demand": 40, "note": "Sector comercio"},
+        {"role": "Penetration Tester","demand": 38, "note": "Freelance remoto"}
+      ],
+      "signals": ["Freelance remoto Cúcuta", "SOC nororiente"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Zona de frontera con Venezuela. Mercado local pequeño pero conexión a trabajo remoto para clientes internacionales.",
+      "cities": [
+        {"name": "Cúcuta",      "latlng": [7.8939, -72.5078], "intensity": 42, "jobs": 4, "freelance": 8, "note": "Frontera binacional"},
+        {"name": "Villa del Rosario", "latlng": [7.8333, -72.4833], "intensity": 25, "jobs": 1, "freelance": 2, "note": "Zona fronteriza"}
+      ]
+    },
+    "COR": {
+      "name": "Córdoba",
+      "capital": "Montería",
+      "latlng": [8.7575, -75.8857],
+      "intensity": 32,
+      "jobs": 3,
+      "freelance": 6,
+      "contract": 2,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$1.8M–$3.5M COP/mes",
+      "driver": "Ganadería · Agro · Sector público",
+      "topRoles": [
+        {"role": "SOC Analyst",      "demand": 35, "note": "Sector público"},
+        {"role": "GRC / Compliance", "demand": 30, "note": "Sector agro"}
+      ],
+      "signals": ["Freelance remoto Montería", "Sector público cyber"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Mercado emergente. Sector público lidera demanda. Talento con opción de trabajo remoto para otras regiones.",
+      "cities": [
+        {"name": "Montería", "latlng": [8.7575, -75.8857], "intensity": 32, "jobs": 3, "freelance": 5, "note": "Capital ganadera"}
+      ]
+    },
+    "MAG": {
+      "name": "Magdalena",
+      "capital": "Santa Marta",
+      "latlng": [11.2408, -74.1990],
+      "intensity": 35,
+      "jobs": 3,
+      "freelance": 7,
+      "contract": 3,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$2M–$4M COP/mes",
+      "driver": "Turismo · Puerto · Bananero",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 38, "note": "Sector turismo"},
+        {"role": "Penetration Tester","demand": 34, "note": "Freelance remoto"}
+      ],
+      "signals": ["Cyber freelance Santa Marta", "Turismo digital"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Sector turístico y portuario emergente. Talento exportado a Bogotá y mercados internacionales vía remoto.",
+      "cities": [
+        {"name": "Santa Marta", "latlng": [11.2408, -74.1990], "intensity": 35, "jobs": 3, "freelance": 6, "note": "Ciudad turística Caribe"}
+      ]
+    },
+    "CAL": {
+      "name": "Caldas",
+      "capital": "Manizales",
+      "latlng": [5.0703, -75.5138],
+      "intensity": 52,
+      "jobs": 6,
+      "freelance": 10,
+      "contract": 5,
+      "training": 6,
+      "fastEntry": true,
+      "salary": "$2.5M–$5.5M COP/mes",
+      "driver": "Café · Universidad Nacional · Ecosistema emprendimiento",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 55, "note": "Sector financiero"},
+        {"role": "GRC / Compliance",  "demand": 50, "note": "Regulación sectorial"},
+        {"role": "Penetration Tester","demand": 48, "note": "Freelance"}
+      ],
+      "signals": ["Cyber Manizales", "Freelance Eje Cafetero", "SOC regional"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Eje Cafetero emergente en tech. Universidad Nacional sede Manizales forma talento. Ecosistema de emprendimiento activo.",
+      "cities": [
+        {"name": "Manizales", "latlng": [5.0703, -75.5138], "intensity": 52, "jobs": 5, "freelance": 8, "note": "Ciudad universitaria cafetera"}
+      ]
+    },
+    "RIS": {
+      "name": "Risaralda",
+      "capital": "Pereira",
+      "latlng": [4.8133, -75.6961],
+      "intensity": 55,
+      "jobs": 7,
+      "freelance": 12,
+      "contract": 6,
+      "training": 6,
+      "fastEntry": true,
+      "salary": "$2.5M–$6M COP/mes",
+      "driver": "Pereira tech · Café · Nearshore",
+      "topRoles": [
+        {"role": "SOC Analyst",        "demand": 58, "note": "Sector financiero"},
+        {"role": "DevSecOps Engineer", "demand": 55, "note": "Startups Pereira"},
+        {"role": "Penetration Tester", "demand": 52, "note": "Freelance remoto"}
+      ],
+      "signals": ["Tech Pereira", "Freelance Eje Cafetero", "DevSecOps startup"],
+      "platforms": "LinkedIn, Computrabajo, Torre.ai",
+      "note": "Pereira lidera el Eje Cafetero en tech. Creciente nearshore para empresas de Medellín y Bogotá.",
+      "cities": [
+        {"name": "Pereira",      "latlng": [4.8133, -75.6961], "intensity": 55, "jobs": 6,  "freelance": 10, "note": "Hub tech Eje Cafetero"},
+        {"name": "Dosquebradas","latlng": [4.8390, -75.6640], "intensity": 35, "jobs": 1,  "freelance": 3,  "note": "Industrial"}
+      ]
+    },
+    "QUI": {
+      "name": "Quindío",
+      "capital": "Armenia",
+      "latlng": [4.5339, -75.6811],
+      "intensity": 45,
+      "jobs": 4,
+      "freelance": 8,
+      "contract": 4,
+      "training": 5,
+      "fastEntry": true,
+      "salary": "$2M–$4.5M COP/mes",
+      "driver": "Turismo café · Comercio · Remoto",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 48, "note": "Sector público"},
+        {"role": "Penetration Tester","demand": 44, "note": "Freelance"}
+      ],
+      "signals": ["Freelance Armenia CO", "Cyber remoto Quindío"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Mercado local pequeño con opción sólida de trabajo remoto. Nearshore para Eje Cafetero.",
+      "cities": [
+        {"name": "Armenia", "latlng": [4.5339, -75.6811], "intensity": 45, "jobs": 4, "freelance": 7, "note": "Capital cafetera"}
+      ]
+    },
+    "HUI": {
+      "name": "Huila",
+      "capital": "Neiva",
+      "latlng": [2.9273, -75.2819],
+      "intensity": 38,
+      "jobs": 3,
+      "freelance": 7,
+      "contract": 3,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$2M–$4M COP/mes",
+      "driver": "Petróleo · Sector público · Agro",
+      "topRoles": [
+        {"role": "OT/ICS Security",   "demand": 42, "note": "Industria petrolera"},
+        {"role": "SOC Analyst",       "demand": 38, "note": "Sector público"},
+        {"role": "Penetration Tester","demand": 35, "note": "Freelance"}
+      ],
+      "signals": ["OT security Huila", "Freelance remoto"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Región petrolera con demanda emergente de OT security. Talento exportado a Bogotá vía trabajo remoto.",
+      "cities": [
+        {"name": "Neiva", "latlng": [2.9273, -75.2819], "intensity": 38, "jobs": 3, "freelance": 6, "note": "Capital petrolera del sur"}
+      ]
+    },
+    "TOL": {
+      "name": "Tolima",
+      "capital": "Ibagué",
+      "latlng": [4.4389, -75.2322],
+      "intensity": 40,
+      "jobs": 4,
+      "freelance": 8,
+      "contract": 3,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$2M–$4.5M COP/mes",
+      "driver": "Música · Sector público · Agro",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 42, "note": "Sector público"},
+        {"role": "GRC / Compliance",  "demand": 38, "note": "Regulación"},
+        {"role": "Penetration Tester","demand": 36, "note": "Freelance"}
+      ],
+      "signals": ["Freelance cyber Ibagué", "Sector público Tolima"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Mercado en crecimiento. Sector público lidera demanda. Cercanía a Bogotá facilita trabajo remoto y desplazamiento.",
+      "cities": [
+        {"name": "Ibagué", "latlng": [4.4389, -75.2322], "intensity": 40, "jobs": 4, "freelance": 7, "note": "Ciudad musical de Colombia"}
+      ]
+    },
+    "NAR": {
+      "name": "Nariño",
+      "capital": "Pasto",
+      "latlng": [1.2136, -77.2811],
+      "intensity": 35,
+      "jobs": 3,
+      "freelance": 6,
+      "contract": 2,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$1.8M–$3.8M COP/mes",
+      "driver": "Frontera Ecuador · Sector público · Universidad Nariño",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 38, "note": "Sector público"},
+        {"role": "Penetration Tester","demand": 34, "note": "Freelance remoto"}
+      ],
+      "signals": ["Freelance Pasto", "Cyber frontera Ecuador"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Zona de frontera con Ecuador. Universidad de Nariño forma talento. Mercado remoto hacia Bogotá y Ecuador.",
+      "cities": [
+        {"name": "Pasto",  "latlng": [1.2136, -77.2811], "intensity": 35, "jobs": 2, "freelance": 5, "note": "Capital sur fronteriza"},
+        {"name": "Tumaco","latlng": [1.7997, -78.7635], "intensity": 20, "jobs": 1, "freelance": 2, "note": "Puerto Pacífico"}
+      ]
+    },
+    "CAU": {
+      "name": "Cauca",
+      "capital": "Popayán",
+      "latlng": [2.4448, -76.6147],
+      "intensity": 38,
+      "jobs": 3,
+      "freelance": 6,
+      "contract": 2,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$1.8M–$3.8M COP/mes",
+      "driver": "Universidad del Cauca · Sector público · Remoto",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 40, "note": "Sector público"},
+        {"role": "Penetration Tester","demand": 36, "note": "Freelance"}
+      ],
+      "signals": ["Freelance Popayán", "Universidad Cauca cyber"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "La Universidad del Cauca forma talento tech. Popayán como ciudad blanca emergente en tecnología.",
+      "cities": [
+        {"name": "Popayán", "latlng": [2.4448, -76.6147], "intensity": 38, "jobs": 3, "freelance": 5, "note": "Ciudad blanca universitaria"}
+      ]
+    },
+    "CES": {
+      "name": "Cesar",
+      "capital": "Valledupar",
+      "latlng": [10.4631, -73.2532],
+      "intensity": 30,
+      "jobs": 2,
+      "freelance": 5,
+      "contract": 2,
+      "training": 3,
+      "fastEntry": true,
+      "salary": "$1.8M–$3.5M COP/mes",
+      "driver": "Carbón · Vallenato · Sector público",
+      "topRoles": [
+        {"role": "SOC Analyst",      "demand": 32, "note": "Sector público"},
+        {"role": "OT/ICS Security",  "demand": 30, "note": "Minería carbón"}
+      ],
+      "signals": ["Freelance Valledupar", "OT minería Cesar"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Región carbonífera. Demanda emergente en OT security para sector minero. Trabajo remoto hacia Barranquilla y Bogotá.",
+      "cities": [
+        {"name": "Valledupar", "latlng": [10.4631, -73.2532], "intensity": 30, "jobs": 2, "freelance": 4, "note": "Capital vallenata"}
+      ]
+    },
+    "MET": {
+      "name": "Meta",
+      "capital": "Villavicencio",
+      "latlng": [4.1420, -73.6266],
+      "intensity": 35,
+      "jobs": 3,
+      "freelance": 6,
+      "contract": 2,
+      "training": 3,
+      "fastEntry": true,
+      "salary": "$2M–$4M COP/mes",
+      "driver": "Petróleo · Agroindustria · Llanos",
+      "topRoles": [
+        {"role": "OT/ICS Security",   "demand": 40, "note": "Sector petrolero"},
+        {"role": "SOC Analyst",       "demand": 35, "note": "Sector público"}
+      ],
+      "signals": ["OT security Villavicencio", "Freelance Llanos"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Puerta de los Llanos. Sector petrolero genera demanda OT. Cercanía a Bogotá permite trabajo remoto.",
+      "cities": [
+        {"name": "Villavicencio", "latlng": [4.1420, -73.6266], "intensity": 35, "jobs": 3, "freelance": 5, "note": "Puerta de los Llanos"}
+      ]
+    },
+    "BOY": {
+      "name": "Boyacá",
+      "capital": "Tunja",
+      "latlng": [5.5353, -73.3678],
+      "intensity": 38,
+      "jobs": 3,
+      "freelance": 6,
+      "contract": 2,
+      "training": 4,
+      "fastEntry": true,
+      "salary": "$2M–$4M COP/mes",
+      "driver": "UPTC · Minería · Sector público",
+      "topRoles": [
+        {"role": "SOC Analyst",       "demand": 40, "note": "Sector público"},
+        {"role": "Penetration Tester","demand": 36, "note": "Freelance"}
+      ],
+      "signals": ["Freelance Tunja", "UPTC cyber"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "UPTC Universidad Pedagógica y Tecnológica forma talento. Sector público y minero dominan demanda.",
+      "cities": [
+        {"name": "Tunja",     "latlng": [5.5353, -73.3678], "intensity": 38, "jobs": 2, "freelance": 5, "note": "Ciudad universitaria andina"},
+        {"name": "Duitama",  "latlng": [5.8278, -73.0281], "intensity": 28, "jobs": 1, "freelance": 2, "note": "Ciudad industrial"}
+      ]
+    },
+    "CAS": {
+      "name": "Casanare",
+      "capital": "Yopal",
+      "latlng": [5.3378, -72.3961],
+      "intensity": 32,
+      "jobs": 2,
+      "freelance": 5,
+      "contract": 2,
+      "training": 3,
+      "fastEntry": true,
+      "salary": "$2M–$4.5M COP/mes",
+      "driver": "Petróleo · Ecopetrol · Llanos",
+      "topRoles": [
+        {"role": "OT/ICS Security",   "demand": 42, "note": "Ecopetrol campos"},
+        {"role": "SOC Analyst",       "demand": 32, "note": "Sector petrolero"}
+      ],
+      "signals": ["OT Ecopetrol Casanare", "ICS security petrolero"],
+      "platforms": "LinkedIn",
+      "note": "Región petrolera de Ecopetrol. Alta demanda específica de OT/ICS security para proteger infraestructura crítica.",
+      "cities": [
+        {"name": "Yopal", "latlng": [5.3378, -72.3961], "intensity": 32, "jobs": 2, "freelance": 4, "note": "Capital petrolera Casanare"}
+      ]
+    },
+    "ARA": {
+      "name": "Arauca",
+      "capital": "Arauca",
+      "latlng": [7.0900, -70.7614],
+      "intensity": 25,
+      "jobs": 1,
+      "freelance": 3,
+      "contract": 1,
+      "training": 2,
+      "fastEntry": true,
+      "salary": "$1.8M–$3M COP/mes",
+      "driver": "Petróleo · Frontera Venezuela",
+      "topRoles": [
+        {"role": "OT/ICS Security", "demand": 30, "note": "Oleoducto"},
+        {"role": "SOC Analyst",     "demand": 25, "note": "Sector público"}
+      ],
+      "signals": ["OT oleoducto Arauca", "Frontera Venezuela cyber"],
+      "platforms": "LinkedIn",
+      "note": "Zona de frontera y oleoductos. Demanda muy específica en OT security para protección de infraestructura petrolera.",
+      "cities": [
+        {"name": "Arauca", "latlng": [7.0900, -70.7614], "intensity": 25, "jobs": 1, "freelance": 3, "note": "Frontera y petróleo"}
+      ]
+    },
+    "SUC": {
+      "name": "Sucre",
+      "capital": "Sincelejo",
+      "latlng": [9.3047, -75.3978],
+      "intensity": 28,
+      "jobs": 2,
+      "freelance": 4,
+      "contract": 1,
+      "training": 3,
+      "fastEntry": true,
+      "salary": "$1.5M–$3M COP/mes",
+      "driver": "Ganadería · Sector público · Remoto",
+      "topRoles": [
+        {"role": "SOC Analyst",      "demand": 30, "note": "Sector público"},
+        {"role": "GRC / Compliance", "demand": 26, "note": "Sector ganadero"}
+      ],
+      "signals": ["Freelance Sincelejo", "Sector público Sucre"],
+      "platforms": "LinkedIn, Computrabajo",
+      "note": "Mercado muy emergente. Sector público es principal empleador. Opción viable de trabajo remoto para Barranquilla y Bogotá.",
+      "cities": [
+        {"name": "Sincelejo", "latlng": [9.3047, -75.3978], "intensity": 28, "jobs": 2, "freelance": 4, "note": "Capital ganadera Caribe"}
+      ]
+    },
+    "CHO": {
+      "name": "Chocó",
+      "capital": "Quibdó",
+      "latlng": [5.6919, -76.6583],
+      "intensity": 18,
+      "jobs": 1,
+      "freelance": 2,
+      "contract": 0,
+      "training": 2,
+      "fastEntry": true,
+      "salary": "$1.5M–$2.5M COP/mes",
+      "driver": "Sector público · Minería artesanal",
+      "topRoles": [
+        {"role": "SOC Analyst", "demand": 20, "note": "Sector público básico"}
+      ],
+      "signals": ["Remoto Quibdó", "Sector público Chocó"],
+      "platforms": "LinkedIn",
+      "note": "Departamento con menor infraestructura tech. Conectividad limitada. Oportunidad principal vía trabajo remoto hacia Medellín.",
+      "cities": [
+        {"name": "Quibdó", "latlng": [5.6919, -76.6583], "intensity": 18, "jobs": 1, "freelance": 2, "note": "Capital selva del Pacífico"}
+      ]
+    },
+    "GUV": {
+      "name": "Guaviare",
+      "capital": "San José del Guaviare",
+      "latlng": [2.5665, -72.6382],
+      "intensity": 12,
+      "jobs": 0,
+      "freelance": 2,
+      "contract": 0,
+      "training": 1,
+      "fastEntry": true,
+      "salary": "Remoto USD",
+      "driver": "Sector público · Amazonia",
+      "topRoles": [
+        {"role": "Freelance remoto", "demand": 15, "note": "Solo trabajo remoto viable"}
+      ],
+      "signals": ["Remoto Amazonia CO"],
+      "platforms": "LinkedIn",
+      "note": "Zona amazónica. Sin ecosistema tech local. Solo viable trabajo remoto hacia Bogotá o clientes internacionales.",
+      "cities": [
+        {"name": "San José del Guaviare", "latlng": [2.5665, -72.6382], "intensity": 12, "jobs": 0, "freelance": 2, "note": "Puerta Amazonia"}
+      ]
+    },
+    "VAU": {
+      "name": "Vaupés",
+      "capital": "Mitú",
+      "latlng": [1.1983, -70.1734],
+      "intensity": 8,
+      "jobs": 0,
+      "freelance": 1,
+      "contract": 0,
+      "training": 0,
+      "fastEntry": false,
+      "salary": "—",
+      "driver": "Sin ecosistema tech",
+      "topRoles": [],
+      "signals": ["Solo remoto posible"],
+      "platforms": "—",
+      "note": "Sin mercado tech local. Conectividad muy limitada. Solo posible trabajo remoto con conexión satelital.",
+      "cities": [
+        {"name": "Mitú", "latlng": [1.1983, -70.1734], "intensity": 8, "jobs": 0, "freelance": 1, "note": "Amazonia profunda"}
+      ]
+    },
+    "AMA": {
+      "name": "Amazonas",
+      "capital": "Leticia",
+      "latlng": [-4.2153, -69.9407],
+      "intensity": 10,
+      "jobs": 0,
+      "freelance": 1,
+      "contract": 0,
+      "training": 1,
+      "fastEntry": false,
+      "salary": "—",
+      "driver": "Turismo · Sector público · Frontera 3 países",
+      "topRoles": [],
+      "signals": ["Remoto Leticia"],
+      "platforms": "LinkedIn",
+      "note": "Triple frontera Colombia-Brasil-Perú. Sin mercado tech local. Oportunidad única en turismo digital y remoto internacional.",
+      "cities": [
+        {"name": "Leticia", "latlng": [-4.2153, -69.9407], "intensity": 10, "jobs": 0, "freelance": 1, "note": "Triple frontera CO-BR-PE"}
+      ]
+    },
+    "PUT": {
+      "name": "Putumayo",
+      "capital": "Mocoa",
+      "latlng": [1.1524, -76.6490],
+      "intensity": 15,
+      "jobs": 0,
+      "freelance": 2,
+      "contract": 0,
+      "training": 1,
+      "fastEntry": true,
+      "salary": "$1.5M–$2.5M COP/mes",
+      "driver": "Petróleo · Frontera Ecuador",
+      "topRoles": [
+        {"role": "OT/ICS Security", "demand": 18, "note": "Oleoductos"}
+      ],
+      "signals": ["OT petróleo Putumayo", "Remoto frontera Ecuador"],
+      "platforms": "LinkedIn",
+      "note": "Departamento petrolero con acceso limitado. Oportunidad en OT security para infraestructura de oleoductos.",
+      "cities": [
+        {"name": "Mocoa", "latlng": [1.1524, -76.6490], "intensity": 15, "jobs": 0, "freelance": 2, "note": "Capital selva andina"}
+      ]
+    },
+    "VIC": {
+      "name": "Vichada",
+      "capital": "Puerto Carreño",
+      "latlng": [6.1891, -67.4833],
+      "intensity": 8,
+      "jobs": 0,
+      "freelance": 1,
+      "contract": 0,
+      "training": 0,
+      "fastEntry": false,
+      "salary": "—",
+      "driver": "Agropecuario · Frontera Venezuela",
+      "topRoles": [],
+      "signals": ["Solo remoto Vichada"],
+      "platforms": "—",
+      "note": "Sin ecosistema tech. Departamento más despoblado de Colombia. Solo viable trabajo remoto.",
+      "cities": [
+        {"name": "Puerto Carreño", "latlng": [6.1891, -67.4833], "intensity": 8, "jobs": 0, "freelance": 1, "note": "Frontera Venezuela Llanos"}
+      ]
+    },
+    "GUA": {
+      "name": "Guainía",
+      "capital": "Inírida",
+      "latlng": [3.8653, -67.9239],
+      "intensity": 8,
+      "jobs": 0,
+      "freelance": 1,
+      "contract": 0,
+      "training": 0,
+      "fastEntry": false,
+      "salary": "—",
+      "driver": "Sector público · Amazonia",
+      "topRoles": [],
+      "signals": ["Solo remoto Inírida"],
+      "platforms": "—",
+      "note": "Sin mercado tech local. Solo posible trabajo remoto hacia Bogotá o clientes internacionales.",
+      "cities": [
+        {"name": "Inírida", "latlng": [3.8653, -67.9239], "intensity": 8, "jobs": 0, "freelance": 1, "note": "Amazonia profunda CO"}
+      ]
+    },
+    "LAG": {
+      "name": "La Guajira",
+      "capital": "Riohacha",
+      "latlng": [11.5444, -72.9072],
+      "intensity": 25,
+      "jobs": 1,
+      "freelance": 3,
+      "contract": 1,
+      "training": 2,
+      "fastEntry": true,
+      "salary": "$1.5M–$3M COP/mes",
+      "driver": "Carbón · Energía eólica · Turismo",
+      "topRoles": [
+        {"role": "OT/ICS Security", "demand": 30, "note": "Parques eólicos"},
+        {"role": "SOC Analyst",     "demand": 24, "note": "Sector público"}
+      ],
+      "signals": ["OT energía eólica Guajira", "Freelance remoto"],
+      "platforms": "LinkedIn",
+      "note": "Hub de energía renovable en Colombia. Parques eólicos offshore generan demanda OT. Mercado emergente.",
+      "cities": [
+        {"name": "Riohacha",    "latlng": [11.5444, -72.9072], "intensity": 25, "jobs": 1, "freelance": 3, "note": "Capital Wayuu"},
+        {"name": "Maicao",     "latlng": [11.3788, -72.2415], "intensity": 18, "jobs": 0, "freelance": 2, "note": "Comercio fronterizo Venezuela"}
+      ]
+    },
+    "SAP": {
+      "name": "San Andrés y Providencia",
+      "capital": "San Andrés",
+      "latlng": [12.5567, -81.7185],
+      "intensity": 30,
+      "jobs": 1,
+      "freelance": 4,
+      "contract": 1,
+      "training": 2,
+      "fastEntry": true,
+      "salary": "$2M–$5M COP/mes",
+      "driver": "Turismo · Zona Libre · Trabajo remoto Caribe",
+      "topRoles": [
+        {"role": "Penetration Tester", "demand": 32, "note": "Freelance remoto USD"},
+        {"role": "SOC Analyst",        "demand": 28, "note": "Sector turístico"}
+      ],
+      "signals": ["Freelance remoto USD San Andrés", "Turismo cyber"],
+      "platforms": "LinkedIn, Upwork",
+      "note": "Zona de libre comercio. Ideal para trabajo remoto en USD. Alta calidad de vida con conectividad internacional.",
+      "cities": [
+        {"name": "San Andrés", "latlng": [12.5567, -81.7185], "intensity": 30, "jobs": 1, "freelance": 4, "note": "Isla Caribe Zona Libre"}
+      ]
+    }
+  },
+  "meta": {
+    "country": "Colombia",
+    "code": "CO",
+    "total_departments": 33,
+    "total_cities": 47,
+    "updated": "2026-06",
+    "top_department": "CUN",
+    "top_city": "Bogotá",
+    "national_intensity": 68,
+    "total_jobs": 167,
+    "total_freelance": 262,
+    "total_contracts": 148
+  }
+}
