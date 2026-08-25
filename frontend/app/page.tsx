@@ -13,11 +13,6 @@ const Globe3D = dynamic(
   { ssr: false }
 )
 
-const Map2D = dynamic(
-  () => import('@/components/Map2D/Map2D').then(mod => mod.Map2D),
-  { ssr: false }
-)
-
 const ColombiaDashboard = dynamic(
   () => import('@/components/ColombiaDashboard/ColombiaDashboard').then(mod => mod.ColombiaDashboard),
   { ssr: false }
@@ -25,7 +20,6 @@ const ColombiaDashboard = dynamic(
 
 export default function Home() {
   const [selectedCountry, setSelectedCountry] = useState<string>('US')
-  const [viewMode, setViewMode] = useState<'2d' | '3d'>('3d')
   const [showColombia, setShowColombia] = useState(false)
 
   // Abrir Colombia Dashboard cuando se selecciona CO
@@ -50,28 +44,8 @@ export default function Home() {
             </div>
           </div>
           
-          {/* View Toggle */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setViewMode('2d')}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                viewMode === '2d'
-                  ? 'bg-cyber-accent text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              🗺️ 2D
-            </button>
-            <button
-              onClick={() => setViewMode('3d')}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                viewMode === '3d'
-                  ? 'bg-cyber-accent text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              🌐 3D
-            </button>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400">🌐 Globo 3D · arrastra · scroll · clic</span>
           </div>
         </div>
       </header>
@@ -86,19 +60,12 @@ export default function Home() {
           />
         </aside>
 
-        {/* Center - Globe or Map */}
+        {/* Center - Globe 3D only */}
         <div className="flex-1 relative">
-          {viewMode === '3d' ? (
-            <Globe3D 
-              selectedCountry={selectedCountry}
-              onSelectCountry={setSelectedCountry}
-            />
-          ) : (
-            <Map2D
-              selectedCountry={selectedCountry}
-              onSelectCountry={setSelectedCountry}
-            />
-          )}
+          <Globe3D 
+            selectedCountry={selectedCountry}
+            onSelectCountry={setSelectedCountry}
+          />
         </div>
 
         {/* Right Sidebar - Intelligence */}
