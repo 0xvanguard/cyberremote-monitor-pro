@@ -5,7 +5,9 @@ from typing import List
 class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     SECRET_KEY: str = "change-me-in-production"
-    DATABASE_URL: str = "postgresql+asyncpg://cyberremote:cyberremote@db:5432/cyberremote"
+    # MVP: SQLite local por defecto (cero infraestructura para arrancar).
+    # En Docker Compose se sobreescribe con PostgreSQL via env var.
+    DATABASE_URL: str = "sqlite+aiosqlite:///./cyberremote.db"
     REDIS_URL: str = "redis://redis:6379/0"
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
 

@@ -1,0 +1,147 @@
+[
+  {
+    "title": "Junior SOC Analyst (Tier 1)",
+    "company": "ShieldOps",
+    "country_code": "CO", "city": "Bogotá", "lat": 4.711, "lng": -74.0721,
+    "specialties": ["soc"], "level": "junior", "contract_type": "remote",
+    "salary_min": 18000, "salary_max": 26000, "currency": "USD",
+    "languages": ["es"], "source": "seed", "source_id": "seed-001",
+    "source_url": null,
+    "description_summary": "Monitoreo de SIEM, triage de alertas y escalamiento de incidentes en SOC 24/7."
+  },
+  {
+    "title": "Junior Penetration Tester",
+    "company": "HackProof Labs",
+    "country_code": "MX", "city": "Ciudad de México", "lat": 19.4326, "lng": -99.1332,
+    "specialties": ["pentesting"], "level": "junior", "contract_type": "full-time",
+    "salary_min": 22000, "salary_max": 30000, "currency": "USD",
+    "languages": ["es", "en"], "source": "seed", "source_id": "seed-002",
+    "description_summary": "Pentesting web y móvil guiado, elaboración de reportes ejecutivos en español."
+  },
+  {
+    "title": "Associate Cloud Security Engineer",
+    "company": "NimbusSecure",
+    "country_code": "US", "city": "Austin, TX", "lat": 30.2672, "lng": -97.7431,
+    "specialties": ["cloud_security"], "level": "semi-junior", "contract_type": "remote",
+    "salary_min": 75000, "salary_max": 95000, "currency": "USD",
+    "languages": ["en"], "source": "seed", "source_id": "seed-003",
+    "description_summary": "Hardening de AWS, IAM least-privilege y automatización de controles con Terraform."
+  },
+  {
+    "title": "DevSecOps Engineer (Mid)",
+    "company": "PipelineGuard",
+    "country_code": "ES", "city": "Madrid", "lat": 40.4168, "lng": -3.7038,
+    "specialties": ["devsecops", "appsec"], "level": "mid", "contract_type": "remote",
+    "salary_min": 48000, "salary_max": 65000, "currency": "EUR",
+    "languages": ["es", "en"], "source": "seed", "source_id": "seed-004",
+    "description_summary": "Integrar SAST/DAST en CI/CD, gestión de secretos y supply chain security."
+  },
+  {
+    "title": "GRC Analyst — ISO 27001",
+    "company": "ComplyLatam",
+    "country_code": "AR", "city": "Buenos Aires", "lat": -34.6037, "lng": -58.3816,
+    "specialties": ["grc"], "level": "junior", "contract_type": "full-time",
+    "salary_min": 15000, "salary_max": 22000, "currency": "USD",
+    "languages": ["es"], "source": "seed", "source_id": "seed-005",
+    "description_summary": "Análisis de brechas ISO 27001, gestión de riesgos terceros y evidencias de auditoría."
+  },
+  {
+    "title": "Threat Intelligence Analyst",
+    "company": "DarkTrace Global",
+    "country_code": "GB", "city": "London", "lat": 51.5074, "lng": -0.1278,
+    "specialties": ["osint"], "level": "semi-junior", "contract_type": "hybrid",
+    "salary_min": 40000, "salary_max": 55000, "currency": "GBP",
+    "languages": ["en"], "source": "seed", "source_id": "seed-006",
+    "description_summary": "OSINT, tracking de actores de amenaza y producción de intel reports accionables."
+  },
+  {
+    "title": "IAM Analyst Junior",
+    "company": "IdentityWorks",
+    "country_code": "BR", "city": "São Paulo", "lat": -23.5505, "lng": -46.6333,
+    "specialties": ["iam"], "level": "junior", "contract_type": "remote",
+    "salary_min": 16000, "salary_max": 24000, "currency": "USD",
+    "languages": ["pt", "en"], "source": "seed", "source_id": "seed-007",
+    "description_summary": "Gestión de accesos, recertificaciones y soporte de SSO/OIDC en entorno enterprise."
+  },
+  {
+    "title": "Application Security Engineer",
+    "company": "CodeShield",
+    "country_code": "US", "city": "Remote", "lat": null, "lng": null,
+    "specialties": ["appsec"], "level": "mid", "contract_type": "remote",
+    "salary_min": 130000, "salary_max": 165000, "currency": "USD",
+    "languages": ["en"], "source": "seed", "source_id": "seed-008",
+    "description_summary": "Code review de seguridad, OWASP Top 10, threat modeling y secure SDLC."
+  },
+  {
+    "title": "SOC Analyst II (Blue Team)",
+    "company": "AndesDefense",
+    "country_code": "CL", "city": "Santiago", "lat": -33.4489, "lng": -70.6693,
+    "specialties": ["soc"], "level": "semi-junior", "contract_type": "on-site",
+    "salary_min": 24000, "salary_max": 34000, "currency": "USD",
+    "languages": ["es"], "source": "seed", "source_id": "seed-009",
+    "description_summary": "Investigación de incidentes, threat hunting proactivo y playbooks de respuesta."
+  },
+  {
+    "title": "Red Team Operator (Senior)",
+    "company": "Vanguard Offensive",
+    "country_code": "NL", "city": "Amsterdam", "lat": 52.3676, "lng": 4.9041,
+    "specialties": ["pentesting"], "level": "senior", "contract_type": "remote",
+    "salary_min": 80000, "salary_max": 110000, "currency": "EUR",
+    "languages": ["en"], "source": "seed", "source_id": "seed-010",
+    "description_summary": "Adversary simulation, C2 infrastructure y evasion en engagements autorizados."
+  },
+  {
+    "title": "Cybersecurity Intern (Trainee)",
+    "company": "StartupSegura",
+    "country_code": "CO", "city": "Medellín", "lat": 6.2442, "lng": -75.5812,
+    "specialties": ["soc", "grc"], "level": "junior", "contract_type": "internship",
+    "salary_min": 6000, "salary_max": 9000, "currency": "USD",
+    "languages": ["es"], "source": "seed", "source_id": "seed-011",
+    "description_summary": "Rotación por SOC, GRC y AppSec con mentoría. Puerta de entrada al sector."
+  },
+  {
+    "title": "Cloud Security Consultant",
+    "company": "Alpes Consulting",
+    "country_code": "MX", "city": "Guadalajara", "lat": 20.6597, "lng": -103.3496,
+    "specialties": ["cloud_security", "devsecops"], "level": "semi-junior", "contract_type": "consulting",
+    "salary_min": 35000, "salary_max": 50000, "currency": "USD",
+    "languages": ["es", "en"], "source": "seed", "source_id": "seed-012",
+    "description_summary": "Auditorías de configuración cloud y acompañamiento a clientes fintech."
+  },
+  {
+    "title": "Incident Response Specialist",
+    "company": "RapidResponse EU",
+    "country_code": "DE", "city": "Berlin", "lat": 52.52, "lng": 13.405,
+    "specialties": ["soc", "forensics"], "level": "mid", "contract_type": "remote",
+    "salary_min": 65000, "salary_max": 85000, "currency": "EUR",
+    "languages": ["en", "de"], "source": "seed", "source_id": "seed-013",
+    "description_summary": "DFIR on-premise y cloud, malware triage y coordinación con equipos legales."
+  },
+  {
+    "title": "Junior Vulnerability Analyst",
+    "company": "ScanAndTell",
+    "country_code": "PE", "city": "Lima", "lat": -12.0464, "lng": -77.0428,
+    "specialties": ["appsec"], "level": "junior", "contract_type": "remote",
+    "salary_min": 12000, "salary_max": 18000, "currency": "USD",
+    "languages": ["es"], "source": "seed", "source_id": "seed-014",
+    "description_summary": "Escaneo continuo, validación manual de hallazgos y priorización por CVSS."
+  },
+  {
+    "title": "Zero Trust Architect",
+    "company": "FortressID",
+    "country_code": "SG", "city": "Singapore", "lat": 1.3521, "lng": 103.8198,
+    "specialties": ["iam"], "level": "senior", "contract_type": "remote",
+    "salary_min": 140000, "salary_max": 190000, "currency": "USD",
+    "languages": ["en"], "source": "seed", "source_id": "seed-015",
+    "description_summary": "Diseño de arquitectura Zero Trust multi-cloud para banca regional."
+  },
+  {
+    "title": "Compliance Officer — NIST CSF",
+    "company": "GovSec Partners",
+    "country_code": "US", "city": "Washington, DC", "lat": 38.9072, "lng": -77.0369,
+    "specialties": ["grc"], "level": "mid", "contract_type": "full-time",
+    "salary_min": 95000, "salary_max": 125000, "currency": "USD",
+    "languages": ["en"], "source": "seed", "source_id": "seed-016",
+    "description_summary": "Alineación de proveedores públicos al NIST AI RMF y CMMC."
+  }
+]
