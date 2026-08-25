@@ -44,11 +44,12 @@
   backdrop-filter: blur(6px);
 }
 
-/* ── Marcadores glow estilo 3D ── */
+/* ── Marcadores glow estilo 3D (optimizado: sin blur, pulso solo en hover/selected) ── */
 .cr-marker {
   position: relative;
   background: transparent !important;
   border: none !important;
+  will-change: auto;
 }
 .cr-marker span {
   position: absolute;
@@ -58,8 +59,7 @@
   pointer-events: none;
 }
 .cr-glow {
-  opacity: .32;
-  filter: blur(7px);
+  opacity: .55;
 }
 .cr-core {
   box-shadow:
@@ -70,8 +70,14 @@
 .cr-pulse {
   width: 100%; height: 100%;
   border: 2px solid var(--c);
-  animation: crPing 2.4s cubic-bezier(.2,.6,.4,1) infinite;
   opacity: 0;
+  animation: none;
+}
+/* El pulso animado SOLO en el marcador seleccionado o en hover —
+   evita 141 animaciones infinitas simultáneas */
+.cr-marker:hover .cr-pulse,
+.cr-marker.selected .cr-pulse {
+  animation: crPing 1.8s cubic-bezier(.2,.6,.4,1) infinite;
 }
 @keyframes crPing {
   0%   { transform: translate(-50%,-50%) scale(.55); opacity: .75; }

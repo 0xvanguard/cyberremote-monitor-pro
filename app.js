@@ -375,10 +375,12 @@ function onEachFeature(feature, layer) {
 
 function markerGlowIcon(color, radius) {
   const s = radius * 2;
+  // Glow con radial-gradient (sin filter:blur — mucho más barato de componer)
+  const glow = `radial-gradient(circle, ${color}59 0%, ${color}26 45%, ${color}00 70%)`;
   return L.divIcon({
     className: 'cr-marker',
     html:
-      `<span class="cr-glow" style="width:${s * 2.7}px;height:${s * 2.7}px;background:${color}"></span>` +
+      `<span class="cr-glow" style="width:${s * 2.7}px;height:${s * 2.7}px;background:${glow}"></span>` +
       `<span class="cr-pulse" style="width:${s * 1.6}px;height:${s * 1.6}px;--c:${color}"></span>` +
       `<span class="cr-core" style="width:${s}px;height:${s}px;background:${color}"></span>`,
     iconSize: [s * 2.7, s * 2.7],
@@ -577,7 +579,20 @@ async function init() {
     buildSearchIndex();
 
     // Init 2D map — attach to #map2d
-    map = L.map('map2d', { worldCopyJump: true, minZoom: 2, maxZoom: 8 }).setView([20, 10], 2);
+    // Sin arrastre ni paneo: solo zoom puro (centro fijo). La navegación
+    // es vía buscador, marcadores, ranking y botones de región (flyTo/setView).
+    map = L.map('map2d', {
+      dragging: false,            // sin arrastre mouse/touch
+      touchZoom: false,           // sin pinch (mueve el centro)
+      scrollWheelZoom: 'center',  // zoom puro, centro fijo
+      doubleClickZoom: 'center',  // zoom puro, centro fijo
+      boxZoom: false,
+      keyboard: false,            // sin paneo con flechas
+      worldCopyJump: false,
+      preferCanvas: true,         // GeoJSON en canvas — mucho más ligero que SVG
+      minZoom: 2,
+      maxZoom: 8
+    }).setView([20, 10], 2);
     map.zoomControl.setPosition('bottomright');
     window._leafletMap = map;
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
