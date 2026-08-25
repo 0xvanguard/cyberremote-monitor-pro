@@ -625,16 +625,16 @@ async function init() {
     buildSearchIndex();
 
     // Init 2D map — attach to #map2d
-    // Sin arrastre ni paneo: solo zoom puro (centro fijo). La navegación
-    // es vía buscador, marcadores, ranking y botones de región (flyTo/setView).
+    // Arrastre habilitado (mouse/touch/teclado) + zoom. El render optimizado
+    // (canvas, glow sin blur, pulso solo en hover) se conserva.
     map = L.map('map2d', {
-      dragging: false,            // sin arrastre mouse/touch
-      touchZoom: false,           // sin pinch (mueve el centro)
-      scrollWheelZoom: 'center',  // zoom puro, centro fijo
-      doubleClickZoom: 'center',  // zoom puro, centro fijo
+      dragging: true,             // arrastre libre mouse/touch
+      touchZoom: true,            // pinch en móvil
+      scrollWheelZoom: true,      // zoom hacia el cursor
+      doubleClickZoom: true,
       boxZoom: false,
-      keyboard: false,            // sin paneo con flechas
-      worldCopyJump: false,
+      keyboard: true,             // paneo con flechas
+      worldCopyJump: true,
       preferCanvas: true,         // GeoJSON en canvas — mucho más ligero que SVG
       minZoom: 2,
       maxZoom: 8
