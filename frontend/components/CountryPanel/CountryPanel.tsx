@@ -1,107 +1,221 @@
-"use client";
+'use client'
 
-import type { GeoPoint } from "../Globe3D";
+import { useEffect, useState } from 'react'
 
-interface CountryPanelProps {
-  country: GeoPoint | null;
-  onClose?: () => void;
+interface CountryData {
+  code: string
+  name: string
+  region: string
+  intensity: number
+  jobs: number
+  freelance: number
+  contract: number
+  fastEntry: boolean
+  salary: string
+  topRoles: Array<{ role: string; demand: number }>
+  signals: string[]
+  cities: Array<{ name: string; score: number }>
 }
 
-const LEVEL_BAR_COLOR: Record<string, string> = {
-  pentesting: "bg-red-500",
-  soc: "bg-blue-500",
-  cloud_security: "bg-sky-500",
-  devsecops: "bg-purple-500",
-  appsec: "bg-orange-500",
-  grc: "bg-yellow-500",
-  osint: "bg-green-500",
-  iam: "bg-pink-500",
-};
+interface CountryPanelProps {
+  countryCode: string
+  onSelect?: (code: string) => void
+}
 
-/**
- * CountryPanel
- * Panel lateral contextual que aparece al hacer click en un pais del globo.
- * Muestra KPIs, especialidades, nivel de mercado y rutas de insercion.
- */
-export default function CountryPanel({ country, onClose }: CountryPanelProps) {
-  if (!country) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-gray-600 font-mono text-sm p-6">
-        <span className="text-4xl mb-3">🌍</span>
-        <p>Haz click en un país del globo</p>
-        <p className="text-xs mt-1 text-gray-700">para ver oportunidades e inteligencia de mercado</p>
-      </div>
-    );
+export function CountryPanel({ countryCode, onSelect }: CountryPanelProps) {
+  const [country, setCountry] = useState<CountryData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadCountry = async () => {
+      setLoading(true)
+      try {
+        // TODO: Conectar a API real
+        const mockData: CountryData = {
+          code: countryCode,
+          name: getCountryName(countryCode),
+          region: getRegion(countryCode),
+          intensity: Math.floor(Math.random() * 30) + 70,
+          jobs: Math.floor(Math.random() * 200) + 100,
+          freelance: Math.floor(Math.random() * 50) + 20,
+          contract: Math.floor(Math.random() * 30) + 10,
+          fastEntry: Math.random() > 0.5,
+          salary: '$3,000 - $8,000 USD/mes',
+          topRoles: [
+            { role: 'SOC Analyst', demand: 85 },
+            { role: 'Pentester', demand: 72 },
+            { role: 'Cloud Security', demand: 68 },
+          ],
+          signals: [
+            'Mercado en crecimiento para juniors',
+            'Alta demanda de SOC analysts',
+            'Salarios competitivos en USD',
+          ],
+          cities: [
+            { name: 'Bogotá', score: 85 },
+            { name: 'Medellín', score: 78 },
+            { name: 'Cali', score: 65 },
+          ],
+        }
+        setCountry(mockData)
+      } catch (error) {
+        console.error('Error loading country:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadCountry()
+  }, [countryCode])
+
+  const getIntensityColor = (intensity: number) => {
+    if (intensity >= 90) return 'text-green-500'
+    if (intensity >= 75) return 'text-green-400'
+    if (intensity >= 60) return 'text-yellow-500'
+    if (intensity >= 45) return 'text-blue-500'
+    return 'text-indigo-500'
   }
 
-  const intensityLabel =
-    country.intensity >= 80 ? "ALTO 🔥" :
-    country.intensity >= 55 ? "MEDIO ⚡" :
-    country.intensity >= 35 ? "MODERADO" : "EMERGENTE";
+  if (loading) {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="animate-pulse space-y-3">
+          <div className="h-6 bg-slate-700 rounded w-2/3" />
+          <div className="h-4 bg-slate-700 rounded w-1/2" />
+          <div className="h-20 bg-slate-700 rounded" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!country) return null
 
   return (
-    <div className="flex flex-col gap-4 p-4 font-mono text-sm text-white h-full overflow-y-auto">
+    <div className="p-4 space-y-4">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-cyan-400">{country.country_name}</h2>
-          <span className="text-xs text-gray-400">{country.country_code}</span>
-        </div>
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-white transition-colors text-lg"
-            aria-label="Cerrar panel"
-          >
-            ×
-          </button>
-        )}
-      </div>
-
-      {/* KPIs */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-          <p className="text-xs text-gray-400">Vacantes activas</p>
-          <p className="text-2xl font-bold text-white">{country.job_count}</p>
-        </div>
-        <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-          <p className="text-xs text-gray-400">Intensidad de mercado</p>
-          <p className="text-xl font-bold text-orange-400">{country.intensity}/100</p>
-          <p className="text-xs text-gray-500">{intensityLabel}</p>
-        </div>
-      </div>
-
-      {/* Especialidades */}
-      {country.top_specialties.length > 0 && (
-        <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-          <p className="text-xs text-gray-400 mb-2">Top especialidades demandadas</p>
-          <div className="space-y-2">
-            {country.top_specialties.map((spec) => (
-              <div key={spec} className="flex items-center gap-2">
-                <div
-                  className={`h-2 rounded-full ${LEVEL_BAR_COLOR[spec] ?? "bg-gray-600"}`}
-                  style={{ width: `${Math.random() * 40 + 40}%` }}
-                />
-                <span className="text-xs text-gray-300 capitalize">{spec.replace("_", " ")}</span>
-              </div>
-            ))}
+      <div className="border-b border-slate-700/50 pb-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white">
+              {country.name}
+              {country.fastEntry && <span className="ml-2">⚡</span>}
+            </h2>
+            <p className="text-xs text-slate-400">{country.region}</p>
           </div>
+          <span className={`text-2xl font-bold ${getIntensityColor(country.intensity)}`}>
+            {country.intensity}
+          </span>
         </div>
-      )}
-
-      {/* Nivel de entrada */}
-      <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-        <p className="text-xs text-gray-400 mb-1">💼 Nivel de entrada sugerido</p>
-        <p className="text-white">Junior con certificaciones básicas (CompTIA Sec+, OSCP, CEH)</p>
       </div>
 
-      {/* CTA */}
-      <a
-        href={`/jobs?country=${country.country_code}`}
-        className="block w-full text-center bg-cyan-700 hover:bg-cyan-600 text-white rounded-lg py-2 px-4 text-sm font-bold transition-colors"
-      >
-        Ver vacantes en {country.country_name} →
-      </a>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <div className="intel-card p-2">
+          <div className="text-lg font-bold text-cyber-accent">{country.jobs}</div>
+          <div className="text-xs text-slate-400">💼 Empleos</div>
+        </div>
+        <div className="intel-card p-2">
+          <div className="text-lg font-bold text-cyber-purple">{country.freelance}</div>
+          <div className="text-xs text-slate-400">🛠️ Freelance</div>
+        </div>
+        <div className="intel-card p-2">
+          <div className="text-lg font-bold text-cyber-warning">{country.contract}</div>
+          <div className="text-xs text-slate-400">📋 Contratos</div>
+        </div>
+      </div>
+
+      {/* Salary */}
+      <div className="intel-card p-3">
+        <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">
+          💰 Rango Salarial
+        </div>
+        <div className="text-sm font-medium text-white">{country.salary}</div>
+      </div>
+
+      {/* Top Roles */}
+      <div>
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          🔥 Roles Más Demandados
+        </h3>
+        <div className="space-y-2">
+          {country.topRoles.map((role, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="flex-1">
+                <div className="text-sm text-white">{role.role}</div>
+                <div className="w-full bg-slate-700 rounded-full h-1.5 mt-1">
+                  <div
+                    className="bg-cyber-accent h-1.5 rounded-full"
+                    style={{ width: `${role.demand}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-xs text-slate-400">{role.demand}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Cities */}
+      <div>
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          🏙️ Ciudades Principales
+        </h3>
+        <div className="space-y-1">
+          {country.cities.map((city, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between p-2 rounded hover:bg-slate-700/50 cursor-pointer"
+            >
+              <span className="text-sm text-white">{city.name}</span>
+              <span className={`text-xs font-bold ${getIntensityColor(city.score)}`}>
+                {city.score}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Signals */}
+      <div>
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          📡 Señales
+        </h3>
+        <div className="space-y-1">
+          {country.signals.map((signal, i) => (
+            <div key={i} className="text-xs text-slate-300 p-2 bg-slate-800/50 rounded">
+              • {signal}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
-  );
+  )
+}
+
+// Helper functions
+function getCountryName(code: string): string {
+  const names: Record<string, string> = {
+    US: 'Estados Unidos',
+    GB: 'Reino Unido',
+    DE: 'Alemania',
+    CA: 'Canadá',
+    CO: 'Colombia',
+    BR: 'Brasil',
+    ES: 'España',
+    AU: 'Australia',
+  }
+  return names[code] || code
+}
+
+function getRegion(code: string): string {
+  const regions: Record<string, string> = {
+    US: 'North America',
+    GB: 'Europe',
+    DE: 'Europe',
+    CA: 'North America',
+    CO: 'LATAM',
+    BR: 'LATAM',
+    ES: 'Europe',
+    AU: 'Oceania',
+  }
+  return regions[code] || 'Unknown'
 }

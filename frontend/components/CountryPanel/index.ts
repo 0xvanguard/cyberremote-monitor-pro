@@ -1,1 +1,1 @@
-export { default } from "./CountryPanel";
+export { CountryPanel } from "./CountryPanel";
